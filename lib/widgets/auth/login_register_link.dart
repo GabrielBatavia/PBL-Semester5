@@ -1,3 +1,5 @@
+// lib/widgets/auth/login_register_link.dart
+
 import 'package:flutter/material.dart';
 import 'package:jawaramobile_1/theme/AppTheme.dart';
 
@@ -8,14 +10,16 @@ class LoginRegisterLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           'Belum punya akun?',
-          style: TextStyle(fontSize: 14, color: Colors.black54),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withOpacity(0.6),
+          ),
         ),
         const SizedBox(width: 4),
         TextButton(
@@ -29,8 +33,8 @@ class LoginRegisterLink extends StatelessWidget {
             'Daftar',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFFFF8100),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.primaryOrange,
             ),
           ),
         ),

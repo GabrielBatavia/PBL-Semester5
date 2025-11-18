@@ -1,3 +1,5 @@
+// lib/screens/Auth/register_screens.dart
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/auth/login_header.dart';
@@ -42,127 +44,151 @@ class _RegisterScreensState extends State<RegisterScreens> {
 
   void _handleDaftar() {
     if (_formKey.currentState!.validate()) {
-      String email = _emailController.text;
-      String password = _passwordController.text;
+      final email = _emailController.text;
+      final password = _passwordController.text;
 
+      // TODO: integrasi API / Firebase di sini
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Login berhasil!'),
+          content: Text('Registrasi berhasil!'),
           backgroundColor: Colors.green,
         ),
       );
 
-      Future.delayed(const Duration(milliseconds: 50), () {
+      Future.delayed(const Duration(milliseconds: 600), () {
         context.go('/login');
       });
     }
   }
 
   void _handleLogin() {
-    Future.delayed(const Duration(milliseconds: 50), () {
-      context.go('/login');
-    });
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   const SnackBar(content: Text('Halaman pendaftaran dalam pengembangan')),
-    // );
+    context.go('/login');
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const LoginHeader(), const SizedBox(height: 40),
-                // Welcome Text
-                const Text(
-                  'Daftar Akun',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+      extendBodyBehindAppBar: true,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.96),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Lengkapi formulir untuk membuat akun',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.black54),
-                ),
-                const SizedBox(height: 40),
-                RegisterForm(
-                  formKey: _formKey,
-                  namaController: _namaController,
-                  nikController: _nikController,
-                  emailController: _emailController,
-                  phoneController: _phoneController,
-                  passwordController: _passwordController,
-                  confirmPasswordController: _confirmPasswordController,
-                  alamatController: _alamatController,
-                  obscurePassword: _obscurePassword,
-                  onTogglePassword: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                  onRegister: _handleDaftar,
-                ),
-                const SizedBox(height: 32),
-
-                // Divider
-                Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(child: Divider(color: Colors.grey[400])),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    const LoginHeader(),
+                    const SizedBox(height: 28),
+                    Align(
+                      alignment: Alignment.centerLeft,
                       child: Text(
-                        'atau daftar dengan',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        'Daftar Akun',
+                        style: theme.textTheme.displayLarge,
                       ),
                     ),
-                    Expanded(child: Divider(color: Colors.grey[400])),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Google Button
-                LoginGoogleButton(onTap: _handleGoogleLogin),
-                const SizedBox(height: 24),
-
-                // Register Link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Sudah punya akun?',
-                      style: TextStyle(fontSize: 14, color: Colors.black54),
-                    ),
-                    const SizedBox(width: 4),
-                    TextButton(
-                      onPressed: _handleLogin,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Lengkapi formulir untuk membuat akun Jawara.',
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: Colors.grey[600]),
                       ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF6D28D9),
+                    ),
+                    const SizedBox(height: 24),
+                    RegisterForm(
+                      formKey: _formKey,
+                      namaController: _namaController,
+                      nikController: _nikController,
+                      emailController: _emailController,
+                      phoneController: _phoneController,
+                      passwordController: _passwordController,
+                      confirmPasswordController: _confirmPasswordController,
+                      alamatController: _alamatController,
+                      obscurePassword: _obscurePassword,
+                      onTogglePassword: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                      onRegister: _handleDaftar,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Divider(color: Colors.grey[300]),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            'atau daftar dengan',
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(color: Colors.grey[300]),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    LoginGoogleButton(onTap: _handleGoogleLogin),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Sudah punya akun?',
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(color: Colors.grey[600]),
+                        ),
+                        const SizedBox(width: 4),
+                        TextButton(
+                          onPressed: _handleLogin,
+                          style: TextButton.styleFrom(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'Login',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF6A11CB),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

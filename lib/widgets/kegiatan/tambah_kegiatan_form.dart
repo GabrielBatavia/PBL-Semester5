@@ -1,10 +1,12 @@
+// lib/widgets/kegiatan/tambah_kegiatan_form.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:jawaramobile_1/theme/AppTheme.dart';
 
 class TambahKegiatanForm extends StatefulWidget {
-  // Tambahkan parameter opsional untuk menerima data awal (untuk mode edit)
   final Map<String, String>? initialData;
 
   const TambahKegiatanForm({super.key, this.initialData});
@@ -16,7 +18,6 @@ class TambahKegiatanForm extends StatefulWidget {
 class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers untuk setiap field
   late TextEditingController _namaController;
   late TextEditingController _pjController;
   late TextEditingController _tanggalController;
@@ -38,7 +39,6 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
   @override
   void initState() {
     super.initState();
-    // Inisialisasi controller dengan data awal jika ada (mode edit)
     final data = widget.initialData;
     _namaController = TextEditingController(text: data?['nama']);
     _pjController = TextEditingController(text: data?['pj']);
@@ -89,13 +89,25 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Menyimpan data kegiatan...')),
       );
+      // TODO: kirim ke backend
     }
+  }
+
+  InputDecoration _decoration(String label, {Widget? suffixIcon}) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      filled: true,
+      fillColor: Colors.white,
+      suffixIcon: suffixIcon,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final fillColor = theme.colorScheme.primary.withOpacity(0.05);
 
     return Form(
       key: _formKey,
@@ -104,14 +116,7 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
         children: [
           TextFormField(
             controller: _namaController,
-            decoration: InputDecoration(
-              labelText: 'Nama Kegiatan',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              filled: true,
-              fillColor: fillColor,
-            ),
+            decoration: _decoration('Nama Kegiatan'),
             validator: (value) => value == null || value.trim().isEmpty
                 ? 'Nama kegiatan tidak boleh kosong'
                 : null,
@@ -120,14 +125,7 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
           DropdownButtonFormField<String>(
             value: _selectedKategori,
             hint: const Text("Pilih Kategori"),
-            decoration: InputDecoration(
-              labelText: "Kategori",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              filled: true,
-              fillColor: fillColor,
-            ),
+            decoration: _decoration("Kategori"),
             items: _kategoriOptions
                 .map(
                   (String value) => DropdownMenuItem<String>(
@@ -144,14 +142,7 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
           const SizedBox(height: 20),
           TextFormField(
             controller: _pjController,
-            decoration: InputDecoration(
-              labelText: 'Penanggung Jawab',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              filled: true,
-              fillColor: fillColor,
-            ),
+            decoration: _decoration('Penanggung Jawab'),
             validator: (value) => value == null || value.trim().isEmpty
                 ? 'Penanggung jawab tidak boleh kosong'
                 : null,
@@ -159,14 +150,7 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
           const SizedBox(height: 20),
           TextFormField(
             controller: _lokasiController,
-            decoration: InputDecoration(
-              labelText: 'Lokasi',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              filled: true,
-              fillColor: fillColor,
-            ),
+            decoration: _decoration('Lokasi'),
             validator: (value) => value == null || value.trim().isEmpty
                 ? 'Lokasi tidak boleh kosong'
                 : null,
@@ -174,14 +158,12 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
           const SizedBox(height: 20),
           TextFormField(
             controller: _tanggalController,
-            decoration: InputDecoration(
-              labelText: 'Tanggal Pelaksanaan',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+            decoration: _decoration(
+              'Tanggal Pelaksanaan',
+              suffixIcon: Icon(
+                Icons.calendar_today_outlined,
+                color: theme.colorScheme.primary,
               ),
-              suffixIcon: const Icon(Icons.calendar_today_outlined),
-              filled: true,
-              fillColor: fillColor,
             ),
             readOnly: true,
             onTap: () => _selectDate(context),
@@ -191,14 +173,7 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
           const SizedBox(height: 20),
           TextFormField(
             controller: _deskripsiController,
-            decoration: InputDecoration(
-              labelText: 'Deskripsi',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              filled: true,
-              fillColor: fillColor,
-            ),
+            decoration: _decoration('Deskripsi'),
             maxLines: 4,
             validator: (value) => value == null || value.trim().isEmpty
                 ? 'Deskripsi tidak boleh kosong'
@@ -211,33 +186,61 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
           ),
           const SizedBox(height: 8),
           _buildImagePicker(context),
-          const SizedBox(height: 40),
-          ElevatedButton(onPressed: _submitForm, child: const Text('Simpan')),
+          const SizedBox(height: 32),
+          SizedBox(
+            height: 48,
+            child: ElevatedButton(
+              onPressed: _submitForm,
+              child: const Text('Simpan'),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildImagePicker(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: _pickImage,
       child: Container(
         height: 150,
         decoration: BoxDecoration(
-          /* ... styling ... */ color: Colors.grey.shade100,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: theme.colorScheme.primary.withOpacity(0.15),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: _photo == null
             ? Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.add_a_photo_outlined),
-                    Text('Tap untuk tambah foto'),
+                  children: [
+                    Icon(
+                      Icons.add_a_photo_outlined,
+                      color: AppTheme.primaryOrange,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Tap untuk tambah foto',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                    ),
                   ],
                 ),
               )
             : ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
                 child: Image.file(
                   _photo!,
                   fit: BoxFit.cover,

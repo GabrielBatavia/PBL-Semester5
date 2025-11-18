@@ -1,5 +1,8 @@
+// lib/widgets/dashboard_header.dart
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jawaramobile_1/theme/AppTheme.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
@@ -10,11 +13,17 @@ class DashboardHeader extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -28,7 +37,7 @@ class DashboardHeader extends StatelessWidget {
                   'P',
                   style: TextStyle(
                     color: colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -38,19 +47,28 @@ class DashboardHeader extends StatelessWidget {
                 children: [
                   Text(
                     'Hai, Admin',
-                    style: theme.textTheme.titleLarge,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.darkBrown,
+                    ),
                   ),
                   Text(
-                    'Welcome Back!',
-                    style: theme.textTheme.bodyMedium,
-                  )
+                    'Welcome Back 👋',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface.withOpacity(0.7),
+                    ),
+                  ),
                 ],
               )
             ],
           ),
           IconButton(
             onPressed: () {},
-            icon: FaIcon(FontAwesomeIcons.bell, color: colorScheme.primary,),
+            icon: FaIcon(
+              FontAwesomeIcons.bell,
+              color: colorScheme.primary,
+              size: 18,
+            ),
           )
         ],
       ),

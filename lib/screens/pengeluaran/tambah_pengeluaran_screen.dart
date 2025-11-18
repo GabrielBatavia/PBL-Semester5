@@ -1,3 +1,5 @@
+// lib/screens/pengeluaran/tambah_pengeluaran_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:jawaramobile_1/widgets/tambah_pengeluaran_form.dart';
 
@@ -7,28 +9,41 @@ class TambahPengeluaranScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colorScheme.primary,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          "Tambah Pengeluaran",
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.onPrimary,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
+        title: const Text("Tambah Pengeluaran"),
       ),
       body: Container(
-        height: double.infinity,
-        decoration: BoxDecoration(color: Colors.white.withOpacity(0.9)),
-        // Body menjadi jauh lebih simpel
-        child: const SingleChildScrollView(
-          padding: EdgeInsets.all(24.0),
-          child: TambahPengeluaranForm(), // Cukup panggil widget form di sini
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: const TambahPengeluaranForm(),
+            ),
+          ),
         ),
       ),
     );

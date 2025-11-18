@@ -1,3 +1,5 @@
+// lib/screens/Pemasukan/tagih_iuran_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/pemasukan/tagih_iuran/tagih_iuran_header.dart';
@@ -63,15 +65,11 @@ class _TagihIuranPageState extends State<TagihIuranPage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text("Iuran berhasil ditagih ke semua keluarga aktif"),
         backgroundColor: Colors.green,
       ),
     );
-
-    // Future.delayed(const Duration(seconds: 1), () {
-    //   context.pop();
-    // });
   }
 
   void _resetForm() {
@@ -83,69 +81,84 @@ class _TagihIuranPageState extends State<TagihIuranPage> {
 
   Map<String, String>? get _selectedIuranData {
     if (_selectedIuran == null) return null;
-    return _availableIuran.firstWhere((iuran) => iuran['no'] == _selectedIuran);
+    return _availableIuran
+        .firstWhere((iuran) => iuran['no'] == _selectedIuran);
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          "Tagih Iuran",
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(color: Colors.white),
-        ),
+        title: const Text("Tagih Iuran"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/menu-pemasukan'),
         ),
       ),
       body: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.95),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const TagihIuranHeader(),
-            const SizedBox(height: 24),
-            JenisIuranSection(
-              availableIuran: _availableIuran,
-              selectedIuran: _selectedIuran,
-              selectedIuranData: _selectedIuranData,
-              onIuranChanged: (value) {
-                setState(() {
-                  _selectedIuran = value;
-                });
-              },
-              onIuranCleared: () {
-                setState(() {
-                  _selectedIuran = null;
-                });
-              },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.96),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const TagihIuranHeader(),
+                  const SizedBox(height: 24),
+                  JenisIuranSection(
+                    availableIuran: _availableIuran,
+                    selectedIuran: _selectedIuran,
+                    selectedIuranData: _selectedIuranData,
+                    onIuranChanged: (value) {
+                      setState(() {
+                        _selectedIuran = value;
+                      });
+                    },
+                    onIuranCleared: () {
+                      setState(() {
+                        _selectedIuran = null;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  TanggalSection(
+                    selectedDate: _selectedDate,
+                    onDateSelected: () => _selectDate(context),
+                  ),
+                  const SizedBox(height: 32),
+                  TagihIuranActions(
+                    onReset: _resetForm,
+                    onTagih: _tagihIuran,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
-            TanggalSection(
-              selectedDate: _selectedDate,
-              onDateSelected: () => _selectDate(context),
-            ),
-            const SizedBox(height: 32),
-            TagihIuranActions(onReset: _resetForm, onTagih: _tagihIuran),
-          ],
+          ),
         ),
       ),
     );

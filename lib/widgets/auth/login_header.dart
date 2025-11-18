@@ -1,31 +1,45 @@
+// lib/widgets/auth/login_header.dart
+
 import 'package:flutter/material.dart';
+import 'package:jawaramobile_1/theme/AppTheme.dart';
 
 class LoginHeader extends StatelessWidget {
   const LoginHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          width: 50,
-          height: 50,
+          width: 54,
+          height: 54,
           decoration: BoxDecoration(
-            color: colorScheme.primary,
+            gradient: const LinearGradient(
+              colors: [AppTheme.primaryOrange, Color(0xFF2575FC)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primaryOrange.withOpacity(0.3),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-          child: Icon(Icons.menu_book, color: colorScheme.onPrimary, size: 28),
+          child: const Icon(Icons.menu_book, color: Colors.white, size: 28),
         ),
         const SizedBox(width: 12),
-        const Text(
+        Text(
           'Jawara Pintar',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+          style: theme.textTheme.displayLarge?.copyWith(
+            fontSize: 26,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.darkBrown,
           ),
         ),
       ],

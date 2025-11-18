@@ -1,25 +1,31 @@
+// lib/widgets/auth/login_welcome.dart
+
 import 'package:flutter/material.dart';
+import 'package:jawaramobile_1/theme/AppTheme.dart';
 
 class LoginWelcome extends StatelessWidget {
   const LoginWelcome({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final theme = Theme.of(context);
+
+    return Column(
       children: [
         Text(
           'Selamat Datang!',
-          style: TextStyle(
+          style: theme.textTheme.displayLarge?.copyWith(
             fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppTheme.darkBrown,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           'Login untuk mengakses sistem Jawara Pintar',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, color: Colors.black54),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withOpacity(0.7),
+          ),
         ),
       ],
     );

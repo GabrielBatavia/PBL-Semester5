@@ -1,3 +1,5 @@
+// lib/screens/ChannelTransfer/tambah_channel_screen.dart
+
 import 'package:flutter/material.dart';
 
 class TambahChannelScreen extends StatefulWidget {
@@ -26,14 +28,21 @@ class _TambahChannelScreenState extends State<TambahChannelScreen> {
 
   void _simpan() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    // TODO: simpan ke server / database
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Channel disimpan')),
     );
     Navigator.of(context).pop();
   }
 
-  Widget _field(String label, TextEditingController c,
-      {TextInputType keyboard = TextInputType.text, String? Function(String?)? validator}) {
+  Widget _field(
+    String label,
+    TextEditingController c, {
+    TextInputType keyboard = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
@@ -42,27 +51,42 @@ class _TambahChannelScreenState extends State<TambahChannelScreen> {
         validator: validator,
         decoration: InputDecoration(
           labelText: label,
-          border: const OutlineInputBorder(),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          // gunakan InputDecorationTheme dari AppTheme (tanpa border manual)
         ),
+        style: theme.textTheme.bodyMedium,
       ),
     );
   }
 
   Widget _uploadPlaceholder(String label) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium,
+        ),
         const SizedBox(height: 8),
         Container(
           height: 120,
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.white,
             border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.grey.shade100,
           ),
-          child: const Center(child: Text("Upload gambar (png/jpg) – placeholder")),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.cloud_upload_outlined),
+              const SizedBox(width: 8),
+              Text(
+                "Upload gambar (png/jpg) – placeholder",
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: Colors.grey[600]),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 16),
       ],
@@ -70,54 +94,122 @@ class _TambahChannelScreenState extends State<TambahChannelScreen> {
   }
 
   @override
+  void dispose() {
+    _namaCtrl.dispose();
+    _nomorCtrl.dispose();
+    _pemilikCtrl.dispose();
+    _catatanCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Buat Transfer Channel")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _field("Nama Channel", _namaCtrl, validator: (v)=> (v==null||v.isEmpty)?"Wajib diisi":null),
-              DropdownButtonFormField<String>(
-                value: _tipe,
-                hint: const Text("-- Pilih Tipe --"),
-                items: const [
-                  DropdownMenuItem(value: 'bank', child: Text('bank')),
-                  DropdownMenuItem(value: 'ewallet', child: Text('ewallet')),
-                  DropdownMenuItem(value: 'qris', child: Text('qris')),
-                ],
-                onChanged: (v) => setState(()=> _tipe=v),
-                decoration: const InputDecoration(
-                  labelText: "Tipe",
-                  border: OutlineInputBorder(),
-                ),
-                validator: (v)=> v==null ? "Pilih tipe" : null,
-              ),
-              const SizedBox(height: 16),
-              _field("Nomor Rekening / Akun", _nomorCtrl, keyboard: TextInputType.number,
-                  validator: (v)=> (v==null||v.isEmpty)?"Wajib diisi":null),
-              _field("Nama Pemilik", _pemilikCtrl, validator: (v)=> (v==null||v.isEmpty)?"Wajib diisi":null),
-              _uploadPlaceholder("QR"),
-              _uploadPlaceholder("Thumbnail"),
-              TextFormField(
-                controller: _catatanCtrl,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: "Catatan (Opsional)",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  ElevatedButton(onPressed: _simpan, child: const Text("Simpan")),
-                  const SizedBox(width: 12),
-                  OutlinedButton(onPressed: _reset, child: const Text("Reset")),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text("Buat Transfer Channel"),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.96),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
                 ],
               ),
-            ],
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    _field(
+                      "Nama Channel",
+                      _namaCtrl,
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? "Wajib diisi" : null,
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: _tipe,
+                      hint: const Text("-- Pilih Tipe --"),
+                      items: const [
+                        DropdownMenuItem(
+                            value: 'bank', child: Text('bank')),
+                        DropdownMenuItem(
+                            value: 'ewallet', child: Text('ewallet')),
+                        DropdownMenuItem(
+                            value: 'qris', child: Text('qris')),
+                      ],
+                      onChanged: (v) => setState(() => _tipe = v),
+                      decoration: const InputDecoration(
+                        labelText: "Tipe",
+                      ),
+                      validator: (v) => v == null ? "Pilih tipe" : null,
+                    ),
+                    const SizedBox(height: 16),
+                    _field(
+                      "Nomor Rekening / Akun",
+                      _nomorCtrl,
+                      keyboard: TextInputType.number,
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? "Wajib diisi" : null,
+                    ),
+                    _field(
+                      "Nama Pemilik",
+                      _pemilikCtrl,
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? "Wajib diisi" : null,
+                    ),
+                    _uploadPlaceholder("QR"),
+                    _uploadPlaceholder("Thumbnail"),
+                    TextFormField(
+                      controller: _catatanCtrl,
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: "Catatan (Opsional)",
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _simpan,
+                            child: const Text("Simpan"),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: _reset,
+                            child: const Text("Reset"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),

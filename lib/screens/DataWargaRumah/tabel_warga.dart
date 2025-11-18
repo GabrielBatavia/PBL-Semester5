@@ -1,12 +1,29 @@
+// lib/screens/DataWargaRumah/tabel_warga.dart
+
 import 'package:flutter/material.dart';
 
 class TabelWarga extends StatelessWidget {
   const TabelWarga({super.key});
 
   final List<Map<String, dynamic>> warga = const [
-    {"nama": "Hanif", "nik": "1234567890123456", "umur": 22, "pekerjaan": "Mahasiswa"},
-    {"nama": "Siti", "nik": "1234567890123457", "umur": 25, "pekerjaan": "Guru"},
-    {"nama": "Budi", "nik": "1234567890123458", "umur": 30, "pekerjaan": "Wiraswasta"},
+    {
+      "nama": "Hanif",
+      "nik": "1234567890123456",
+      "umur": 22,
+      "pekerjaan": "Mahasiswa"
+    },
+    {
+      "nama": "Siti",
+      "nik": "1234567890123457",
+      "umur": 25,
+      "pekerjaan": "Guru"
+    },
+    {
+      "nama": "Budi",
+      "nik": "1234567890123458",
+      "umur": 30,
+      "pekerjaan": "Wiraswasta"
+    },
   ];
 
   @override
@@ -27,19 +44,29 @@ class TabelWarga extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal, // ✅ scroll horizontal untuk HP
+              scrollDirection: Axis.horizontal,
               child: DataTable(
                 columnSpacing: 16,
-                headingRowColor:
-                MaterialStateProperty.all(colorScheme.primaryContainer),
-                headingTextStyle: theme.textTheme.titleSmall
-                    ?.copyWith(color: colorScheme.onPrimaryContainer),
+                headingRowColor: MaterialStateProperty.all(
+                  colorScheme.primary.withOpacity(0.06),
+                ),
+                headingTextStyle: theme.textTheme.titleSmall?.copyWith(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
                 columns: const [
                   DataColumn(label: Text("Nama")),
                   DataColumn(label: Text("NIK")),
@@ -49,10 +76,30 @@ class TabelWarga extends StatelessWidget {
                 rows: warga.map((w) {
                   return DataRow(
                     cells: [
-                      DataCell(Text(w["nama"], style: theme.textTheme.bodyMedium)),
-                      DataCell(Text(w["nik"], style: theme.textTheme.bodyMedium)),
-                      DataCell(Text("${w["umur"]}", style: theme.textTheme.bodyMedium)),
-                      DataCell(Text(w["pekerjaan"], style: theme.textTheme.bodyMedium)),
+                      DataCell(
+                        Text(
+                          w["nama"],
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          w["nik"],
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          "${w["umur"]}",
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          w["pekerjaan"],
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
                     ],
                   );
                 }).toList(),

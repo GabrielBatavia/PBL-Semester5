@@ -1,7 +1,9 @@
+// lib/widgets/bottom_navbar.dart
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jawaramobile_1/widgets/menu_popup.dart'; // ⬅️ Tambahkan ini
+import 'package:jawaramobile_1/widgets/menu_popup.dart';
 
 class BottomNavbar extends StatefulWidget {
   const BottomNavbar({super.key});
@@ -26,13 +28,13 @@ class _BottomNavbarState extends State<BottomNavbar> {
         context.go('/dashboard');
         break;
       case 1:
-      // laporan
+        // TODO: route laporan
         break;
       case 2:
-        showMenuPopUp(context); // ✅ ganti ini
+        showMenuPopUp(context);
         break;
       case 3:
-      // pengguna
+        // TODO: route pengguna
         break;
     }
   }
@@ -40,6 +42,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final currentIndex = _calculateSelectedIndex(context);
+
     final items = const [
       {'icon': FontAwesomeIcons.house, 'label': 'Home'},
       {'icon': FontAwesomeIcons.fileLines, 'label': 'Laporan'},
@@ -47,19 +51,40 @@ class _BottomNavbarState extends State<BottomNavbar> {
       {'icon': FontAwesomeIcons.userGroup, 'label': 'Pengguna'},
     ];
 
-    return BottomNavigationBar(
-      currentIndex: _calculateSelectedIndex(context),
-      onTap: _onItemTapped,
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: colorScheme.primary,
-      unselectedItemColor: colorScheme.onSurface.withOpacity(0.5),
-      backgroundColor: colorScheme.surface,
-      items: items
-          .map((e) => BottomNavigationBarItem(
-        icon: FaIcon(e['icon'] as IconData),
-        label: e['label'] as String,
-      ))
-          .toList(),
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 18,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: colorScheme.primary,
+          unselectedItemColor: colorScheme.onSurface.withOpacity(0.55),
+          backgroundColor: colorScheme.surface,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+          items: items
+              .map(
+                (e) => BottomNavigationBarItem(
+                  icon: FaIcon(e['icon'] as IconData, size: 18),
+                  label: e['label'] as String,
+                ),
+              )
+              .toList(),
+        ),
+      ),
     );
   }
 }

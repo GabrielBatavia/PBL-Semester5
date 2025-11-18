@@ -1,4 +1,7 @@
+// lib/widgets/auth/register_form.dart
+
 import 'package:flutter/material.dart';
+import 'package:jawaramobile_1/theme/AppTheme.dart';
 
 class RegisterForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -30,85 +33,46 @@ class RegisterForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 1,
+            color: AppTheme.primaryOrange.withOpacity(0.16),
+            blurRadius: 18,
             offset: const Offset(0, 8),
           ),
         ],
       ),
-
-      // Form container
       child: Form(
         key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // nama label
-            const Text(
-              'Nama',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-            // nama input
+            _label(theme, 'Nama'),
             const SizedBox(height: 8),
             TextFormField(
               controller: namaController,
               decoration: _inputDecoration('Masukkan nama disini'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Nama tidak boleh kosong';
-                }
-                return null;
-              },
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Nama tidak boleh kosong' : null,
             ),
-
-            // NIK label
             const SizedBox(height: 20),
-            const Text(
-              'NIK',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-            // NIK input
+            _label(theme, 'NIK'),
             const SizedBox(height: 8),
             TextFormField(
               controller: nikController,
               keyboardType: TextInputType.number,
               decoration: _inputDecoration('Masukkan NIK disini'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'NIK tidak boleh kosong';
-                }
-                return null;
-              },
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'NIK tidak boleh kosong' : null,
             ),
-
-            // Email label
             const SizedBox(height: 20),
-            const Text(
-              'Email',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-            // Email input
+            _label(theme, 'Email'),
             const SizedBox(height: 8),
             TextFormField(
               controller: emailController,
@@ -124,42 +88,18 @@ class RegisterForm extends StatelessWidget {
                 return null;
               },
             ),
-
-            // Phone label
             const SizedBox(height: 20),
-            const Text(
-              'Nomor Telepon',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-            // Phone input
+            _label(theme, 'Nomor Telepon'),
             const SizedBox(height: 8),
             TextFormField(
               controller: phoneController,
               keyboardType: TextInputType.phone,
               decoration: _inputDecoration('Masukkan nomor telepon disini'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Nomor telepon tidak boleh kosong';
-                }
-                return null;
-              },
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Nomor telepon tidak boleh kosong' : null,
             ),
-
-            // Password label
             const SizedBox(height: 20),
-            const Text(
-              'Password',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-            // Password input
+            _label(theme, 'Password'),
             const SizedBox(height: 8),
             TextFormField(
               controller: passwordController,
@@ -168,7 +108,7 @@ class RegisterForm extends StatelessWidget {
                 suffixIcon: IconButton(
                   icon: Icon(
                     obscurePassword ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.grey[600],
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
                   ),
                   onPressed: onTogglePassword,
                 ),
@@ -183,36 +123,22 @@ class RegisterForm extends StatelessWidget {
                 return null;
               },
             ),
-
-            // Confirm Password label
             const SizedBox(height: 20),
-            const Text(
-              'Konfirmasi Password',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-            // Confirm Password input
+            _label(theme, 'Konfirmasi Password'),
             const SizedBox(height: 8),
             TextFormField(
               controller: confirmPasswordController,
               obscureText: obscurePassword,
-              decoration:
-                  _inputDecoration(
-                    'Masukkan konfirmasi password disini',
-                  ).copyWith(
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: Colors.grey[600],
-                      ),
-                      onPressed: onTogglePassword,
-                    ),
+              decoration: _inputDecoration('Masukkan konfirmasi password disini')
+                  .copyWith(
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
                   ),
+                  onPressed: onTogglePassword,
+                ),
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Konfirmasi password tidak boleh kosong';
@@ -223,43 +149,12 @@ class RegisterForm extends StatelessWidget {
                 return null;
               },
             ),
-
-            // alamat label
-            // const SizedBox(height: 20),
-            // const Text(
-            //   'Alamat',
-            //   style: TextStyle(
-            //     fontSize: 14,
-            //     fontWeight: FontWeight.w500,
-            //     color: Colors.black87,
-            //   ),
-            // ),
-            // // alamat input
-            // const SizedBox(height: 8),
-            // TextFormField(
-            //   controller: alamatController,
-            //   decoration: _inputDecoration('Masukkan alamat disini'),
-            //   validator: (value) {
-            //     if (value == null || value.isEmpty) {
-            //       return 'Alamat tidak boleh kosong';
-            //     }
-            //     return null;
-            //   },
-            // ),
-            // Register button
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
                 onPressed: onRegister,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  foregroundColor: colorScheme.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
                 child: const Text(
                   'Register',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -272,26 +167,35 @@ class RegisterForm extends StatelessWidget {
     );
   }
 
-  // Style decoration ntar sesuain sama tema e
+  Widget _label(ThemeData theme, String text) {
+    return Text(
+      text,
+      style: theme.textTheme.labelLarge?.copyWith(
+        color: theme.colorScheme.onSurface.withOpacity(0.85),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: Colors.grey[400]),
+      hintStyle: const TextStyle(color: Colors.black45),
       filled: true,
-      fillColor: Colors.grey[50],
+      fillColor: Colors.white,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
       ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFF6D28D9)),
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+        borderSide: BorderSide(color: AppTheme.primaryOrange, width: 1.4),
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
 }

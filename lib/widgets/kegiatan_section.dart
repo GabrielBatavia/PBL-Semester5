@@ -1,3 +1,5 @@
+// lib/widgets/kegiatan_section.dart
+
 import 'package:flutter/material.dart';
 
 class KegiatanSection extends StatelessWidget {
@@ -11,21 +13,62 @@ class KegiatanSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Kegiatan Warga', style: theme.textTheme.titleLarge),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Kegiatan Warga', style: theme.textTheme.titleLarge),
+            TextButton(
+              onPressed: () {
+                // TODO: route ke halaman kegiatan
+              },
+              child: const Text('Lihat semua'),
+            ),
+          ],
+        ),
         const SizedBox(height: 4),
-        Text('Kegiatan Terbaru', style: theme.textTheme.bodyMedium),
+        Text(
+          'Kegiatan terbaru di lingkungan Anda',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withOpacity(0.7),
+          ),
+        ),
         const SizedBox(height: 12),
         Container(
           height: 120,
           decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
+            color: colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          alignment: Alignment.center,
-          child: Text(
-            'Belum ada kegiatan',
-            style: theme.textTheme.bodyLarge,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Container(
+                height: 60,
+                width: 60,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.event,
+                  color: colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Belum ada kegiatan terjadwal.\nTambahkan kegiatan pertama untuk warga!',
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
+            ],
           ),
         ),
       ],

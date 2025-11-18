@@ -1,3 +1,5 @@
+// lib/screens/Auth/login_screens.dart
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/auth/login_header.dart';
@@ -29,9 +31,10 @@ class _LoginPageState extends State<LoginPage> {
 
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-      String email = _emailController.text;
-      String password = _passwordController.text;
+      final email = _emailController.text;
+      final password = _passwordController.text;
 
+      // TODO: integrasi API / Firebase di sini
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Login berhasil!'),
@@ -55,46 +58,75 @@ class _LoginPageState extends State<LoginPage> {
     Future.delayed(const Duration(milliseconds: 50), () {
       context.go('/register');
     });
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   const SnackBar(content: Text('Halaman pendaftaran dalam pengembangan')),
-    // );
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: colorScheme.onPrimary,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const LoginHeader(),
-                const SizedBox(height: 40),
-                const LoginWelcome(),
-                const SizedBox(height: 40),
-                LoginForm(
-                  formKey: _formKey,
-                  emailController: _emailController,
-                  passwordController: _passwordController,
-                  obscurePassword: _obscurePassword,
-                  onTogglePassword: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                  onLogin: _handleLogin,
+      extendBodyBehindAppBar: true,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.96),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 32),
-                const LoginDivider(),
-                const SizedBox(height: 24),
-                LoginGoogleButton(onTap: _handleGoogleLogin),
-                const SizedBox(height: 24),
-                LoginRegisterLink(onTap: _handleDaftar),
-              ],
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const LoginHeader(),
+                    const SizedBox(height: 32),
+                    const LoginWelcome(),
+                    const SizedBox(height: 32),
+                    LoginForm(
+                      formKey: _formKey,
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      obscurePassword: _obscurePassword,
+                      onTogglePassword: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                      onLogin: _handleLogin,
+                    ),
+                    const SizedBox(height: 24),
+                    const LoginDivider(),
+                    const SizedBox(height: 16),
+                    LoginGoogleButton(onTap: _handleGoogleLogin),
+                    const SizedBox(height: 16),
+                    LoginRegisterLink(onTap: _handleDaftar),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Versi demo – autentikasi belum terhubung server',
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: Colors.grey[500]),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

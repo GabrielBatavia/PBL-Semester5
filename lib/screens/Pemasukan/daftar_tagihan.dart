@@ -1,3 +1,5 @@
+// lib/screens/Pemasukan/daftar_tagihan.dart
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'tagihan_table.dart';
@@ -44,114 +46,73 @@ class _DaftarTagihanState extends State<DaftarTagihan> {
     },
   ];
 
-  // void _showAddIuranDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AddIuranDialog(
-  //         onIuranAdded: (newIuran) {
-  //           _addNewIuran(newIuran);
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
-  // void _addNewIuran(Map<String, String> newIuran) {
-  //   setState(() {
-  //     _daftarTagihan.add({
-  //       "no": (_daftarTagihan.length + 1).toString(),
-  //       "nama": newIuran['nama']!,
-  //       "jenis": newIuran['jenis']!,
-  //       "nominal": newIuran['nominal'] ?? "Rp 0",
-  //     });
-  //   });
-
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text("Iuran ${newIuran['nama']} berhasil ditambahkan"),
-  //       backgroundColor: Colors.green,
-  //     ),
-  //   );
-  // }
-
-  // void _deleteIuran(Map<String, String> item) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text("Hapus Iuran"),
-  //         content: Text("Yakin ingin menghapus iuran ${item['nama']}?"),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.of(context).pop(),
-  //             child: const Text("Batal"),
-  //           ),
-  //           ElevatedButton(
-  //             onPressed: () {
-  //               setState(() {
-  //                 _daftarTagihan.remove(item);
-  //               });
-  //               Navigator.of(context).pop();
-  //               ScaffoldMessenger.of(context).showSnackBar(
-  //                 SnackBar(
-  //                   content: Text("Iuran ${item['nama']} berhasil dihapus"),
-  //                   backgroundColor: Colors.green,
-  //                 ),
-  //               );
-  //             },
-  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-  //             child: const Text("Hapus", style: TextStyle(color: Colors.white)),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colorScheme.primary,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          "Tagihan Iuran",
-          style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
-        ),
+        title: const Text("Tagihan Iuran"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/menu-pemasukan'),
         ),
       ),
       body: Container(
-        margin: const EdgeInsets.all(16),
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.95),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: TagihanTable(
-            daftarTagihan: _daftarTagihan,
-            // onAddPressed: _showAddIuranDialog,
-            // onDeletePressed: _deleteIuran,
-            onViewPressed: (item) {
-              context.push('/detail-tagihan', extra: item);
-            },
+        child: SafeArea(
+          child: Padding(
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Daftar Tagihan Iuran',
+                  style: theme.textTheme.displayLarge
+                      ?.copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Pantau status tagihan iuran untuk semua keluarga aktif.',
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: Colors.white70),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.96),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: TagihanTable(
+                      daftarTagihan: _daftarTagihan,
+                      onViewPressed: (item) {
+                        context.push('/detail-tagihan', extra: item);
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

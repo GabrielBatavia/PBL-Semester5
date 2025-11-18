@@ -1,6 +1,8 @@
+// lib/screens/penerimaan_warga_screen.dart
+
 import 'package:flutter/material.dart';
 import '../theme/AppTheme.dart';
-import 'package:go_router/go_router.dart'; // Import GoRouter
+import 'package:go_router/go_router.dart';
 
 // Model data untuk simulasi
 class PermintaanAkun {
@@ -38,7 +40,7 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
       email: 'rendhazupez@gmail.com',
       jenisKelamin: 'L',
       fotoIdentitasUrl:
-          'https://placehold.co/100x70/7F00FF/D8BFD8?text=Foto+Identitas+1', // Placeholder
+          'https://placehold.co/100x70/7F00FF/D8BFD8?text=Foto+Identitas+1',
     ),
     PermintaanAkun(
       no: 2,
@@ -47,7 +49,7 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
       email: 'antimicin3@gmail.com',
       jenisKelamin: 'L',
       fotoIdentitasUrl:
-          'https://placehold.co/100x70/4C008D/D8BFD8?text=Foto+Identitas+2', // Placeholder
+          'https://placehold.co/100x70/4C008D/D8BFD8?text=Foto+Identitas+2',
     ),
     PermintaanAkun(
       no: 3,
@@ -56,14 +58,13 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
       email: 'ijat1@gmail.com',
       jenisKelamin: 'P',
       fotoIdentitasUrl:
-          'https://placehold.co/100x70/7F00FF/D8BFD8?text=Foto+Identitas+3', // Placeholder
+          'https://placehold.co/100x70/7F00FF/D8BFD8?text=Foto+Identitas+3',
     ),
   ];
 
   String? _filterNama;
   String? _filterJenisKelamin;
-  String?
-  _filterStatus; // Ditambahkan untuk filter, meskipun tidak ada di kolom tabel
+  String? _filterStatus;
 
   // =========================================================================
   // MODAL FILTER
@@ -109,8 +110,8 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                   Text(
                     'Nama',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
@@ -135,8 +136,8 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                   Text(
                     'Jenis Kelamin',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
@@ -165,20 +166,18 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Status Filter (ditambahkan berdasarkan screenshot filter)
+                  // Status Filter
                   Text(
                     'Status',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     value: currentStatus,
                     hint: const Text('-- Pilih Status --'),
-                    items: ['Pending', 'Diterima', 'Ditolak'].map((
-                      String status,
-                    ) {
+                    items: ['Pending', 'Diterima', 'Ditolak'].map((status) {
                       return DropdownMenuItem<String>(
                         value: status,
                         child: Text(status),
@@ -269,17 +268,13 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
     }
 
     return _permintaanList.where((permintaan) {
-      final matchesNama =
-          _filterNama == null ||
+      final matchesNama = _filterNama == null ||
           permintaan.nama.toLowerCase().contains(_filterNama!.toLowerCase());
-      final matchesJK =
-          _filterJenisKelamin == null ||
+      final matchesJK = _filterJenisKelamin == null ||
           permintaan.jenisKelamin.toLowerCase() ==
               _filterJenisKelamin!.toLowerCase();
-      // Asumsi: Kita hanya menggunakan filter Nama dan Jenis Kelamin untuk data simulasi
-      // final matchesStatus = _filterStatus == null || permintaan.status.toLowerCase() == _filterStatus!.toLowerCase();
-
-      return matchesNama && matchesJK; // && matchesStatus;
+      // Status belum digunakan di data dummy
+      return matchesNama && matchesJK;
     }).toList();
   }
 
@@ -291,9 +286,8 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          // Gradient background
           gradient: LinearGradient(
-            colors: [AppTheme.darkBrown, AppTheme.warmCream],
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -301,21 +295,19 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
-              title: Text(
-                'Penerimaan Warga',
-                style: theme.textTheme.displayLarge!.copyWith(
-                  color: AppTheme.darkBrown,
-                ),
-              ),
-              backgroundColor: AppTheme.primaryOrange,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
               floating: true,
               pinned: true,
-              expandedHeight: 0, // No expansion needed for this screen
-              // Tombol Kembali (Contoh Routing ke 'aspirasi')
+              centerTitle: true,
+              title: Text(
+                'Penerimaan Warga',
+                style: theme.textTheme.titleLarge
+                    ?.copyWith(color: Colors.white),
+              ),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppTheme.darkBrown),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
-                  // Menggunakan GoRouter untuk navigasi ke route 'aspirasi'
                   context.goNamed('aspirasi');
                 },
               ),
@@ -339,7 +331,6 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Filter Button
                       Align(
                         alignment: Alignment.centerRight,
                         child: ElevatedButton(
@@ -354,10 +345,7 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                               vertical: 12,
                             ),
                             elevation: 5,
-                            minimumSize: const Size(
-                              60,
-                              50,
-                            ), // Buat lebih kotak dan terlihat seperti tombol filter di screenshot
+                            minimumSize: const Size(60, 50),
                           ),
                           child: const Icon(
                             Icons.filter_list,
@@ -367,7 +355,7 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Data Table (Responsive/Scrollable)
+                      // Data Table (Scrollable)
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
@@ -376,7 +364,8 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                           headingRowColor: MaterialStateProperty.all(
                             AppTheme.warmCream,
                           ),
-                          headingTextStyle: theme.textTheme.bodyLarge!.copyWith(
+                          headingTextStyle:
+                              theme.textTheme.bodyLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppTheme.primaryOrange,
                           ),
@@ -397,13 +386,9 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                                 DataCell(Text(permintaan.email)),
                                 DataCell(Text(permintaan.jenisKelamin)),
                                 DataCell(
-                                  // Tampilkan foto identitas (contoh menggunakan NetworkImage)
                                   InkWell(
                                     onTap: () {
-                                      // Logika untuk menampilkan foto identitas secara penuh
-                                      print(
-                                        'Lihat Foto Identitas ${permintaan.nama}',
-                                      );
+                                      // Nanti bisa ditambah preview full-screen
                                     },
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
@@ -414,20 +399,19 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                                         fit: BoxFit.cover,
                                         errorBuilder:
                                             (context, error, stackTrace) {
-                                              return Container(
-                                                width: 70,
-                                                height: 50,
-                                                color: Colors.grey.shade200,
-                                                child: const Center(
-                                                  child: Icon(
-                                                    Icons.broken_image,
-                                                    size: 20,
-                                                    color:
-                                                        AppTheme.primaryOrange,
-                                                  ),
-                                                ),
-                                              );
-                                            },
+                                          return Container(
+                                            width: 70,
+                                            height: 50,
+                                            color: Colors.grey.shade200,
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.broken_image,
+                                                size: 20,
+                                                color: AppTheme.primaryOrange,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),
@@ -440,7 +424,7 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
 
                       const SizedBox(height: 20),
 
-                      // Pagination (Simplified)
+                      // Pagination (dummy)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -448,9 +432,9 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                             icon: const Icon(
                               Icons.arrow_back_ios,
                               size: 16,
-                              color: AppTheme.warmCream,
+                              color: AppTheme.darkBrown,
                             ),
-                            onPressed: () {}, // Logic for previous page
+                            onPressed: () {},
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -473,9 +457,9 @@ class _PenerimaanWargaScreenState extends State<PenerimaanWargaScreen> {
                             icon: const Icon(
                               Icons.arrow_forward_ios,
                               size: 16,
-                              color: AppTheme.warmCream,
+                              color: AppTheme.darkBrown,
                             ),
-                            onPressed: () {}, // Logic for next page
+                            onPressed: () {},
                           ),
                         ],
                       ),

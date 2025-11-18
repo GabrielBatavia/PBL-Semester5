@@ -1,3 +1,4 @@
+// lib/screens/menu_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jawaramobile_1/widgets/submenu_keuangan.dart';
@@ -12,7 +13,6 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Fungsi helper untuk fitur yang belum siap
     void showFeatureNotReady() {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -51,8 +51,7 @@ class MenuScreen extends StatelessWidget {
       {
         'icon': Icons.assessment,
         'title': 'Laporan Keuangan',
-        'action': () =>
-            showSubMenuKeuangan(context), // Panggil fungsi dengan context
+        'action': () => showSubMenuKeuangan(context),
       },
       {
         'icon': Icons.campaign,
@@ -77,57 +76,95 @@ class MenuScreen extends StatelessWidget {
       {
         'icon': Icons.history,
         'title': 'Log Aktifitas',
-        'action': () => context.goNamed('log-aktivitas'), 
+        'action': () => context.goNamed('log-aktivitas'),
       },
       {
         'icon': Icons.manage_accounts,
         'title': 'Manajemen Pengguna',
-        'action': () => showSubMenuManajemenPengguna(context), 
+        'action': () => showSubMenuManajemenPengguna(context),
       },
-
       {
         'icon': Icons.wallet,
         'title': 'Channel Transfer',
         'action': () => showSubMenuChannelTransfer(context),
       },
-
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
-          "Menu",
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.onPrimary,
-          ),
-        ),
-        backgroundColor: Colors.deepPurple,
+        title: const Text("Menu"),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
       ),
       body: Container(
-        height: double.infinity,
-        color: Colors.white,
-        // decoration: BoxDecoration(color: Colors.white.withOpacity(0.9)),
-        child: GridView.builder(
-          padding: const EdgeInsets.all(20),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.9,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF6A11CB),
+              Color(0xFF2575FC),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          itemCount: menuItems.length,
-          itemBuilder: (context, index) {
-            final item = menuItems[index];
-            return _buildMenuItem(
-              context,
-              icon: item['icon'],
-              title: item['title'],
-              onTap: item['action'],
-            );
-          },
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Semua Fitur',
+                    style: theme.textTheme.displayLarge!
+                        .copyWith(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 18,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
+                  ),
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(20),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.9,
+                    ),
+                    itemCount: menuItems.length,
+                    itemBuilder: (context, index) {
+                      final item = menuItems[index];
+                      return _buildMenuItem(
+                        context,
+                        icon: item['icon'],
+                        title: item['title'],
+                        onTap: item['action'],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -142,25 +179,37 @@ class MenuScreen extends StatelessWidget {
     final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(18),
       child: Container(
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacity(0.04),
               spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
+              blurRadius: 7,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: theme.colorScheme.primary),
-            const SizedBox(height: 12),
+            Container(
+              height: 42,
+              width: 42,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Icon(icon, size: 24, color: Colors.white),
+            ),
+            const SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -175,3 +224,5 @@ class MenuScreen extends StatelessWidget {
     );
   }
 }
+
+// NOTE: pastikan import ini ada di atas file aslinya

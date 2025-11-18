@@ -11,14 +11,18 @@ class DaftarChannelScreen extends StatelessWidget {
     {"nama": "QRIS Resmi RT 08", "tipe": "qris", "an": "RW 08 Karangploso"},
     {"nama": "BCA", "tipe": "bank", "an": "Jose"},
     {"nama": "OVO", "tipe": "ewallet", "an": "23234"},
-    {"nama": "Transfer via BCA", "tipe": "bank", "an": "RT Jawara Karangploso"},
+    {
+      "nama": "Transfer via BCA",
+      "tipe": "bank",
+      "an": "RT Jawara Karangploso"
+    },
   ];
 
   Widget _typeChip(BuildContext context, String t) {
     final cs = Theme.of(context).colorScheme;
-    // warna mengikuti theme
     Color bg;
     Color fg;
+
     switch (t) {
       case 'bank':
         bg = cs.primary.withOpacity(.12);
@@ -45,7 +49,10 @@ class DaftarChannelScreen extends StatelessWidget {
       ),
       child: Text(
         t,
-        style: TextStyle(fontWeight: FontWeight.w600, color: fg),
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: fg,
+        ),
       ),
     );
   }
@@ -56,17 +63,11 @@ class DaftarChannelScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colorScheme.primary,
+        title: const Text("Channel Transfer"),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          "Channel Transfer",
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: colorScheme.onPrimary,
-          ),
-        ),
-        iconTheme: IconThemeData(color: colorScheme.onPrimary),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -78,80 +79,111 @@ class DaftarChannelScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/tambah-channel'),
+        backgroundColor: colorScheme.primary,
         child: const Icon(Icons.add_link),
       ),
       body: Container(
-        margin: const EdgeInsets.all(16),
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.95),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          // TABLE SEDERHANA: 2 kolom saja agar tidak perlu scroll horizontal
-          child: DataTable2(
-            columnSpacing: 12,
-            horizontalMargin: 12,
-            headingRowColor: MaterialStateProperty.all(
-              theme.colorScheme.primary.withOpacity(0.1),
-            ),
-            headingTextStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.secondary,
-            ),
-            columns: const [
-              DataColumn2(label: Text('Nama Channel')),
-              DataColumn2(label: Text('Tipe')),
-            ],
-            rows: _rows.map((r) {
-              return DataRow2(
-                // Klik baris untuk menuju halaman detail (sementara arahkan ke tambah/edit jika detail belum ada)
-                onTap: () {
-                  // TODO: ganti ke '/detail-channel' jika nanti halaman detail tersedia
-                  // context.push('/detail-channel', extra: r);
-                  context.push('/tambah-channel');
-                },
-                cells: [
-                  // Nama Channel + A/N sebagai informasi tambahan singkat
-                  DataCell(
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          r['nama']!,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          "A/N ${r['an']!}",
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(.7),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+        child: SafeArea(
+          child: Padding(
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Daftar Channel Transfer',
+                  style: theme.textTheme.displayLarge!
+                      .copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Atur rekening, e-wallet, dan QRIS resmi untuk pembayaran.',
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: Colors.white70),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.96),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 18,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: DataTable2(
+                        columnSpacing: 12,
+                        horizontalMargin: 12,
+                        headingRowColor: MaterialStateProperty.all(
+                          colorScheme.primary.withOpacity(0.05),
+                        ),
+                        headingTextStyle: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.primary,
+                        ),
+                        columns: const [
+                          DataColumn2(label: Text('Nama Channel')),
+                          DataColumn2(label: Text('Tipe')),
+                        ],
+                        rows: _rows.map((r) {
+                          return DataRow2(
+                            onTap: () {
+                              // TODO: arahkan ke detail channel jika sudah ada
+                              context.push('/tambah-channel');
+                            },
+                            cells: [
+                              DataCell(
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      r['nama']!,
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: theme.colorScheme.onSurface,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      "A/N ${r['an']!}",
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                        color: theme.colorScheme.onSurface
+                                            .withOpacity(.7),
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              DataCell(_typeChip(context, r['tipe']!)),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   ),
-                  DataCell(_typeChip(context, r['tipe']!)),
-                ],
-              );
-            }).toList(),
+                ),
+              ],
+            ),
           ),
         ),
       ),

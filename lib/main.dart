@@ -1,3 +1,5 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
 import 'theme/AppTheme.dart';
 import 'app_router.dart';
@@ -14,8 +16,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Jawara Apps',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme, // Gunakan tema ungu kamu
+      theme: AppTheme.lightTheme,
       routerConfig: appRouter,
     );
   }
 }
+

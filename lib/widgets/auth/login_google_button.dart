@@ -1,4 +1,7 @@
+// lib/widgets/auth/login_google_button.dart
+
 import 'package:flutter/material.dart';
+import 'package:jawaramobile_1/theme/AppTheme.dart';
 
 class LoginGoogleButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -7,37 +10,49 @@ class LoginGoogleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       width: double.infinity,
       height: 48,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[300]!),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppTheme.primaryOrange.withOpacity(0.25),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(14),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Kalau nanti mau ganti asset lokal ikon Google juga gampang
               Image.network(
                 'https://www.google.com/favicon.ico',
-                width: 24,
-                height: 24,
-                errorBuilder: (context, error, stackTrace) {
+                width: 22,
+                height: 22,
+                errorBuilder: (context, _, __) {
                   return const Icon(Icons.g_mobiledata, size: 24);
                 },
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Google',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.darkBrown,
                 ),
               ),
             ],

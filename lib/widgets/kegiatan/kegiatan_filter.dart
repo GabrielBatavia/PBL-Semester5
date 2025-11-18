@@ -1,3 +1,5 @@
+// lib/widgets/kegiatan/kegiatan_filter.dart
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -45,31 +47,41 @@ class _KegiatanFilterState extends State<KegiatanFilter> {
     super.dispose();
   }
 
+  InputDecoration _decoration(BuildContext context, String label,
+      {Widget? suffixIcon}) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      filled: true,
+      fillColor: Colors.white,
+      suffixIcon: suffixIcon,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Widget ini tidak lagi dibungkus Card, agar bisa masuk ke content dialog
+    final theme = Theme.of(context);
+
     return Column(
-      mainAxisSize: MainAxisSize.min, // Penting agar dialog tidak terlalu besar
+      mainAxisSize: MainAxisSize.min,
       children: [
         TextFormField(
-          decoration: InputDecoration(
-            labelText: "Nama Kegiatan",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          ),
+          decoration: _decoration(context, "Nama Kegiatan"),
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
           value: selectedKategori,
           hint: const Text("Pilih Kategori"),
           isExpanded: true,
-          decoration: InputDecoration(
-            labelText: "Kategori",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          ),
+          decoration: _decoration(context, "Kategori"),
           items: kategori
               .map(
-                (String value) =>
-                    DropdownMenuItem<String>(value: value, child: Text(value)),
+                (String value) => DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                ),
               )
               .toList(),
           onChanged: (newValue) => setState(() => selectedKategori = newValue),
@@ -77,10 +89,13 @@ class _KegiatanFilterState extends State<KegiatanFilter> {
         const SizedBox(height: 16),
         TextFormField(
           controller: _tanggalController,
-          decoration: InputDecoration(
-            labelText: "Tanggal Pelaksanaan",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            suffixIcon: const Icon(Icons.calendar_today),
+          decoration: _decoration(
+            context,
+            "Tanggal Pelaksanaan",
+            suffixIcon: Icon(
+              Icons.calendar_today,
+              color: theme.colorScheme.primary,
+            ),
           ),
           readOnly: true,
           onTap: () => _selectDate(context, _tanggalController),

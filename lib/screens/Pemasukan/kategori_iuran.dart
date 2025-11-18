@@ -1,6 +1,7 @@
+// lib/screens/Pemasukan/kategori_iuran.dart
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:data_table_2/data_table_2.dart';
 import '../../widgets/pemasukan/add_iuran_dialog.dart';
 import '../../widgets/pemasukan/iuran_table.dart';
 
@@ -85,13 +86,18 @@ class _KategoriIuranState extends State<KategoriIuran> {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("Iuran ${item['nama']} berhasil dihapus"),
+                    content:
+                        Text("Iuran ${item['nama']} berhasil dihapus"),
                     backgroundColor: Colors.green,
                   ),
                 );
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text("Hapus", style: TextStyle(color: Colors.white)),
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text(
+                "Hapus",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -102,46 +108,72 @@ class _KategoriIuranState extends State<KategoriIuran> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colorScheme.primary,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          "Kategori Iuran",
-          style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
-        ),
+        title: const Text("Kategori Iuran"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/menu-pemasukan'),
         ),
       ),
       body: Container(
-        margin: const EdgeInsets.all(16),
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.95),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: IuranTable(
-            kategoriIuran: _kategoriIuran,
-            onAddPressed: _showAddIuranDialog,
-            onDeletePressed: _deleteIuran,
-            onViewPressed: (item) {
-              context.push('/detail-kategori', extra: item);
-            },
+        child: SafeArea(
+          child: Padding(
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Kategori Iuran',
+                  style: theme.textTheme.displayLarge
+                      ?.copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Kelola jenis iuran dan nominal yang berlaku di lingkungan.',
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: Colors.white70),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.96),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: IuranTable(
+                      kategoriIuran: _kategoriIuran,
+                      onAddPressed: _showAddIuranDialog,
+                      onDeletePressed: _deleteIuran,
+                      onViewPressed: (item) {
+                        context.push('/detail-kategori', extra: item);
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

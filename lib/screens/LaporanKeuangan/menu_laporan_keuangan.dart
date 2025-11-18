@@ -1,3 +1,5 @@
+// lib/screens/LaporanKeuangan/menu_laporan_keuangan.dart
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,32 +15,33 @@ class _MenuLaporanKeuanganState extends State<MenuLaporanKeuangan> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text('Laporan Keuangan'),
-        backgroundColor: colorScheme.primary,
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/dashboard'),
         ),
       ),
-      // Aktifkan agar body bisa “tembus” ke bawah navigation bar yang melayang
-      extendBody: true,
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 24, right: 16, left: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  MenuLaporanKeuanganHeader(), // beri jarak agar konten tak tertutup nav
-                ],
-              ),
-            ),
-          ],
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding:
+                const EdgeInsets.only(top: 24, right: 16, left: 16, bottom: 24),
+            child: const MenuLaporanKeuanganHeader(),
+          ),
         ),
       ),
     );
@@ -72,22 +75,18 @@ class _MenuLaporanKeuanganItemState extends State<MenuLaporanKeuanganItem> {
 
     return InkWell(
       onTap: () => context.push(widget.route),
-      // Gunakan onHover untuk mengubah state
       onHover: (hovering) {
         setState(() {
           _isHovering = hovering;
         });
       },
-      borderRadius: BorderRadius.circular(
-        16,
-      ), // Samakan radius dengan container
+      borderRadius: BorderRadius.circular(16),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 50), // Animasi halus
+        duration: const Duration(milliseconds: 120),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
           color: _isHovering
-              ? colorScheme
-                    .surfaceVariant // Beri sedikit warna latar saat hover
+              ? colorScheme.surfaceVariant.withOpacity(0.5)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
@@ -107,7 +106,7 @@ class _MenuLaporanKeuanganItemState extends State<MenuLaporanKeuanganItem> {
             const SizedBox(height: 8),
             Text(
               widget.label,
-              textAlign: TextAlign.center, // Agar rapi jika label 2 baris
+              textAlign: TextAlign.center,
               style: textTheme.bodyMedium!.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
@@ -125,7 +124,6 @@ class MenuLaporanKeuanganHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     final items = [
@@ -149,22 +147,30 @@ class MenuLaporanKeuanganHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
+        color: Colors.white.withOpacity(0.96),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Pilih Menu Laporan Keuangan', style: textTheme.titleLarge),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+          Text(
+            'Lihat rekap pemasukan, pengeluaran, dan cetak laporan resmi.',
+            style: textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 16),
           Row(
-            // Tambahkan ini agar item tetap rapi di atas
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: items.map((e) {
-              // Ganti blok InkWell lama dengan widget baru ini
-              // Bungkus dengan Expanded agar area tap/hover merata
               return Expanded(
                 child: MenuLaporanKeuanganItem(
                   icon: e['icon'] as IconData,

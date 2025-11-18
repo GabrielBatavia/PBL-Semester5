@@ -1,11 +1,21 @@
+// lib/screens/DataWargaRumah/tabel_keluarga.dart
+
 import 'package:flutter/material.dart';
 
 class TabelKeluarga extends StatelessWidget {
   const TabelKeluarga({super.key});
 
   final List<Map<String, dynamic>> keluarga = const [
-    {"nama_keluarga": "Keluarga Ijat", "jumlah_anggota": 4, "alamat": "Jl. Kenanga No.12"},
-    {"nama_keluarga": "Keluarga Mara Nunez", "jumlah_anggota": 3, "alamat": "Jl. Melati No.8"},
+    {
+      "nama_keluarga": "Keluarga Ijat",
+      "jumlah_anggota": 4,
+      "alamat": "Jl. Kenanga No.12"
+    },
+    {
+      "nama_keluarga": "Keluarga Mara Nunez",
+      "jumlah_anggota": 3,
+      "alamat": "Jl. Melati No.8"
+    },
   ];
 
   @override
@@ -26,19 +36,29 @@ class TabelKeluarga extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal, // ✅ biar bisa digeser di layar kecil
+              scrollDirection: Axis.horizontal,
               child: DataTable(
                 columnSpacing: 16,
-                headingRowColor:
-                MaterialStateProperty.all(colorScheme.primaryContainer),
-                headingTextStyle: theme.textTheme.titleSmall
-                    ?.copyWith(color: colorScheme.onPrimaryContainer),
+                headingRowColor: MaterialStateProperty.all(
+                  colorScheme.primary.withOpacity(0.06),
+                ),
+                headingTextStyle: theme.textTheme.titleSmall?.copyWith(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
                 columns: const [
                   DataColumn(label: Text("Nama Keluarga")),
                   DataColumn(label: Text("Jumlah Anggota")),
@@ -47,9 +67,24 @@ class TabelKeluarga extends StatelessWidget {
                 rows: keluarga.map((k) {
                   return DataRow(
                     cells: [
-                      DataCell(Text(k["nama_keluarga"], style: theme.textTheme.bodyMedium)),
-                      DataCell(Text("${k["jumlah_anggota"]}", style: theme.textTheme.bodyMedium)),
-                      DataCell(Text(k["alamat"], style: theme.textTheme.bodyMedium)),
+                      DataCell(
+                        Text(
+                          k["nama_keluarga"],
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          "${k["jumlah_anggota"]}",
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          k["alamat"],
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
                     ],
                   );
                 }).toList(),

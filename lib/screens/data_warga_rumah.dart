@@ -1,3 +1,5 @@
+// lib/screens/data_warga_rumah.dart
+
 import 'package:flutter/material.dart';
 import './DataWargaRumah/tabel_keluarga.dart';
 import './DataWargaRumah/tabel_rumah.dart';
@@ -28,50 +30,97 @@ class _DataWargaPageState extends State<DataWargaPage>
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text(
           'Data Warga',
-          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
       ),
-      backgroundColor: colorScheme.surface,
-      body: Column(
-        children: [
-          // ================= TAB BAR =================
-          Container(
-            color: colorScheme.primaryContainer,
-            child: TabBar(
-              controller: _tabController,
-              indicatorColor: colorScheme.primary,
-              labelColor: colorScheme.primary,
-              unselectedLabelColor: colorScheme.onSurface.withOpacity(0.6),
-              tabs: const [
-                Tab(text: "Data Warga"),
-                Tab(text: "Keluarga"),
-                Tab(text: "Data Rumah"),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Data Warga & Rumah',
+                  style: theme.textTheme.displayLarge
+                      ?.copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Kelola data warga, keluarga, dan rumah dalam satu tempat.',
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: Colors.white70),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    indicator: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    labelColor: colorScheme.primary,
+                    unselectedLabelColor: Colors.white70,
+                    tabs: const [
+                      Tab(text: "Data Warga"),
+                      Tab(text: "Keluarga"),
+                      Tab(text: "Data Rumah"),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.96),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 18,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: TabBarView(
+                      controller: _tabController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: const [
+                        TabelWarga(),
+                        TabelKeluarga(),
+                        TabelRumah(),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-
-          // ================= ISI TAB =================
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: const [
-                TabelWarga(),
-                TabelKeluarga(),
-                TabelRumah(),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
