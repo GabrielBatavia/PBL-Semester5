@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/services/auth_service.dart';
 import '../../widgets/auth/login_header.dart';
 import '../../widgets/auth/register_form.dart';
 import '../../widgets/auth/login_google_button.dart';
@@ -23,6 +24,7 @@ class _RegisterScreensState extends State<RegisterScreens> {
   final _confirmPasswordController = TextEditingController();
   final _alamatController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -42,22 +44,71 @@ class _RegisterScreensState extends State<RegisterScreens> {
     );
   }
 
-  void _handleDaftar() {
-    if (_formKey.currentState!.validate()) {
-      final email = _emailController.text;
-      final password = _passwordController.text;
+  Future<void> _handleDaftar() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      // TODO: integrasi API / Firebase di sini
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registrasi berhasil!'),
-          backgroundColor: Colors.green,
-        ),
+    final name = _namaController.text.trim();
+    final nik = _nikController.text.trim().isEmpty
+        ? null
+        : _nikController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim().isEmpty
+        ? null
+        : _phoneController.text.trim();
+    final password = _passwordController.text;
+    final alamat = _alamatController.text.trim().isEmpty
+        ? null
+        : _alamatController.text.trim();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final ok = await AuthService.register(
+        name: name,
+        email: email,
+        password: password,
+        nik: nik,
+        phone: phone,
+        address: alamat,
       );
 
-      Future.delayed(const Duration(milliseconds: 600), () {
-        context.go('/login');
-      });
+      if (!mounted) return;
+
+      if (ok) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('Registrasi berhasil! Akun menunggu persetujuan admin.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Future.delayed(const Duration(milliseconds: 600), () {
+          context.go('/login');
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registrasi gagal. Coba lagi.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Terjadi error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -135,57 +186,62 @@ class _RegisterScreensState extends State<RegisterScreens> {
                           _obscurePassword = !_obscurePassword;
                         });
                       },
-                      onRegister: _handleDaftar,
+                      onRegister: _isLoading ? null : _handleDaftar,
                     ),
                     const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(color: Colors.grey[300]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            'atau daftar dengan',
+                    if (_isLoading) ...[
+                      const CircularProgressIndicator(),
+                    ] else ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(color: Colors.grey[300]),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              'atau daftar dengan',
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.grey[600]),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(color: Colors.grey[300]),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      LoginGoogleButton(onTap: _handleGoogleLogin),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Sudah punya akun?',
                             style: theme.textTheme.bodyMedium
                                 ?.copyWith(color: Colors.grey[600]),
                           ),
-                        ),
-                        Expanded(
-                          child: Divider(color: Colors.grey[300]),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    LoginGoogleButton(onTap: _handleGoogleLogin),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Sudah punya akun?',
-                          style: theme.textTheme.bodyMedium
-                              ?.copyWith(color: Colors.grey[600]),
-                        ),
-                        const SizedBox(width: 4),
-                        TextButton(
-                          onPressed: _handleLogin,
-                          style: TextButton.styleFrom(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'Login',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF6A11CB),
+                          const SizedBox(width: 4),
+                          TextButton(
+                            onPressed: _handleLogin,
+                            style: TextButton.styleFrom(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              'Login',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF6A11CB),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

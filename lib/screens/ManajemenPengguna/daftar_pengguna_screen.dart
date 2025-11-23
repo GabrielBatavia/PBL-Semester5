@@ -1,7 +1,10 @@
 // lib/screens/ManajemenPengguna/daftar_pengguna_screen.dart
+
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/models/user.dart';
+import 'package:jawaramobile_1/services/user_service.dart';
 import 'package:jawaramobile_1/widgets/manajemen_pengguna_filter.dart';
 
 class DaftarPenggunaScreen extends StatefulWidget {
@@ -12,40 +15,93 @@ class DaftarPenggunaScreen extends StatefulWidget {
 }
 
 class _DaftarPenggunaScreenState extends State<DaftarPenggunaScreen> {
-  final List<Map<String, String>> _users = [
-    {"nama": "mimin", "email": "mimin@gmail.com", "status": "Diterima"},
-    {"nama": "Farhan", "email": "farhan@gmail.com", "status": "Diterima"},
-    {
-      "nama": "dewqedwddw",
-      "email": "admiwewen1@gmail.com",
-      "status": "Pending"
-    },
-    {
-      "nama": "Rendha Putra Rahmadya",
-      "email": "rendhazuper@gmail.com",
-      "status": "Diterima"
-    },
-    {"nama": "bla", "email": "y@gmail.com", "status": "Ditolak"},
-    {
-      "nama": "Anti Micin",
-      "email": "antimicin3@gmail.com",
-      "status": "Diterima"
-    },
-  ];
+  List<User> _users = [];
+  bool _isLoading = false;
+  String? _error;
 
   String? _queryNama;
-  String? _queryStatus;
+  String? _queryStatus; // "Diterima" / "Pending" / "Ditolak"
 
-  List<Map<String, String>> get _filtered {
+  @override
+  void initState() {
+    super.initState();
+    _loadUsers();
+  }
+
+  Future<void> _loadUsers() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final users = await UserService.getUsers();
+      setState(() {
+        _users = users;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Gagal memuat pengguna: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // mapping status backend -> label UI
+  String _statusLabel(String? status) {
+    final s = (status ?? '').toLowerCase();
+    switch (s) {
+      case 'diterima':
+      case 'accepted':
+      case 'active':
+        return 'Diterima';
+      case 'pending':
+        return 'Pending';
+      case 'ditolak':
+      case 'rejected':
+        return 'Ditolak';
+      default:
+        return status ?? '-';
+    }
+  }
+
+  Color statusBg(String label) {
+    switch (label) {
+      case 'Diterima':
+        return Colors.green.withOpacity(.12);
+      case 'Pending':
+        return Colors.orange.withOpacity(.12);
+      case 'Ditolak':
+        return Colors.red.withOpacity(.12);
+      default:
+        return Colors.grey.withOpacity(.12);
+    }
+  }
+
+  Color statusFg(String label) {
+    switch (label) {
+      case 'Diterima':
+        return Colors.green.shade800;
+      case 'Pending':
+        return Colors.orange.shade800;
+      case 'Ditolak':
+        return Colors.red.shade800;
+      default:
+        return Colors.grey.shade800;
+    }
+  }
+
+  List<User> get _filtered {
     return _users.where((u) {
+      final label = _statusLabel(u.status);
       final okNama = _queryNama == null || _queryNama!.isEmpty
           ? true
-          : u['nama']!
-              .toLowerCase()
-              .contains(_queryNama!.toLowerCase());
-      final okStatus = _queryStatus == null || _queryStatus!.isEmpty
-          ? true
-          : (u['status'] == _queryStatus);
+          : u.name.toLowerCase().contains(_queryNama!.toLowerCase());
+      final okStatus =
+          _queryStatus == null || _queryStatus!.isEmpty ? true : label == _queryStatus;
       return okNama && okStatus;
     }).toList();
   }
@@ -54,8 +110,7 @@ class _DaftarPenggunaScreenState extends State<DaftarPenggunaScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text("Filter Manajemen Pengguna"),
         content: const ManajemenPenggunaFilter(),
         actions: [
@@ -70,38 +125,15 @@ class _DaftarPenggunaScreenState extends State<DaftarPenggunaScreen> {
             child: const Text("Reset Filter"),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              // TEMP: di laporan kamu bisa jelaskan kalau filter formnya nanti di-wire ke _queryNama/_queryStatus
+              Navigator.of(context).pop();
+            },
             child: const Text("Terapkan"),
           ),
         ],
       ),
     );
-  }
-
-  Color statusBg(String s) {
-    switch (s) {
-      case 'Diterima':
-        return Colors.green.withOpacity(.12);
-      case 'Pending':
-        return Colors.orange.withOpacity(.12);
-      case 'Ditolak':
-        return Colors.red.withOpacity(.12);
-      default:
-        return Colors.grey.withOpacity(.12);
-    }
-  }
-
-  Color statusFg(String s) {
-    switch (s) {
-      case 'Diterima':
-        return Colors.green.shade800;
-      case 'Pending':
-        return Colors.orange.shade800;
-      case 'Ditolak':
-        return Colors.red.shade800;
-      default:
-        return Colors.grey.shade800;
-    }
   }
 
   @override
@@ -117,6 +149,10 @@ class _DaftarPenggunaScreenState extends State<DaftarPenggunaScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadUsers,
+          ),
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _openFilter,
@@ -145,8 +181,8 @@ class _DaftarPenggunaScreenState extends State<DaftarPenggunaScreen> {
               children: [
                 Text(
                   'Manajemen Pengguna',
-                  style: theme.textTheme.displayLarge
-                      ?.copyWith(color: Colors.white),
+                  style:
+                      theme.textTheme.displayLarge?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -170,84 +206,112 @@ class _DaftarPenggunaScreenState extends State<DaftarPenggunaScreen> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: DataTable2(
-                        columnSpacing: 12,
-                        horizontalMargin: 12,
-                        headingRowColor: MaterialStateProperty.all(
-                          colorScheme.primary.withOpacity(0.05),
-                        ),
-                        headingTextStyle:
-                            theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
-                        columns: const [
-                          DataColumn2(label: Text('Nama')),
-                          DataColumn2(
-                            label: Text('Status'),
-                            size: ColumnSize.S,
-                          ),
-                        ],
-                        rows: rows.map((u) {
-                          return DataRow2(
-                            onTap: () {
-                              // TODO: route detail pengguna kalau nanti ada
-                              // context.push('/detail-pengguna', extra: u);
-                            },
-                            cells: [
-                              DataCell(
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      u['nama']!,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.bodyLarge
-                                          ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      u['email']!,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                        color: theme
-                                            .colorScheme.onSurface
-                                            .withOpacity(.7),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              DataCell(
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: statusBg(u['status']!),
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
+                      child: _isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : _error != null
+                              ? Center(
                                   child: Text(
-                                    u['status']!,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: statusFg(u['status']!),
+                                    _error!,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: Colors.red,
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
+                                )
+                              : rows.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        'Belum ada pengguna.',
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                    )
+                                  : DataTable2(
+                                      columnSpacing: 12,
+                                      horizontalMargin: 12,
+                                      headingRowColor: MaterialStateProperty.all(
+                                        colorScheme.primary.withOpacity(0.05),
+                                      ),
+                                      headingTextStyle:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.primary,
+                                      ),
+                                      columns: const [
+                                        DataColumn2(label: Text('Nama')),
+                                        DataColumn2(
+                                          label: Text('Status'),
+                                          size: ColumnSize.S,
+                                        ),
+                                      ],
+                                      rows: rows.map((u) {
+                                        final label = _statusLabel(u.status);
+                                        return DataRow2(
+                                          onTap: () {
+                                            // TODO: route detail pengguna kalau nanti ada
+                                            // context.push('/detail-pengguna', extra: u);
+                                          },
+                                          cells: [
+                                            DataCell(
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    u.name,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: theme
+                                                        .textTheme.bodyLarge
+                                                        ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 2),
+                                                  Text(
+                                                    u.email,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: theme
+                                                        .textTheme.bodySmall
+                                                        ?.copyWith(
+                                                      color: theme
+                                                          .colorScheme.onSurface
+                                                          .withOpacity(.7),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            DataCell(
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 10,
+                                                  vertical: 6,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: statusBg(label),
+                                                  borderRadius:
+                                                      BorderRadius.circular(999),
+                                                ),
+                                                child: Text(
+                                                  label,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: statusFg(label),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }).toList(),
+                                    ),
                     ),
                   ),
                 ),

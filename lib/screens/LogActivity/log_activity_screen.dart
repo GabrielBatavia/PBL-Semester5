@@ -3,82 +3,31 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/models/log_entry.dart';
+import 'package:jawaramobile_1/services/log_service.dart';
 import 'package:jawaramobile_1/widgets/log_aktivitas_filter.dart';
 
-class LogActivityScreen extends StatelessWidget {
+class LogActivityScreen extends StatefulWidget {
   const LogActivityScreen({super.key});
 
-  // Dummy data
-  final List<Map<String, String>> _logs = const [
-    {
-      "no": "1",
-      "deskripsi": "Memperbarui transfer channel: BCA",
-      "aktor": "Admin Jawara",
-      "tanggal": "20 Oktober 2025"
-    },
-    {
-      "no": "2",
-      "deskripsi": "Menambahkan transfer channel baru: BCA",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-    {
-      "no": "3",
-      "deskripsi": "Menyetujui pesan warga: titooit",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-    {
-      "no": "4",
-      "deskripsi": "Menambahkan rumah baru: jalan suhat",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-    {
-      "no": "5",
-      "deskripsi": "Menambahkan rumah baru: I",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-    {
-      "no": "6",
-      "deskripsi": "Menambahkan pengeluaran: Kerja Bakti Rp 50.000",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-    {
-      "no": "7",
-      "deskripsi": "Menambahkan pengeluaran: Kerja Bakti Rp 100.000",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-    {
-      "no": "8",
-      "deskripsi": "Menolak registrasi dari: asdfghjkl",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-    {
-      "no": "9",
-      "deskripsi": "Menambahkan akun: mimin sebagai community_head",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-    {
-      "no": "10",
-      "deskripsi":
-          "Menugaskan tagihan: Agustusan periode Januari 2025 sebesar Rp 15",
-      "aktor": "Admin Jawara",
-      "tanggal": "19 Oktober 2025"
-    },
-  ];
+  @override
+  State<LogActivityScreen> createState() => _LogActivityScreenState();
+}
+
+class _LogActivityScreenState extends State<LogActivityScreen> {
+  late final Stream<List<LogEntry>> _logStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _logStream = LogService.logsStream(); // polling tiap 5 detik
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text("Filter Log Aktivitas"),
         content: const LogAktivitasFilter(),
         actions: [
@@ -137,8 +86,8 @@ class LogActivityScreen extends StatelessWidget {
               children: [
                 Text(
                   'Log Aktivitas Sistem',
-                  style: theme.textTheme.displayLarge
-                      ?.copyWith(color: Colors.white),
+                  style:
+                      theme.textTheme.displayLarge?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -162,42 +111,82 @@ class LogActivityScreen extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: DataTable2(
-                        columnSpacing: 12,
-                        horizontalMargin: 12,
-                        headingRowColor: MaterialStateProperty.all(
-                          colorScheme.primary.withOpacity(0.05),
-                        ),
-                        headingTextStyle:
-                            theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
-                        columns: const [
-                          DataColumn2(label: Text('Deskripsi')),
-                          DataColumn2(
-                            label: Text('Tanggal'),
-                            size: ColumnSize.S,
-                          ),
-                        ],
-                        rows: _logs.map((item) {
-                          return DataRow2(
-                            onTap: () => context.push(
-                              '/detail-log-aktivitas',
-                              extra: item,
-                            ),
-                            cells: [
-                              DataCell(
-                                Text(
-                                  item['deskripsi'] ?? '-',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                      child: StreamBuilder<List<LogEntry>>(
+                        stream: _logStream,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text(
+                                'Gagal memuat log: ${snapshot.error}',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.red,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                              DataCell(Text(item['tanggal'] ?? '-')),
+                            );
+                          }
+
+                          final logs = snapshot.data ?? [];
+
+                          if (logs.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'Belum ada aktivitas.',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            );
+                          }
+
+                          return DataTable2(
+                            columnSpacing: 12,
+                            horizontalMargin: 12,
+                            headingRowColor: MaterialStateProperty.all(
+                              colorScheme.primary.withOpacity(0.05),
+                            ),
+                            headingTextStyle:
+                                theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                            columns: const [
+                              DataColumn2(label: Text('Deskripsi')),
+                              DataColumn2(
+                                label: Text('Tanggal'),
+                                size: ColumnSize.S,
+                              ),
                             ],
+                            rows: logs.map((log) {
+                              return DataRow2(
+                                onTap: () => context.push(
+                                  '/detail-log-aktivitas',
+                                  extra: {
+                                    'no': log.id.toString(),
+                                    'deskripsi': log.description,
+                                    'aktor': log.actorName,
+                                    'tanggal': log.formattedDate,
+                                  },
+                                ),
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      log.description,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  DataCell(Text(log.formattedDate)),
+                                ],
+                              );
+                            }).toList(),
                           );
-                        }).toList(),
+                        },
                       ),
                     ),
                   ),

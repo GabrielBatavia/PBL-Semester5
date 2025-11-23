@@ -14,7 +14,8 @@ class RegisterForm extends StatelessWidget {
       alamatController;
   final bool obscurePassword;
   final VoidCallback onTogglePassword;
-  final VoidCallback onRegister;
+  // BISA NULL, supaya saat loading tombol disable
+  final VoidCallback? onRegister;
 
   const RegisterForm({
     super.key,
@@ -28,7 +29,7 @@ class RegisterForm extends StatelessWidget {
     required this.alamatController,
     required this.obscurePassword,
     required this.onTogglePassword,
-    required this.onRegister,
+    this.onRegister, // <- tidak required lagi
   });
 
   @override
@@ -68,8 +69,14 @@ class RegisterForm extends StatelessWidget {
               controller: nikController,
               keyboardType: TextInputType.number,
               decoration: _inputDecoration('Masukkan NIK disini'),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'NIK tidak boleh kosong' : null,
+              // SEKARANG OPSIONAL (sesuai logic di register_screens)
+              validator: (value) {
+                if (value == null || value.isEmpty) return null;
+                if (value.length < 8) {
+                  return 'NIK terlalu pendek';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 20),
             _label(theme, 'Email'),
@@ -95,8 +102,14 @@ class RegisterForm extends StatelessWidget {
               controller: phoneController,
               keyboardType: TextInputType.phone,
               decoration: _inputDecoration('Masukkan nomor telepon disini'),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'Nomor telepon tidak boleh kosong' : null,
+              // juga opsional
+              validator: (value) {
+                if (value == null || value.isEmpty) return null;
+                if (value.length < 9) {
+                  return 'Nomor terlalu pendek';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 20),
             _label(theme, 'Password'),
@@ -154,6 +167,7 @@ class RegisterForm extends StatelessWidget {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
+                // kalau onRegister = null (loading), button disable
                 onPressed: onRegister,
                 child: const Text(
                   'Register',

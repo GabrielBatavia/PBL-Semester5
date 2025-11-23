@@ -1,7 +1,7 @@
 // lib/screens/Auth/login_screens.dart
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/services/auth_service.dart';
 import '../../widgets/auth/login_header.dart';
 import '../../widgets/auth/login_welcome.dart';
 import '../../widgets/auth/login_form.dart';
@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -29,22 +30,53 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      final email = _emailController.text;
-      final password = _passwordController.text;
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      // TODO: integrasi API / Firebase di sini
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final success = await AuthService.login(email, password);
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login berhasil!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.go('/dashboard');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Login gagal. Periksa email/password atau status akun.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login berhasil!'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: Text('Terjadi error: $e'),
+          backgroundColor: Colors.red,
         ),
       );
-
-      Future.delayed(const Duration(milliseconds: 800), () {
-        context.go('/dashboard');
-      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -109,21 +141,26 @@ class _LoginPageState extends State<LoginPage> {
                           _obscurePassword = !_obscurePassword;
                         });
                       },
-                      onLogin: _handleLogin,
+                      // <-- penting: pakai _isLoading
+                      onLogin: _isLoading ? null : _handleLogin,
                     ),
                     const SizedBox(height: 24),
-                    const LoginDivider(),
-                    const SizedBox(height: 16),
-                    LoginGoogleButton(onTap: _handleGoogleLogin),
-                    const SizedBox(height: 16),
-                    LoginRegisterLink(onTap: _handleDaftar),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Versi demo – autentikasi belum terhubung server',
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: Colors.grey[500]),
-                      textAlign: TextAlign.center,
-                    ),
+                    if (_isLoading) ...[
+                      const CircularProgressIndicator(),
+                    ] else ...[
+                      const LoginDivider(),
+                      const SizedBox(height: 16),
+                      LoginGoogleButton(onTap: _handleGoogleLogin),
+                      const SizedBox(height: 16),
+                      LoginRegisterLink(onTap: _handleDaftar),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Terhubung ke server FastAPI – autentikasi JWT',
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: Colors.grey[500]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ],
                 ),
               ),

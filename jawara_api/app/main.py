@@ -1,0 +1,35 @@
+# app/main.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from .db import Base, engine
+from .routers import auth, users, logs
+
+# create tables kalau belum ada
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="Jawara RT/RW API")
+
+# CORS buat Flutter dev
+origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5500",
+    "http://10.0.2.2:8080",
+    "http://localhost:62301",  # flutter web dev
+    "http://localhost:8000",
+    "http://127.0.0.1:62301",
+    "*",  # dev only
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(logs.router)

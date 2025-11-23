@@ -9,7 +9,8 @@ class LoginForm extends StatelessWidget {
   final TextEditingController passwordController;
   final bool obscurePassword;
   final VoidCallback onTogglePassword;
-  final VoidCallback onLogin;
+  // BISA NULL, supaya pas loading tombol bisa di-disable
+  final VoidCallback? onLogin;
 
   const LoginForm({
     super.key,
@@ -18,7 +19,7 @@ class LoginForm extends StatelessWidget {
     required this.passwordController,
     required this.obscurePassword,
     required this.onTogglePassword,
-    required this.onLogin,
+    this.onLogin, // <- tidak required lagi
   });
 
   @override
@@ -101,6 +102,7 @@ class LoginForm extends StatelessWidget {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
+                // kalau onLogin = null (saat loading), button otomatis disabled
                 onPressed: onLogin,
                 child: const Text(
                   'Login',
