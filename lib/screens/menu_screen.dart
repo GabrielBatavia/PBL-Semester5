@@ -88,6 +88,11 @@ class MenuScreen extends StatelessWidget {
         'title': 'Channel Transfer',
         'action': () => showSubMenuChannelTransfer(context),
       },
+      {
+        'icon': Icons.storefront,
+        'title': 'Marketplace Sayuran',
+        'action': () => context.push('/marketplace'),
+      },
     ];
 
     return Scaffold(

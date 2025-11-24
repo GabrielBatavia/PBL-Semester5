@@ -1,6 +1,5 @@
-# app/models.py
 from sqlalchemy import (
-    Column, Integer, String, ForeignKey, DateTime, Text
+    Column, Integer, String, ForeignKey, DateTime, Text, Float
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -42,6 +41,12 @@ class User(Base):
     role = relationship("Role", back_populates="users")
     logs = relationship("ActivityLog", back_populates="actor")
 
+    marketplace_items = relationship(
+        "MarketplaceItem",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )
+
 
 class ActivityLog(Base):
     __tablename__ = "activity_logs"
@@ -52,3 +57,21 @@ class ActivityLog(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     actor = relationship("User", back_populates="logs")
+
+
+class MarketplaceItem(Base):
+    __tablename__ = "marketplace_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    price = Column(Float, nullable=False)           # ⬅️ pakai Float
+    unit = Column(String(50), nullable=True)        # kg / ikat / pcs
+    image_url = Column(Text, nullable=True)
+
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    owner = relationship("User", back_populates="marketplace_items")

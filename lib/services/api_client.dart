@@ -2,14 +2,15 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';  
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
   // Sesuaikan host berdasarkan platform
   // Web/desktop  : localhost
   // Android emu  : 10.0.2.2
-  static const String _webBaseUrl = 'http://localhost:8000';
-  static const String _androidEmulatorBaseUrl = 'http://10.0.2.2:8000';
+  static const String _webBaseUrl = 'http://127.0.0.1:9000';
+  static const String _androidEmulatorBaseUrl = 'http://10.0.2.2:9000';
 
   static String get baseUrl =>
       kIsWeb ? _webBaseUrl : _androidEmulatorBaseUrl;
@@ -46,7 +47,18 @@ class ApiClient {
       }
     }
 
-    return http.post(uri, headers: headers, body: jsonEncode(body));
+    try {
+      debugPrint('POST $uri');
+      final resp = await http
+          .post(uri, headers: headers, body: jsonEncode(body))
+          .timeout(const Duration(seconds: 10));
+
+      debugPrint('→ ${resp.statusCode}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠️ Timeout ke $uri');
+      rethrow;
+    }
   }
 
   static Future<http.Response> get(
@@ -65,6 +77,17 @@ class ApiClient {
       }
     }
 
-    return http.get(uri, headers: headers);
+    try {
+      debugPrint('GET  $uri');
+      final resp = await http
+          .get(uri, headers: headers)
+          .timeout(const Duration(seconds: 10));
+
+      debugPrint('→ ${resp.statusCode}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠️ Timeout ke $uri');
+      rethrow;
+    }
   }
 }

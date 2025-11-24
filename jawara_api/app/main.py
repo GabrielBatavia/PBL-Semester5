@@ -1,9 +1,12 @@
 # app/main.py
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from .db import Base, engine
-from .routers import auth, users, logs
+from .routers import auth, users, logs, marketplace   # ← TAMBAHKAN marketplace
 
 # create tables kalau belum ada
 Base.metadata.create_all(bind=engine)
@@ -30,6 +33,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ───────────────────────────────────────────────
+# STATIC FILES (serve gambar)
+# ───────────────────────────────────────────────
+static_dir = Path("uploads")
+static_dir.mkdir(exist_ok=True)
+
+# contoh akses: http://localhost:8000/static/nama_file.jpg
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+# ───────────────────────────────────────────────
+# ROUTERS
+# ───────────────────────────────────────────────
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(logs.router)
+
+# NEW: marketplace router
+app.include_router(marketplace.router)        # ← TAMBAHKAN DI SINI
+

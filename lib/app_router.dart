@@ -1,3 +1,5 @@
+// lib/app_router.dart
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jawaramobile_1/screens/Auth/login_screens.dart';
@@ -55,9 +57,14 @@ import 'package:jawaramobile_1/screens/ManajemenPengguna/tambah_pengguna_screen.
 import 'package:jawaramobile_1/screens/ChannelTransfer/daftar_channel_screen.dart';
 import 'package:jawaramobile_1/screens/ChannelTransfer/tambah_channel_screen.dart';
 
+// ====marketplace sayuran=====
+import 'package:jawaramobile_1/screens/marketplace/marketplace_screen.dart';
+
+
 // ====== Lainnya ======
 import 'package:jawaramobile_1/screens/penerimaan_warga_screen.dart';
 import 'package:jawaramobile_1/screens/dashboard_aspirasi.dart';
+
 
 final appRouter = GoRouter(
   initialLocation: '/login',
@@ -324,5 +331,14 @@ final appRouter = GoRouter(
       name: 'dashboard-aspirasi',
       builder: (context, state) => const DashboardAspirasi(),
     ),
+
+
+    // ====== Marketplace ======
+    GoRoute(
+      path: '/marketplace',
+      name: 'marketplace',
+      builder: (context, state) => const MarketplaceScreen(),
+    ),
+
   ],
 );

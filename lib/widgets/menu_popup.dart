@@ -114,6 +114,11 @@ class _MenuPopUpContent extends StatelessWidget {
         'title': 'Aspirasi',
         'action': () => context.push('/dashboard-aspirasi'),
       },
+      {
+        'icon': Icons.storefront_outlined,
+        'title': 'Marketplace Sayuran',
+        'action': () => context.push('/marketplace'),
+      },
     ];
 
     return Material(
