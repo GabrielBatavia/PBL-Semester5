@@ -1,19 +1,32 @@
 // lib/services/api_client.dart
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'dart:async';  
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
 
 class ApiClient {
-  // Sesuaikan host berdasarkan platform
-  // Web/desktop  : localhost
-  // Android emu  : 10.0.2.2
-  static const String _webBaseUrl = 'http://127.0.0.1:9000';
-  static const String _androidEmulatorBaseUrl = 'http://10.0.2.2:9000';
+  // GANTI IP INI sesuai ipconfig kamu
+  static const String _pcLanBaseUrl = 'http://10.12.14.97:9000';
+  static const String _webBaseUrl   = 'http://127.0.0.1:9000';
+  static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';
 
-  static String get baseUrl =>
-      kIsWeb ? _webBaseUrl : _androidEmulatorBaseUrl;
+  static String get baseUrl {
+    if (kIsWeb) {
+      // Flutter web jalan di laptop yang sama → pakai localhost
+      return _webBaseUrl;
+    }
+
+    if (Platform.isAndroid) {
+      // ganti ke true kalau lagi pakai emulator, false kalau HP fisik
+      const bool useEmulator = false;
+      return useEmulator ? _androidEmuBaseUrl : _pcLanBaseUrl;
+    }
+
+    // fallback (misal iOS desktop, dll)
+    return _pcLanBaseUrl;
+  }
 
   static Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -36,15 +49,11 @@ class ApiClient {
     bool auth = false,
   }) async {
     final uri = Uri.parse('$baseUrl$path');
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-    };
+    final headers = <String, String>{'Content-Type': 'application/json'};
 
     if (auth) {
       final token = await _getToken();
-      if (token != null) {
-        headers['Authorization'] = 'Bearer $token';
-      }
+      if (token != null) headers['Authorization'] = 'Bearer $token';
     }
 
     try {
@@ -52,7 +61,6 @@ class ApiClient {
       final resp = await http
           .post(uri, headers: headers, body: jsonEncode(body))
           .timeout(const Duration(seconds: 10));
-
       debugPrint('→ ${resp.statusCode}');
       return resp;
     } on TimeoutException {
@@ -66,15 +74,11 @@ class ApiClient {
     bool auth = false,
   }) async {
     final uri = Uri.parse('$baseUrl$path');
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-    };
+    final headers = <String, String>{'Content-Type': 'application/json'};
 
     if (auth) {
       final token = await _getToken();
-      if (token != null) {
-        headers['Authorization'] = 'Bearer $token';
-      }
+      if (token != null) headers['Authorization'] = 'Bearer $token';
     }
 
     try {
@@ -82,7 +86,6 @@ class ApiClient {
       final resp = await http
           .get(uri, headers: headers)
           .timeout(const Duration(seconds: 10));
-
       debugPrint('→ ${resp.statusCode}');
       return resp;
     } on TimeoutException {

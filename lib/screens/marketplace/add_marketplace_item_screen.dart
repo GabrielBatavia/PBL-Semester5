@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../services/marketplace_service.dart';
 
+
 class AddMarketplaceItemScreen extends StatefulWidget {
   const AddMarketplaceItemScreen({super.key});
 
@@ -38,22 +39,30 @@ class _AddMarketplaceItemScreenState extends State<AddMarketplaceItemScreen> {
   }
 
   Future<void> _pick(ImageSource source) async {
-    final picked = await _picker.pickImage(
-      source: source,
-      maxWidth: 1200,
-      imageQuality: 85,
-    );
-    if (picked != null) {
-      setState(() {
-        _imageFile = File(picked.path);
-        _aiHint = null; // reset hasil AI kalau foto ganti
-      });
+    try {
+      final picked = await _picker.pickImage(
+        source: source,
+        maxWidth: 1200,
+        imageQuality: 85,
+      );
+      if (picked != null) {
+        setState(() {
+          _imageFile = File(picked.path);
+          _aiHint = null; // reset hasil AI kalau foto ganti
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal membuka kamera/galeri: $e')),
+      );
     }
   }
 
   Future<void> _pickFromCamera() async {
     await _pick(ImageSource.camera);
   }
+
 
   Future<void> _pickFromGallery() async {
     await _pick(ImageSource.gallery);
@@ -96,35 +105,36 @@ class _AddMarketplaceItemScreenState extends State<AddMarketplaceItemScreen> {
     }
   }
 
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+Future<void> _submit() async {
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _saving = true);
+  setState(() => _saving = true);
 
-    try {
-      await MarketplaceService.instance.addItem(
-        title: _titleC.text.trim(),
-        price: double.parse(_priceC.text.trim()),
-        description:
-            _descC.text.trim().isEmpty ? null : _descC.text.trim(),
-        unit: _unitC.text.trim().isEmpty ? null : _unitC.text.trim(),
-        imageFile: _imageFile,
-      );
+  try {
+    await MarketplaceService.instance.addItem(
+      title: _titleC.text.trim(),
+      price: double.parse(_priceC.text.trim()),
+      description: _descC.text.trim().isEmpty ? null : _descC.text.trim(),
+      unit: _unitC.text.trim().isEmpty ? null : _unitC.text.trim(),
+      imageFile: _imageFile,
+    );
 
-      if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Berhasil menambahkan sayuran')),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal menyimpan: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Berhasil menambahkan sayuran')),
+    );
+
+    Navigator.of(context).pop(true); // boleh kirim true sbg "berhasil"
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Gagal menyimpan: $e')),
+    );
+  } finally {
+    if (mounted) setState(() => _saving = false);
   }
+}
 
   @override
   Widget build(BuildContext context) {
