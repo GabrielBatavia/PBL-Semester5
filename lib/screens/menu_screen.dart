@@ -1,104 +1,200 @@
 // lib/screens/menu_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jawaramobile_1/widgets/submenu_keuangan.dart';
-import 'package:jawaramobile_1/widgets/submenu_manajemen_pengguna.dart';
-import 'package:jawaramobile_1/widgets/submenu_channel_transfer.dart';
 
+import '../services/auth_service.dart';
+import '../widgets/submenu_keuangan.dart';
+import '../widgets/submenu_manajemen_pengguna.dart';
+import '../widgets/submenu_channel_transfer.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: AuthService.instance.getCachedRoleName(),
+      builder: (context, snapshot) {
+        // sementara loading – biar nggak blank
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // default: kalau belum ada role, anggap "warga"
+        final role = snapshot.data ?? 'warga';
+        return _MenuContent(role: role);
+      },
+    );
+  }
+}
+
+class _MenuContent extends StatelessWidget {
+  final String role; // admin, rt, rw, bendahara, sekretaris, warga
+
+  const _MenuContent({super.key, required this.role});
+
+  void _showFeatureNotReady(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Fitur ini sedang dalam pengembangan'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  // Mapping role → menu yang boleh muncul
+  bool _allowedForRole(String menuKey) {
+    // kamu bisa edit mapping ini sesuai tabel yang sudah kita buat
+    switch (role) {
+      case 'admin':
+        return true; // admin boleh semuanya
+      case 'bendahara':
+        return [
+          'dashboard',
+          'pemasukan',
+          'pengeluaran',
+          'laporan',
+          'channel-transfer',
+          'log',
+        ].contains(menuKey);
+      case 'rt':
+        return [
+          'dashboard',
+          'kegiatan',
+          'broadcast',
+          'pesan-warga',
+          'penerimaan-warga',
+          'mutasi',
+          'log',
+          'marketplace',
+        ].contains(menuKey);
+      case 'rw':
+        return [
+          'dashboard',
+          'kegiatan',
+          'laporan',
+          'mutasi',
+          'log',
+        ].contains(menuKey);
+      case 'sekretaris':
+        return [
+          'dashboard',
+          'data-warga',
+          'penerimaan-warga',
+          'mutasi',
+          'log',
+        ].contains(menuKey);
+      case 'warga':
+      default:
+        return [
+          'dashboard',
+          'kegiatan',
+          'pesan-warga',
+          'marketplace',
+        ].contains(menuKey);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    void showFeatureNotReady() {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Fitur ini sedang dalam pengembangan'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-
-    final List<Map<String, dynamic>> menuItems = [
+    final List<Map<String, dynamic>> allMenuItems = [
       {
+        'key': 'dashboard',
         'icon': Icons.dashboard,
         'title': 'Dashboard',
-        'action': showFeatureNotReady,
+        'action': () => _showFeatureNotReady(context),
       },
       {
+        'key': 'kegiatan',
         'icon': Icons.event_note,
         'title': 'Kegiatan',
         'action': () => context.push('/kegiatan'),
       },
       {
+        'key': 'data-warga',
         'icon': Icons.home_work,
         'title': 'Data Warga & Rumah',
         'action': () => context.push('/data-warga-rumah'),
       },
       {
+        'key': 'pemasukan',
         'icon': Icons.account_balance_wallet,
         'title': 'Pemasukan',
         'action': () => context.push('/menu-pemasukan'),
       },
       {
+        'key': 'pengeluaran',
         'icon': Icons.monetization_on,
         'title': 'Pengeluaran',
         'action': () => context.push('/pengeluaran'),
       },
       {
+        'key': 'laporan',
         'icon': Icons.assessment,
         'title': 'Laporan Keuangan',
         'action': () => showSubMenuKeuangan(context),
       },
       {
+        'key': 'broadcast',
         'icon': Icons.campaign,
         'title': 'Broadcast',
-        'action': showFeatureNotReady,
+        'action': () => _showFeatureNotReady(context),
       },
       {
+        'key': 'pesan-warga',
         'icon': Icons.chat_bubble,
         'title': 'Pesan Warga',
-        'action': showFeatureNotReady,
+        'action': () => _showFeatureNotReady(context),
       },
       {
+        'key': 'penerimaan-warga',
         'icon': Icons.person_add_alt_1,
         'title': 'Penerimaan Warga',
-        'action': showFeatureNotReady,
+        'action': () => _showFeatureNotReady(context),
       },
       {
+        'key': 'mutasi',
         'icon': Icons.switch_account,
         'title': 'Mutasi Keluarga',
         'action': () => context.push('/mutasi'),
       },
       {
+        'key': 'log',
         'icon': Icons.history,
         'title': 'Log Aktifitas',
         'action': () => context.goNamed('log-aktivitas'),
       },
       {
+        'key': 'manajemen-pengguna',
         'icon': Icons.manage_accounts,
         'title': 'Manajemen Pengguna',
         'action': () => showSubMenuManajemenPengguna(context),
       },
       {
+        'key': 'channel-transfer',
         'icon': Icons.wallet,
         'title': 'Channel Transfer',
         'action': () => showSubMenuChannelTransfer(context),
       },
       {
+        'key': 'marketplace',
         'icon': Icons.storefront,
         'title': 'Marketplace Sayuran',
         'action': () => context.push('/marketplace'),
       },
     ];
 
+    final menuItems =
+        allMenuItems.where((m) => _allowedForRole(m['key'] as String)).toList();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Menu"),
+        title: Text("Menu (${role.toUpperCase()})"),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -160,9 +256,9 @@ class MenuScreen extends StatelessWidget {
                       final item = menuItems[index];
                       return _buildMenuItem(
                         context,
-                        icon: item['icon'],
-                        title: item['title'],
-                        onTap: item['action'],
+                        icon: item['icon'] as IconData,
+                        title: item['title'] as String,
+                        onTap: item['action'] as VoidCallback,
                       );
                     },
                   ),
@@ -229,5 +325,3 @@ class MenuScreen extends StatelessWidget {
     );
   }
 }
-
-// NOTE: pastikan import ini ada di atas file aslinya

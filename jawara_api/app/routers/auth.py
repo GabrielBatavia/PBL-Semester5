@@ -104,5 +104,9 @@ def login(
 
 
 @router.get("/me", response_model=user_schemas.UserRead)
-def me(current_user: models.User = Depends(get_current_user)):
+def get_me(current_user: models.User = Depends(get_current_user)):
+    """
+    Mengembalikan profil user yang sedang login (pakai JWT).
+    Termasuk field role: { id, name, display_name }.
+    """
     return current_user

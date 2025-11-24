@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/marketplace_item.dart';
@@ -28,7 +28,6 @@ class MarketplaceService {
 
   /// GET /marketplace/items
   Future<void> fetchItems() async {
-    // pakai ApiClient supaya baseUrl-nya beradaptasi (web vs emulator)
     final res = await ApiClient.get(
       '/marketplace/items',
       auth: true,
@@ -45,7 +44,7 @@ class MarketplaceService {
     }
   }
 
-  /// POST /marketplace/items (multipart)
+  /// POST /marketplace/items (multipart) – buat item baru
   Future<void> addItem({
     required String title,
     required double price,
@@ -67,6 +66,7 @@ class MarketplaceService {
       request.fields['unit'] = unit;
     }
 
+    // kirim file gambar (opsional)
     if (imageFile != null) {
       final mime = lookupMimeType(imageFile.path) ?? 'image/jpeg';
       final parts = mime.split('/');
@@ -93,6 +93,41 @@ class MarketplaceService {
       _itemsController.add(_cache);
     } else {
       throw Exception('Gagal menambahkan item (${resp.statusCode})');
+    }
+  }
+
+  /// POST /marketplace/analyze-image – kirim foto ke backend AI (mock)
+  /// (pastikan endpoint ini sudah ada di FastAPI, kalau belum, tombol di UI jangan dipakai dulu)
+  Future<Map<String, dynamic>> analyzeImage(File imageFile) async {
+    final uri =
+        Uri.parse('${ApiClient.baseUrl}/marketplace/analyze-image');
+    final token = await _getToken();
+
+    final request = http.MultipartRequest('POST', uri);
+    final mime = lookupMimeType(imageFile.path) ?? 'image/jpeg';
+    final parts = mime.split('/');
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'image',
+        imageFile.path,
+        contentType: MediaType(parts[0], parts[1]),
+      ),
+    );
+
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    final streamed = await request.send();
+    final resp = await http.Response.fromStream(streamed);
+
+    if (resp.statusCode == 200) {
+      return jsonDecode(resp.body) as Map<String, dynamic>;
+    } else {
+      throw Exception(
+        'Gagal analisa gambar (${resp.statusCode}): ${resp.body}',
+      );
     }
   }
 

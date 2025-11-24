@@ -59,6 +59,7 @@ import 'package:jawaramobile_1/screens/ChannelTransfer/tambah_channel_screen.dar
 
 // ====marketplace sayuran=====
 import 'package:jawaramobile_1/screens/marketplace/marketplace_screen.dart';
+import 'package:jawaramobile_1/screens/marketplace/add_marketplace_item_screen.dart';
 
 
 // ====== Lainnya ======
@@ -340,5 +341,10 @@ final appRouter = GoRouter(
       builder: (context, state) => const MarketplaceScreen(),
     ),
 
+    GoRoute(
+      path: '/marketplace-add-item',
+      name: 'marketplace-add-item',
+      builder: (context, state) => const AddMarketplaceItemScreen(),
+    ),
   ],
 );

@@ -1,7 +1,58 @@
-// lib/widgets/menu_popup.dart
-// lib/widgets/menu_popup.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../services/auth_service.dart';
+
+bool _allowedForRole(String role, String menuKey) {
+  switch (role) {
+    case 'admin':
+      return true;
+    case 'bendahara':
+      return [
+        'dashboard',
+        'pemasukan',
+        'pengeluaran',
+        'laporan',
+        'channel-transfer',
+        'log',
+      ].contains(menuKey);
+    case 'rt':
+      return [
+        'dashboard',
+        'kegiatan',
+        'broadcast',
+        'pesan-warga',
+        'penerimaan-warga',
+        'mutasi',
+        'log',
+        'marketplace',
+      ].contains(menuKey);
+    case 'rw':
+      return [
+        'dashboard',
+        'kegiatan',
+        'laporan',
+        'mutasi',
+        'log',
+      ].contains(menuKey);
+    case 'sekretaris':
+      return [
+        'dashboard',
+        'data-warga',
+        'penerimaan-warga',
+        'mutasi',
+        'log',
+      ].contains(menuKey);
+    case 'warga':
+    default:
+      return [
+        'dashboard',
+        'kegiatan',
+        'pesan-warga',
+        'marketplace',
+      ].contains(menuKey);
+  }
+}
 
 void showMenuPopUp(BuildContext context) {
   final theme = Theme.of(context);
@@ -19,7 +70,7 @@ void showMenuPopUp(BuildContext context) {
             right: 16,
             bottom: viewInsets.bottom + 16,
           ),
-          child: _MenuPopUpContent(),
+          child: const _MenuPopUpContent(),
         ),
       );
     },
@@ -27,7 +78,7 @@ void showMenuPopUp(BuildContext context) {
 }
 
 class _MenuPopUpContent extends StatelessWidget {
-  _MenuPopUpContent({super.key});
+  const _MenuPopUpContent({super.key});
 
   void showFeatureNotReady(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -43,203 +94,245 @@ class _MenuPopUpContent extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final List<Map<String, dynamic>> menuItems = [
-      {
-        'icon': Icons.dashboard_outlined,
-        'title': 'Dashboard',
-        'action': () => showFeatureNotReady(context),
-      },
-      {
-        'icon': Icons.event_note,
-        'title': 'Kegiatan',
-        'action': () => context.push('/kegiatan'),
-      },
-      {
-        'icon': Icons.home_work_outlined,
-        'title': 'Data Warga & Rumah',
-        'action': () => context.push('/data-warga-rumah'),
-      },
-      {
-        'icon': Icons.account_balance_wallet_outlined,
-        'title': 'Pemasukan',
-        'action': () => context.push('/menu-pemasukan'),
-      },
-      {
-        'icon': Icons.monetization_on_outlined,
-        'title': 'Pengeluaran',
-        'action': () => context.push('/pengeluaran'),
-      },
-      {
-        'icon': Icons.assessment_outlined,
-        'title': 'Laporan Keuangan',
-        'action': () => context.push('/laporan-keuangan'),
-      },
-      {
-        'icon': Icons.campaign_outlined,
-        'title': 'Broadcast',
-        'action': () => context.push('/broadcast'),
-      },
-      {
-        'icon': Icons.chat_bubble_outline,
-        'title': 'Pesan Warga',
-        'action': () => showFeatureNotReady(context),
-      },
-      {
-        'icon': Icons.person_add_alt_1_outlined,
-        'title': 'Penerimaan Warga',
-        'action': () => context.push('/penerimaan-warga'),
-      },
-      {
-        'icon': Icons.switch_account,
-        'title': 'Mutasi Keluarga',
-        'action': () => context.push('/mutasi'),
-      },
-      {
-        'icon': Icons.history,
-        'title': 'Log Aktifitas',
-        'action': () => context.push('/log-aktivitas'),
-      },
-      {
-        'icon': Icons.manage_accounts_outlined,
-        'title': 'Manajemen Pengguna',
-        'action': () => context.push('/manajemen-pengguna'),
-      },
-      {
-        'icon': Icons.wallet_outlined,
-        'title': 'Channel Transfer',
-        'action': () => context.push('/channel-transfer'),
-      },
-      {
-        'icon': Icons.forum_outlined,
-        'title': 'Aspirasi',
-        'action': () => context.push('/dashboard-aspirasi'),
-      },
-      {
-        'icon': Icons.storefront_outlined,
-        'title': 'Marketplace Sayuran',
-        'action': () => context.push('/marketplace'),
-      },
-    ];
-
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.18),
-              blurRadius: 20,
-              offset: const Offset(0, -6),
+    return FutureBuilder<String?>(
+      future: AuthService.instance.getCachedRoleName(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(24),
             ),
-          ],
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // drag handle
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Menu Utama',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                GridView.builder(
-                  padding: const EdgeInsets.all(20),
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: menuItems.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    // ➜ bikin cell sedikit lebih tinggi
-                    childAspectRatio: 0.8,
-                  ),
-                  itemBuilder: (context, index) {
-                    final item = menuItems[index];
-                    return InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Future.delayed(const Duration(milliseconds: 100), () {
-                          item['action']();
-                        });
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.06),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14),
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                ),
-                                child: Icon(
-                                  item['icon'],
-                                  size: 22,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                item['title'],
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurface,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                )
+            height: 160,
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
 
+        final role = snapshot.data ?? 'warga';
+
+        // daftar semua menu (pakai key untuk filter)
+        final List<Map<String, dynamic>> allMenuItems = [
+          {
+            'key': 'dashboard',
+            'icon': Icons.dashboard_outlined,
+            'title': 'Dashboard',
+            'action': () => showFeatureNotReady(context),
+          },
+          {
+            'key': 'kegiatan',
+            'icon': Icons.event_note,
+            'title': 'Kegiatan',
+            'action': () => context.push('/kegiatan'),
+          },
+          {
+            'key': 'data-warga',
+            'icon': Icons.home_work_outlined,
+            'title': 'Data Warga & Rumah',
+            'action': () => context.push('/data-warga-rumah'),
+          },
+          {
+            'key': 'pemasukan',
+            'icon': Icons.account_balance_wallet_outlined,
+            'title': 'Pemasukan',
+            'action': () => context.push('/menu-pemasukan'),
+          },
+          {
+            'key': 'pengeluaran',
+            'icon': Icons.monetization_on_outlined,
+            'title': 'Pengeluaran',
+            'action': () => context.push('/pengeluaran'),
+          },
+          {
+            'key': 'laporan',
+            'icon': Icons.assessment_outlined,
+            'title': 'Laporan Keuangan',
+            'action': () => context.push('/laporan-keuangan'),
+          },
+          {
+            'key': 'broadcast',
+            'icon': Icons.campaign_outlined,
+            'title': 'Broadcast',
+            'action': () => context.push('/broadcast'),
+          },
+          {
+            'key': 'pesan-warga',
+            'icon': Icons.chat_bubble_outline,
+            'title': 'Pesan Warga',
+            'action': () => showFeatureNotReady(context),
+          },
+          {
+            'key': 'penerimaan-warga',
+            'icon': Icons.person_add_alt_1_outlined,
+            'title': 'Penerimaan Warga',
+            'action': () => context.push('/penerimaan-warga'),
+          },
+          {
+            'key': 'mutasi',
+            'icon': Icons.switch_account,
+            'title': 'Mutasi Keluarga',
+            'action': () => context.push('/mutasi'),
+          },
+          {
+            'key': 'log',
+            'icon': Icons.history,
+            'title': 'Log Aktifitas',
+            'action': () => context.push('/log-aktivitas'),
+          },
+          {
+            'key': 'manajemen-pengguna',
+            'icon': Icons.manage_accounts_outlined,
+            'title': 'Manajemen Pengguna',
+            'action': () => context.push('/manajemen-pengguna'),
+          },
+          {
+            'key': 'channel-transfer',
+            'icon': Icons.wallet_outlined,
+            'title': 'Channel Transfer',
+            'action': () => context.push('/channel-transfer'),
+          },
+          {
+            'key': 'aspirasi',
+            'icon': Icons.forum_outlined,
+            'title': 'Aspirasi',
+            'action': () => context.push('/dashboard-aspirasi'),
+          },
+          {
+            'key': 'marketplace',
+            'icon': Icons.storefront_outlined,
+            'title': 'Marketplace Sayuran',
+            'action': () => context.push('/marketplace'),
+          },
+        ];
+
+        final menuItems = allMenuItems
+            .where((m) => _allowedForRole(role, m['key'] as String))
+            .toList();
+
+        return Material(
+          color: Colors.transparent,
+          child: Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 20,
+                  offset: const Offset(0, -6),
+                ),
               ],
             ),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Menu Utama (${role.toUpperCase()})',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    GridView.builder(
+                      padding: const EdgeInsets.all(20),
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: menuItems.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.8,
+                      ),
+                      itemBuilder: (context, index) {
+                        final item = menuItems[index];
+                        return InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            Future.delayed(
+                              const Duration(milliseconds: 100),
+                              () => (item['action'] as VoidCallback)(),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surface,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.06),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14),
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFF6A11CB),
+                                          Color(0xFF2575FC)
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      item['icon'] as IconData,
+                                      size: 22,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    item['title'] as String,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurface,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

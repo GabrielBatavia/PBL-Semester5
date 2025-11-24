@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:go_router/go_router.dart';
+
 
 import '../../services/marketplace_service.dart';
 import '../../models/marketplace_item.dart';
@@ -52,7 +54,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         elevation: 0,
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openAddItemSheet,
+        onPressed: () => context.pushNamed('marketplace-add-item'),
         icon: const Icon(Icons.add),
         label: const Text('Jual Sayuran'),
       ),

@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
 from .db import Base, engine
-from .routers import auth, users, logs, marketplace   # ← TAMBAHKAN marketplace
+from .routers import auth, users, logs, marketplace, ai_agent   # ← TAMBAHKAN marketplace
 
 # create tables kalau belum ada
 Base.metadata.create_all(bind=engine)
@@ -16,6 +16,8 @@ app = FastAPI(title="Jawara RT/RW API")
 # CORS buat Flutter dev
 origins = [
     "http://localhost:3000",
+    "http://localhost:51377",
+    "http://127.0.0.1:51377",
     "http://localhost:5173",
     "http://127.0.0.1:5500",
     "http://10.0.2.2:8080",
@@ -27,7 +29,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,7 +50,6 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(logs.router)
-
-# NEW: marketplace router
-app.include_router(marketplace.router)        # ← TAMBAHKAN DI SINI
+app.include_router(ai_agent.router)
+app.include_router(marketplace.router)     
 
