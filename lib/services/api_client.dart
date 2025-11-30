@@ -7,24 +7,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 
 class ApiClient {
-  // GANTI IP INI sesuai ipconfig kamu
   static const String _pcLanBaseUrl = 'http://10.12.14.97:9000';
   static const String _webBaseUrl   = 'http://127.0.0.1:9000';
   static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';
 
   static String get baseUrl {
-    if (kIsWeb) {
-      // Flutter web jalan di laptop yang sama → pakai localhost
-      return _webBaseUrl;
-    }
-
+    if (kIsWeb) return _webBaseUrl;
     if (Platform.isAndroid) {
-      // ganti ke true kalau lagi pakai emulator, false kalau HP fisik
       const bool useEmulator = false;
       return useEmulator ? _androidEmuBaseUrl : _pcLanBaseUrl;
     }
-
-    // fallback (misal iOS desktop, dll)
     return _pcLanBaseUrl;
   }
 
@@ -43,6 +35,8 @@ class ApiClient {
     await prefs.remove('auth_token');
   }
 
+  // ─────────────────────────────────────────────
+
   static Future<http.Response> post(
     String path,
     Map<String, dynamic> body, {
@@ -53,7 +47,9 @@ class ApiClient {
 
     if (auth) {
       final token = await _getToken();
-      if (token != null) headers['Authorization'] = 'Bearer $token';
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
     }
 
     try {
@@ -61,13 +57,16 @@ class ApiClient {
       final resp = await http
           .post(uri, headers: headers, body: jsonEncode(body))
           .timeout(const Duration(seconds: 10));
-      debugPrint('→ ${resp.statusCode}');
+
+      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
       return resp;
     } on TimeoutException {
-      debugPrint('⚠️ Timeout ke $uri');
+      debugPrint('⚠ Timeout ke $uri');
       rethrow;
     }
   }
+
+  // ─────────────────────────────────────────────
 
   static Future<http.Response> get(
     String path, {
@@ -78,7 +77,9 @@ class ApiClient {
 
     if (auth) {
       final token = await _getToken();
-      if (token != null) headers['Authorization'] = 'Bearer $token';
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
     }
 
     try {
@@ -86,10 +87,11 @@ class ApiClient {
       final resp = await http
           .get(uri, headers: headers)
           .timeout(const Duration(seconds: 10));
-      debugPrint('→ ${resp.statusCode}');
+
+      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
       return resp;
     } on TimeoutException {
-      debugPrint('⚠️ Timeout ke $uri');
+      debugPrint('⚠ Timeout ke $uri');
       rethrow;
     }
   }

@@ -3,24 +3,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter/foundation.dart';
 import 'api_client.dart';
 
 class AuthService {
   AuthService._();
 
-  /// Singleton – bisa dipanggil dengan AuthService.instance
   static final AuthService instance = AuthService._();
 
-  static const _keyToken = 'auth_token';
-  static const _keyRoleName = 'role_name';
-  static const _keyUserName = 'user_name';
+  static const _keyToken     = 'auth_token';
+  static const _keyRoleName  = 'role_name';
+  static const _keyUserName  = 'user_name';
 
   // ─────────────────────────────────────────────
-  // LOGIN & REGISTER (dipakai LoginPage)
-  // ─────────────────────────────────────────────
 
-  /// Versi static biar kode lama tetap jalan:
   static Future<bool> login(String email, String password) =>
       instance._login(email, password);
 
@@ -41,6 +37,8 @@ class AuthService {
         address: address,
       );
 
+  // ─────────────────────────────────────────────
+
   Future<bool> _login(String email, String password) async {
     final http.Response res = await ApiClient.post(
       '/auth/login',
@@ -50,22 +48,21 @@ class AuthService {
       },
     );
 
-    if (res.statusCode == 200) {
-      final data = jsonDecode(res.body) as Map<String, dynamic>;
-      final token = data['token'] as String?;
-      if (token != null) {
-        // simpan token untuk dipakai ApiClient
+    if (res.statusCode == 200 && res.body.isNotEmpty) {
+      final data = jsonDecode(res.body) as Map<String, dynamic>?;
+
+      final token = data?['token'] as String?;
+      if (token != null && token.isNotEmpty) {
         await ApiClient.saveToken(token);
-
-        // coba ambil profil + role (kalau endpoint /auth/me sudah ada)
-        await fetchAndCacheProfile();
-
+        await fetchAndCacheProfile(); // safe now
         return true;
       }
     }
 
     return false;
   }
+
+  // ─────────────────────────────────────────────
 
   Future<bool> _register({
     required String name,
@@ -91,35 +88,46 @@ class AuthService {
   }
 
   // ─────────────────────────────────────────────
-  // PROFILE & ROLE CACHE
+  // PROFILE CACHE (NO NULL)
   // ─────────────────────────────────────────────
 
-  /// Panggil endpoint profil (misal /auth/me) lalu cache role & nama.
   Future<void> fetchAndCacheProfile() async {
     try {
-      // SESUAIKAN dengan endpoint backend-mu
-      final res = await ApiClient.get(
-        '/auth/me', // sementara kalau belum ada, kamu bisa ganti mock
-        auth: true,
-      );
+      final res = await ApiClient.get('/auth/me', auth: true);
 
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body) as Map<String, dynamic>;
-        final prefs = await SharedPreferences.getInstance();
-
-        final roleName =
-            (data['role']?['name'] as String?)?.toLowerCase() ?? 'warga';
-        final userName = data['name'] as String? ?? '';
-
-        await prefs.setString(_keyRoleName, roleName);
-        await prefs.setString(_keyUserName, userName);
+      if (res.statusCode != 200) {
+        debugPrint("⚠ /auth/me gagal: ${res.statusCode}");
+        return;
       }
-    } catch (_) {
-      // kalau gagal, biarkan saja – nanti default-nya dianggap 'warga'
+
+      if (res.body.isEmpty) {
+        debugPrint("⚠ /auth/me empty body");
+        return;
+      }
+
+      final data = jsonDecode(res.body) as Map<String, dynamic>?;
+
+      if (data == null) {
+        debugPrint("⚠ /auth/me returned null JSON");
+        return;
+      }
+
+
+      final prefs = await SharedPreferences.getInstance();
+
+      final roleName =
+          (data['role']?['name'] as String?)?.toLowerCase() ?? 'warga';
+      final userName = data['name'] as String? ?? '';
+
+      await prefs.setString(_keyRoleName, roleName);
+      await prefs.setString(_keyUserName, userName);
+    } catch (e) {
+      debugPrint("⚠ fetchAndCacheProfile error: $e");
     }
   }
 
-  /// Dipakai di MenuScreen untuk baca role terakhir.
+  // ─────────────────────────────────────────────
+
   Future<String?> getCachedRoleName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyRoleName);
@@ -130,8 +138,6 @@ class AuthService {
     return prefs.getString(_keyUserName);
   }
 
-  // ─────────────────────────────────────────────
-  // LOGOUT
   // ─────────────────────────────────────────────
 
   Future<void> logout() async {
