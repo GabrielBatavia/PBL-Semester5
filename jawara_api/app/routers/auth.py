@@ -16,7 +16,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
+    return plain == hashed
 
 
 def hash_password(password: str) -> str:
@@ -29,7 +29,7 @@ def hash_password(password: str) -> str:
     if len(raw) > 72:
         raw = raw[:72]
 
-    return pwd_context.hash(raw)
+    return password
 
 
 def create_access_token(user_id: int, expires_minutes: int = 60 * 24):
