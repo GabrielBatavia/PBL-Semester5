@@ -243,7 +243,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/tambah-broadcast',
       name: 'tambah-broadcast',
-      builder: (context, state) => const TambahBroadcastScreen(),
+      builder: (context, state) => const TambahBroadcastForm(),
     ),
     GoRoute(
       path: '/detail-broadcast',

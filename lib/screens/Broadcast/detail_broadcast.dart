@@ -1,40 +1,46 @@
-// lib/screens/Broadcast/detail_broadcast.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/services/broadcast_service.dart';
 
 class DetailBroadcastScreen extends StatelessWidget {
-  final Map<String, String> broadcastData;
+  final Map<String, dynamic> broadcastData;
 
   const DetailBroadcastScreen({super.key, required this.broadcastData});
 
-  void _showDeleteConfirmation(BuildContext context) {
+  void _confirmDelete(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext dialogContext) {
+      builder: (dialogContext) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Text("Konfirmasi Hapus"),
-          content: const Text(
-            "Apakah Anda yakin ingin menghapus broadcast ini? Aksi ini tidak dapat dibatalkan.",
-          ),
+          content: const Text("Apakah Anda yakin ingin menghapus broadcast ini?"),
           actions: [
             TextButton(
               child: const Text("Batal"),
-              onPressed: () => Navigator.of(dialogContext).pop(),
+              onPressed: () => Navigator.pop(dialogContext),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: const Text("Hapus"),
-              onPressed: () {
-                // TODO: hapus data dari server
-                Navigator.of(dialogContext).pop();
-                context.pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Broadcast berhasil dihapus')),
-                );
+              onPressed: () async {
+                Navigator.pop(dialogContext);
+
+                final id = broadcastData['id'];
+                final success = await BroadcastService.deleteBroadcast(id);
+
+                if (context.mounted) {
+                  if (success) {
+                    context.pop(true);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Broadcast berhasil dihapus")),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Gagal menghapus broadcast")),
+                    );
+                  }
+                }
               },
             ),
           ],
@@ -43,30 +49,25 @@ class DetailBroadcastScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, String label, String value) {
+  Widget _buildRow(BuildContext context, String label, String value) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 2,
             child: Text(
               label,
-              style:
-                  theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            flex: 3,
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -77,14 +78,22 @@ class DetailBroadcastScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+
+    final String title = broadcastData['title']?.toString() ?? '-';
+    final String content = broadcastData['content']?.toString() ?? '-';
+
+    // FIX: gunakan sender_id karena sender sudah dihapus
+    final String senderId = broadcastData['sender_id']?.toString() ?? '-';
+
+    final String createdAt =
+        broadcastData['created_at']?.toString().replaceAll('T', ' ') ?? '-';
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        title: const Text("Detail Broadcast"),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text("Detail Broadcast"),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -96,149 +105,81 @@ class DetailBroadcastScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  broadcastData['judul'] ?? '-',
-                  style: theme.textTheme.displayLarge
-                      ?.copyWith(color: Colors.white),
-                ),
+                Text(title,
+                    style: theme.textTheme.displayLarge?.copyWith(color: Colors.white)),
                 const SizedBox(height: 8),
-                Text(
-                  'Broadcast resmi RT / RW',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: Colors.white70),
-                ),
+                Text("Broadcast RW / RT",
+                    style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white70)),
                 const SizedBox(height: 20),
+
+                // Card detail
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.98),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.12),
                         blurRadius: 18,
+                        color: Colors.black.withOpacity(0.12),
                         offset: const Offset(0, 8),
                       ),
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 18,
-                    ),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _buildDetailRow(
-                          context,
-                          "Judul Broadcast",
-                          broadcastData['judul'] ?? '-',
-                        ),
-                        const Divider(height: 1),
-                        _buildDetailRow(
-                          context,
-                          "Pengirim",
-                          broadcastData['pengirim'] ?? '-',
-                        ),
-                        const Divider(height: 1),
-                        _buildDetailRow(
-                          context,
-                          "Tanggal Publikasi",
-                          broadcastData['tanggal'] ?? '-',
-                        ),
+                        _buildRow(context, "Judul", title),
+                        const Divider(),
+                        _buildRow(context, "Pengirim (User ID)", senderId),
+                        const Divider(),
+                        _buildRow(context, "Tanggal Publikasi", createdAt),
                       ],
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 24),
-                Text(
-                  'Isi Broadcast',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                Text("Isi Broadcast",
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
+
+                // Isi broadcast
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.96),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Text(
-                    broadcastData['isi'] ?? 'Tidak ada deskripsi.',
-                    style: theme.textTheme.bodyMedium,
-                  ),
+                  child: Text(content, style: theme.textTheme.bodyMedium),
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  'Lampiran Foto',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    height: 200,
-                    color: Colors.white.withOpacity(0.15),
-                    child: const Center(
-                      child: Icon(
-                        Icons.image,
-                        color: Colors.white70,
-                        size: 40,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Lampiran Dokumen',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ListTile(
-                  tileColor: Colors.white.withOpacity(0.96),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  leading: const Icon(Icons.description_outlined),
-                  title: Text(
-                    broadcastData['namaDokumen'] ?? 'Dokumen',
-                  ),
-                  trailing:
-                      const Icon(Icons.download_for_offline_outlined),
-                  onTap: () {
-                    // TODO: Implement document download/view logic
-                  },
-                ),
+
                 const SizedBox(height: 32),
+
+                // Tombol aksi
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
                         icon: const Icon(Icons.delete_outline),
-                        label: const Text('Hapus'),
+                        label: const Text("Hapus"),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: colorScheme.error,
-                          side: BorderSide(color: colorScheme.error),
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
                         ),
-                        onPressed: () => _showDeleteConfirmation(context),
+                        onPressed: () => _confirmDelete(context),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.edit_outlined),
-                        label: const Text('Edit'),
+                        label: const Text("Edit"),
                         onPressed: () {
                           context.push(
                             '/edit-broadcast',

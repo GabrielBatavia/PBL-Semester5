@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:jawaramobile_1/widgets/broadcast/tambah_broadcast_form.dart';
 
 class EditBroadcastScreen extends StatelessWidget {
-  final Map<String, String> broadcastData;
+  final Map<String, dynamic> broadcastData;
 
-  const EditBroadcastScreen({super.key, required this.broadcastData});
+  const EditBroadcastScreen({
+    super.key,
+    required this.broadcastData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +34,7 @@ class EditBroadcastScreen extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.96),
                 borderRadius: BorderRadius.circular(20),
@@ -58,7 +60,23 @@ class EditBroadcastScreen extends StatelessWidget {
                         ?.copyWith(color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 20),
-                  TambahBroadcastForm(initialData: broadcastData),
+
+                  /// >>> PERBAIKAN DI SINI <<<
+                  /// Tidak ada lagi field "sender", diganti ke sender_id (jika diperlukan)
+                  /// Sesuai struktur tabel broadcast terbaru
+                  TambahBroadcastForm(
+                    initialData: {
+                      "id": broadcastData["id"],
+                      "title": broadcastData["title"],
+                      "content": broadcastData["content"],
+                      "sender_id": broadcastData["sender_id"], // FIXED
+                      "image_url": broadcastData["image_url"],
+                      "document_name": broadcastData["document_name"],
+                      "document_url": broadcastData["document_url"],
+                      "target_scope": broadcastData["target_scope"],
+                    },
+                    isEdit: true,
+                  ),
                 ],
               ),
             ),

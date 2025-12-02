@@ -1,51 +1,65 @@
-// lib/screens/Broadcast/daftar_broadcast.dart
-
+import 'dart:async';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/services/broadcast_service.dart';
 import 'package:jawaramobile_1/widgets/broadcast/broadcast_filter.dart';
 
-class BroadcastScreen extends StatelessWidget {
+class BroadcastScreen extends StatefulWidget {
   const BroadcastScreen({super.key});
 
-  // Data dummy
-  final List<Map<String, String>> _broadcastData = const [
-    {
-      "pengirim": "Ahmad Suhendra",
-      "judul": "Pemberitahuan Kerja Bakti",
-      "isi":
-          "Halo warga RT 05, pada Sabtu mendatang akan diadakan kerja bakti membersihkan lingkungan. Mohon partisipasinya ya!",
-      "tanggal": "18 Okt 2025",
-    },
-    {
-      "pengirim": "Siti Aminah",
-      "judul": "Undangan Rapat Warga",
-      "isi":
-          "Yth. Warga RT 05, kami mengundang Anda untuk hadir dalam rapat warga yang akan dilaksanakan pada Minggu, 20 Oktober 2025 di Balai Warga pukul 10.00 WIB.",
-      "tanggal": "18 Okt 2025",
-    },
-  ];
+  @override
+  State<BroadcastScreen> createState() => _BroadcastScreenState();
+}
+
+class _BroadcastScreenState extends State<BroadcastScreen> {
+  final StreamController<List<Map<String, dynamic>>> _streamController =
+      StreamController.broadcast();
+
+  List<Map<String, dynamic>> _broadcastList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBroadcast();
+  }
+
+  Future<void> _loadBroadcast() async {
+    final List<dynamic> data = await BroadcastService.getBroadcastList();
+
+    // pastikan semua item adalah Map<String, dynamic>
+    _broadcastList = data.map((e) => Map<String, dynamic>.from(e)).toList();
+
+    _streamController.add(_broadcastList);
+  }
+
+  void addBroadcast(Map<String, dynamic> newItem) {
+    _broadcastList.insert(0, newItem);
+    _streamController.add(_broadcastList);
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Text("Filter Broadcast"),
           content: const SingleChildScrollView(child: BroadcastFilter()),
-          actions: <Widget>[
+          actions: [
             TextButton(
               child: const Text("Batal"),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.pop(context),
             ),
             ElevatedButton(
               child: const Text("Cari"),
-              onPressed: () {
-                // TODO: Tambahkan logika filter
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         );
@@ -71,11 +85,21 @@ class BroadcastScreen extends StatelessWidget {
           ),
         ],
       ),
+
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/tambah-broadcast'),
         backgroundColor: colorScheme.primary,
         child: const Icon(Icons.add),
+        onPressed: () async {
+          final result = await context.push<Map<String, dynamic>>(
+            '/tambah-broadcast',
+          );
+
+          if (result != null) {
+            addBroadcast(result);
+          }
+        },
       ),
+
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -86,73 +110,71 @@ class BroadcastScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding:
-                const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Daftar Broadcast',
-                  style: theme.textTheme.displayLarge!
-                      .copyWith(color: Colors.white),
+                  style: theme.textTheme.displayLarge!.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Kelola pengumuman resmi untuk seluruh warga.',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: Colors.white70),
+                  'Kelola pengumuman resmi untuk warga.',
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    color: Colors.white70,
+                  ),
                 ),
                 const SizedBox(height: 16),
+
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.96),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
-                          blurRadius: 18,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: DataTable2(
-                        columnSpacing: 12,
-                        horizontalMargin: 12,
-                        headingRowColor: MaterialStateProperty.all(
-                          colorScheme.primary.withOpacity(0.05),
-                        ),
-                        headingTextStyle: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colorScheme.primary,
-                        ),
-                        columns: const [
-                          DataColumn2(label: Text('Judul')),
-                          DataColumn2(label: Text('Pengirim')),
-                        ],
-                        rows: _broadcastData.map((item) {
-                          return DataRow2(
-                            onTap: () {
-                              context.push(
-                                '/detail-broadcast',
-                                extra: item,
-                              );
-                            },
-                            cells: [
-                              DataCell(
-                                Text(
-                                  item['judul']!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              DataCell(Text(item['pengirim']!)),
-                            ],
+                    child: StreamBuilder<List<Map<String, dynamic>>>(
+                      stream: _streamController.stream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
                           );
-                        }).toList(),
-                      ),
+                        }
+
+                        final data = snapshot.data!;
+
+                        return Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: DataTable2(
+                            columnSpacing: 16,
+                            columns: const [
+                              DataColumn2(label: Text("Judul")),
+                              DataColumn2(label: Text("Pengirim (ID)")),
+                            ],
+                            rows: data.map((item) {
+                              return DataRow2(
+                                onTap: () => context.push(
+                                  '/detail-broadcast',
+                                  extra: item,
+                                ),
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      item['title'] ?? "",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text((item['sender_id'] ?? '-').toString()),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),

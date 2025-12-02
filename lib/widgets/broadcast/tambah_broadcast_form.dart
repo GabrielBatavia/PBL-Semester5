@@ -1,16 +1,16 @@
-// lib/widgets/broadcast/tambah_broadcast_form.dart
-
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:jawaramobile_1/theme/AppTheme.dart';
+import 'package:jawaramobile_1/services/broadcast_service.dart';
+import 'package:go_router/go_router.dart';
 
 class TambahBroadcastForm extends StatefulWidget {
-  final Map<String, String>? initialData;
+  final Map<String, dynamic>? initialData;
+  final bool isEdit;
 
-  const TambahBroadcastForm({super.key, this.initialData});
+  const TambahBroadcastForm({
+    super.key,
+    this.initialData,
+    this.isEdit = false,
+  });
 
   @override
   State<TambahBroadcastForm> createState() => _TambahBroadcastFormState();
@@ -19,245 +19,151 @@ class TambahBroadcastForm extends StatefulWidget {
 class _TambahBroadcastFormState extends State<TambahBroadcastForm> {
   final _formKey = GlobalKey<FormState>();
 
-  late TextEditingController _judulBroadcast;
-  late TextEditingController _isiBroadcast;
-  late TextEditingController _tanggalController;
-  late TextEditingController _pengirim;
+  late final TextEditingController titleController;
+  late final TextEditingController contentController;
+  late final TextEditingController senderController;
 
-  File? _photo;
-  PlatformFile? _document;
+  bool isLoading = false;
 
-  final ImagePicker _imagePicker = ImagePicker();
+  // sementara (nanti ambil dari token/login)
+  final int fixedSenderId = 1;
 
   @override
   void initState() {
     super.initState();
-    final data = widget.initialData;
-    _judulBroadcast = TextEditingController(text: data?['judul']);
-    _isiBroadcast = TextEditingController(text: data?['isi']);
-    _tanggalController = TextEditingController(text: data?['tanggal']);
-    _pengirim = TextEditingController(text: data?['pengirim']);
+
+    titleController = TextEditingController(
+        text: widget.initialData?['title']?.toString() ?? '');
+    contentController = TextEditingController(
+        text: widget.initialData?['content']?.toString() ?? '');
+    senderController = TextEditingController(
+        text: widget.initialData?['sender']?.toString() ?? '');
   }
 
   @override
   void dispose() {
-    _judulBroadcast.dispose();
-    _tanggalController.dispose();
-    _pengirim.dispose();
-    _isiBroadcast.dispose();
+    titleController.dispose();
+    contentController.dispose();
+    senderController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final XFile? pickedImage = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedImage != null) {
-      setState(() {
-        _photo = File(pickedImage.path);
-      });
-    }
-  }
+  Future<void> submit() async {
+    if (!_formKey.currentState!.validate()) return;
 
-  Future<void> _pickDocument() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx'],
-    );
-    if (result != null) {
-      setState(() {
-        _document = result.files.first;
-      });
-    }
-  }
+    setState(() => isLoading = true);
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      String formattedDate = DateFormat('dd MMM yyyy').format(picked);
-      setState(() {
-        _tanggalController.text = formattedDate;
-      });
-    }
-  }
+    try {
+      Map<String, dynamic> response;
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
+      if (widget.isEdit) {
+        final idRaw = widget.initialData?['id'];
+        final id = (idRaw is int)
+            ? idRaw
+            : int.tryParse(idRaw?.toString() ?? '');
+
+        if (id == null) {
+          setState(() => isLoading = false);
+          if (!mounted) return;
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("ID tidak ditemukan")));
+          return;
+        }
+
+        // ========================
+        //       UPDATE
+        // ========================
+        response = await BroadcastService.updateBroadcast(
+          id: id,
+          title: titleController.text,
+          content: contentController.text,
+          senderId: fixedSenderId, // FIXED
+        );
+      } else {
+        // ========================
+        //       CREATE
+        // ========================
+        response = await BroadcastService.createBroadcast(
+          title: titleController.text,
+          content: contentController.text,
+          senderId: fixedSenderId, // FIXED
+        );
+      }
+
+      setState(() => isLoading = false);
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Menyimpan data broadcast...')),
+        SnackBar(
+            content: Text(widget.isEdit
+                ? "Broadcast berhasil diperbarui!"
+                : "Broadcast berhasil dibuat!")),
       );
-      // TODO: kirim data ke backend
-    }
-  }
 
-  InputDecoration _decoration(String label, {Widget? suffixIcon}) {
-    return InputDecoration(
-      labelText: label,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
-      filled: true,
-      fillColor: Colors.white,
-      suffixIcon: suffixIcon,
-    );
+      context.pop(response);
+
+    } catch (e) {
+      setState(() => isLoading = false);
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
-            controller: _judulBroadcast,
-            decoration: _decoration('Judul Broadcast'),
-            validator: (value) => value == null || value.trim().isEmpty
-                ? 'Judul broadcast tidak boleh kosong'
-                : null,
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            controller: _pengirim,
-            decoration: _decoration('Pengirim'),
-            validator: (value) => value == null || value.trim().isEmpty
-                ? 'Pengirim tidak boleh kosong'
-                : null,
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            controller: _tanggalController,
-            decoration: _decoration(
-              'Tanggal Pelaksanaan',
-              suffixIcon: Icon(
-                Icons.calendar_today_outlined,
-                color: theme.colorScheme.primary,
-              ),
+            controller: titleController,
+            decoration: const InputDecoration(
+              labelText: "Judul Broadcast",
+              border: OutlineInputBorder(),
             ),
-            readOnly: true,
-            onTap: () => _selectDate(context),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Tanggal harus diisi' : null,
+            validator: (val) =>
+                val == null || val.isEmpty ? "Judul harus diisi" : null,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
           TextFormField(
-            controller: _isiBroadcast,
-            decoration: _decoration('Isi Broadcast'),
-            maxLines: 4,
-            validator: (value) => value == null || value.trim().isEmpty
-                ? 'Isi broadcast tidak boleh kosong'
-                : null,
+            controller: contentController,
+            maxLines: 6,
+            decoration: const InputDecoration(
+              labelText: "Isi Pesan",
+              border: OutlineInputBorder(),
+            ),
+            validator: (val) =>
+                val == null || val.isEmpty ? "Isi pesan harus diisi" : null,
           ),
+          const SizedBox(height: 16),
+
+          // Tampilkan pengirim sebagai informasi saja
+          TextFormField(
+            controller: senderController,
+            readOnly: true,
+            decoration: const InputDecoration(
+              labelText: "Pengirim (otomatis)",
+              border: OutlineInputBorder(),
+            ),
+          ),
+
           const SizedBox(height: 24),
-          Text(
-            'Upload Foto (Opsional)',
-            style: theme.textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          _buildImagePicker(context),
-          const SizedBox(height: 24),
-          Text(
-            'Upload Dokumen (Opsional)',
-            style: theme.textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          _buildDocumentPicker(context),
-          const SizedBox(height: 32),
+
           SizedBox(
-            height: 48,
+            width: double.infinity,
             child: ElevatedButton(
-              onPressed: _submitForm,
-              child: const Text('Simpan'),
+              onPressed: isLoading ? null : submit,
+              child: isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : Text(widget.isEdit
+                      ? "Perbarui Broadcast"
+                      : "Kirim Broadcast"),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildImagePicker(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return GestureDetector(
-      onTap: _pickImage,
-      child: Container(
-        height: 150,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: theme.colorScheme.primary.withOpacity(0.15),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: _photo == null
-            ? Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.add_a_photo_outlined,
-                      color: AppTheme.primaryOrange,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Tap untuk tambah foto',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.7),
-                          ),
-                    ),
-                  ],
-                ),
-              )
-            : ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Image.file(
-                  _photo!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget _buildDocumentPicker(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return OutlinedButton.icon(
-      icon: Icon(
-        Icons.attach_file,
-        color: theme.colorScheme.primary,
-      ),
-      label: Text(
-        _document == null ? 'Pilih Dokumen (PDF/DOC)' : _document!.name,
-      ),
-      onPressed: _pickDocument,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        textStyle: theme.textTheme.bodyLarge,
-        side: BorderSide(
-          color: theme.colorScheme.primary.withOpacity(0.4),
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
       ),
     );
   }
