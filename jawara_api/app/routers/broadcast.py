@@ -1,12 +1,21 @@
+# app/routers/broadcast.py
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from fastapi.responses import RedirectResponse
 
 from ..db import SessionLocal
 from ..models.broadcast import Broadcast
 from ..schemas.broadcast import BroadcastCreate, BroadcastRead, BroadcastUpdate
 from ..deps import get_db
 
-router = APIRouter(prefix="/broadcasts", tags=["Broadcast"])
+# Gunakan prefix "broadcast" supaya Flutter bisa pakai /broadcast
+router = APIRouter(prefix="/broadcast", tags=["Broadcast"])
+
+# Redirect /broadcast → /broadcast/ (trailing slash)
+@router.get("", include_in_schema=False)
+def redirect_to_slash():
+    return RedirectResponse("/broadcast/")
 
 # GET ALL BROADCAST
 @router.get("/", response_model=list[BroadcastRead])
