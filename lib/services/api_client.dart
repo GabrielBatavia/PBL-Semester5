@@ -95,4 +95,53 @@ class ApiClient {
       rethrow;
     }
   }
+  static Future<http.Response> put(
+    String path,
+    Map<String, dynamic> body, {
+    bool auth = false,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final headers = <String, String>{'Content-Type': 'application/json'};
+
+    if (auth) {
+      final token = await _getToken();
+      if (token != null) headers['Authorization'] = 'Bearer $token';
+    }
+
+    try {
+      debugPrint('PUT  $uri');
+      final resp = await http
+          .put(uri, headers: headers, body: jsonEncode(body))
+          .timeout(const Duration(seconds: 10));
+      debugPrint('→ ${resp.statusCode}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠️ Timeout ke $uri');
+      rethrow;
+    }
+  }
+  static Future<http.Response> delete(
+    String path, {
+    bool auth = false,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final headers = <String, String>{'Content-Type': 'application/json'};
+
+    if (auth) {
+      final token = await _getToken();
+      if (token != null) headers['Authorization'] = 'Bearer $token';
+    }
+
+    try {
+      debugPrint('DELETE $uri');
+      final resp = await http
+          .delete(uri, headers: headers)
+          .timeout(const Duration(seconds: 10));
+      debugPrint('→ ${resp.statusCode}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠️ Timeout ke $uri');
+      rethrow;
+    }
+  }
 }

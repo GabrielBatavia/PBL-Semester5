@@ -75,3 +75,40 @@ class MarketplaceItem(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     owner = relationship("User", back_populates="marketplace_items")
+
+class Family(Base):
+    __tablename__ = "families"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    house_id = Column(Integer, ForeignKey("houses.id"), nullable=True)
+    status = Column(String, default="aktif")
+
+    # Relationship
+    house = relationship("House", back_populates="families") 
+    residents = relationship("Resident", back_populates="family") 
+
+class House(Base):
+    __tablename__ = "houses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    address = Column(String(255), nullable=False)
+    area = Column(String(50), nullable=True)
+    status = Column(String(255), nullable=False)
+    # relasi ke Family
+    families = relationship("Family", back_populates="house")
+    
+
+class Resident(Base):
+    __tablename__ = "residents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    nik = Column(String(100), nullable=True)
+    gender = Column(String(50), nullable=True)
+    birth_date = Column(String(50), nullable=True)
+    job = Column(String(100), nullable=True)
+    gender = Column(String(1), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    family_id = Column(Integer, ForeignKey("families.id", ondelete="CASCADE"))
+    family = relationship("Family", back_populates="residents")

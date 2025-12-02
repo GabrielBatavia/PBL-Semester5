@@ -1,113 +1,141 @@
-// lib/screens/DataWargaRumah/tabel_warga.dart
-
 import 'package:flutter/material.dart';
+import '../../widgets/info_row.dart';
+import '../../models/resident_model.dart';
+import '../../services/resident_service.dart';
+import '../../utils/debouncer.dart';
+import 'warga_detail_page.dart';
 
-class TabelWarga extends StatelessWidget {
+class TabelWarga extends StatefulWidget {
   const TabelWarga({super.key});
 
-  final List<Map<String, dynamic>> warga = const [
-    {
-      "nama": "Hanif",
-      "nik": "1234567890123456",
-      "umur": 22,
-      "pekerjaan": "Mahasiswa"
-    },
-    {
-      "nama": "Siti",
-      "nik": "1234567890123457",
-      "umur": 25,
-      "pekerjaan": "Guru"
-    },
-    {
-      "nama": "Budi",
-      "nik": "1234567890123458",
-      "umur": 30,
-      "pekerjaan": "Wiraswasta"
-    },
-  ];
+  @override
+  State<TabelWarga> createState() => _TabelWargaState();
+}
+
+class _TabelWargaState extends State<TabelWarga> {
+  final _controller = TextEditingController();
+  final _debouncer = Debouncer(milliseconds: 500);
+
+  late Future<List<ResidentModel>> _futureResidents;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureResidents = ResidentService.instance.fetchResidents();
+  }
+
+  void _onSearchChanged() {
+    _debouncer.run(() {
+      setState(() {
+        _futureResidents = ResidentService.instance
+            .fetchResidents(search: _controller.text);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Tabel Data Warga",
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columnSpacing: 16,
-                headingRowColor: MaterialStateProperty.all(
-                  colorScheme.primary.withOpacity(0.06),
-                ),
-                headingTextStyle: theme.textTheme.titleSmall?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-                columns: const [
-                  DataColumn(label: Text("Nama")),
-                  DataColumn(label: Text("NIK")),
-                  DataColumn(label: Text("Umur")),
-                  DataColumn(label: Text("Pekerjaan")),
-                ],
-                rows: warga.map((w) {
-                  return DataRow(
-                    cells: [
-                      DataCell(
-                        Text(
-                          w["nama"],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          w["nik"],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          "${w["umur"]}",
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          w["pekerjaan"],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
+    return Column(
+      children: [
+        // 🔎 SEARCH BAR
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: TextField(
+            controller: _controller,
+            onChanged: (_) => _onSearchChanged(),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              hintText: "Cari nama / NIK...",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+
+        Expanded(
+          child: FutureBuilder<List<ResidentModel>>(
+            future: _futureResidents,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return const Center(child: Text("Gagal memuat data warga"));
+              }
+
+              final residents = snapshot.data ?? [];
+
+              if (residents.isEmpty) {
+                return const Center(
+                  child: Text("Tidak ada data warga ditemukan"),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: residents.length,
+                itemBuilder: (context, i) {
+                  final r = residents[i];
+
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => TabelWargaDetailPage(resident: r),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 3,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            // Info Kiri
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  InfoRow(
+                                    icon: Icons.person,
+                                    label: "Nama",
+                                    value: r.name,
+                                  ),
+                                  InfoRow(
+                                    icon: Icons.credit_card,
+                                    label: "NIK",
+                                    value: r.nik ?? "-",
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // ICON PANAH
+                            const Icon(
+                              Icons.chevron_right,
+                              size: 28,
+                              color: Colors.grey,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
