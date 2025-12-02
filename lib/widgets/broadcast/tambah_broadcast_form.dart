@@ -6,11 +6,7 @@ class TambahBroadcastForm extends StatefulWidget {
   final Map<String, dynamic>? initialData;
   final bool isEdit;
 
-  const TambahBroadcastForm({
-    super.key,
-    this.initialData,
-    this.isEdit = false,
-  });
+  const TambahBroadcastForm({super.key, this.initialData, this.isEdit = false});
 
   @override
   State<TambahBroadcastForm> createState() => _TambahBroadcastFormState();
@@ -18,26 +14,22 @@ class TambahBroadcastForm extends StatefulWidget {
 
 class _TambahBroadcastFormState extends State<TambahBroadcastForm> {
   final _formKey = GlobalKey<FormState>();
-
   late final TextEditingController titleController;
   late final TextEditingController contentController;
   late final TextEditingController senderController;
 
   bool isLoading = false;
-
-  // sementara (nanti ambil dari token/login)
   final int fixedSenderId = 1;
 
   @override
   void initState() {
     super.initState();
-
-    titleController = TextEditingController(
-        text: widget.initialData?['title']?.toString() ?? '');
-    contentController = TextEditingController(
-        text: widget.initialData?['content']?.toString() ?? '');
-    senderController = TextEditingController(
-        text: widget.initialData?['sender']?.toString() ?? '');
+    titleController =
+        TextEditingController(text: widget.initialData?['title'] ?? '');
+    contentController =
+        TextEditingController(text: widget.initialData?['content'] ?? '');
+    senderController =
+        TextEditingController(text: widget.initialData?['sender_name'] ?? 'Anda');
   }
 
   @override
@@ -52,62 +44,37 @@ class _TambahBroadcastFormState extends State<TambahBroadcastForm> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => isLoading = true);
-
     try {
-      Map<String, dynamic> response;
+      Map<String, dynamic> resp;
 
       if (widget.isEdit) {
-        final idRaw = widget.initialData?['id'];
-        final id = (idRaw is int)
-            ? idRaw
-            : int.tryParse(idRaw?.toString() ?? '');
-
-        if (id == null) {
-          setState(() => isLoading = false);
-          if (!mounted) return;
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("ID tidak ditemukan")));
-          return;
-        }
-
-        // ========================
-        //       UPDATE
-        // ========================
-        response = await BroadcastService.updateBroadcast(
+        final id = widget.initialData?['id'];
+        resp = await BroadcastService.updateBroadcast(
           id: id,
           title: titleController.text,
           content: contentController.text,
-          senderId: fixedSenderId, // FIXED
+          senderId: fixedSenderId,
         );
       } else {
-        // ========================
-        //       CREATE
-        // ========================
-        response = await BroadcastService.createBroadcast(
+        resp = await BroadcastService.createBroadcast(
           title: titleController.text,
           content: contentController.text,
-          senderId: fixedSenderId, // FIXED
+          senderId: fixedSenderId,
         );
       }
-
-      setState(() => isLoading = false);
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(widget.isEdit
-                ? "Broadcast berhasil diperbarui!"
-                : "Broadcast berhasil dibuat!")),
+        SnackBar(content: Text(widget.isEdit ? "Broadcast diperbarui" : "Broadcast dibuat")),
       );
 
-      context.pop(response);
-
+      context.pop(resp);
     } catch (e) {
-      setState(() => isLoading = false);
-
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Error: $e")));
+      setState(() => isLoading = false);
     }
   }
 
@@ -120,47 +87,41 @@ class _TambahBroadcastFormState extends State<TambahBroadcastForm> {
           TextFormField(
             controller: titleController,
             decoration: const InputDecoration(
-              labelText: "Judul Broadcast",
-              border: OutlineInputBorder(),
-            ),
-            validator: (val) =>
-                val == null || val.isEmpty ? "Judul harus diisi" : null,
+                labelText: "Judul Broadcast", border: OutlineInputBorder()),
+            validator: (v) => v == null || v.isEmpty ? "Judul wajib diisi" : null,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
           TextFormField(
             controller: contentController,
             maxLines: 6,
             decoration: const InputDecoration(
-              labelText: "Isi Pesan",
-              border: OutlineInputBorder(),
-            ),
-            validator: (val) =>
-                val == null || val.isEmpty ? "Isi pesan harus diisi" : null,
+                labelText: "Isi Pesan", border: OutlineInputBorder()),
+            validator: (v) => v == null || v.isEmpty ? "Isi wajib diisi" : null,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
-          // Tampilkan pengirim sebagai informasi saja
           TextFormField(
             controller: senderController,
             readOnly: true,
             decoration: const InputDecoration(
-              labelText: "Pengirim (otomatis)",
-              border: OutlineInputBorder(),
-            ),
+                labelText: "Pengirim (otomatis)", border: OutlineInputBorder()),
           ),
-
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
 
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: isLoading ? null : submit,
               child: isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(widget.isEdit
-                      ? "Perbarui Broadcast"
-                      : "Kirim Broadcast"),
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ))
+                  : Text(widget.isEdit ? "Perbarui" : "Kirim"),
             ),
           ),
         ],
