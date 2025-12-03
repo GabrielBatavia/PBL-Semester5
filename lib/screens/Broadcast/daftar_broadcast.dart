@@ -1,55 +1,78 @@
-// lib/screens/Broadcast/daftar_broadcast.dart
-
+import 'dart:async';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/services/broadcast_service.dart';
 import 'package:jawaramobile_1/widgets/broadcast/broadcast_filter.dart';
 
-class BroadcastScreen extends StatelessWidget {
+class BroadcastScreen extends StatefulWidget {
   const BroadcastScreen({super.key});
 
-  // Data dummy
-  final List<Map<String, String>> _broadcastData = const [
-    {
-      "pengirim": "Ahmad Suhendra",
-      "judul": "Pemberitahuan Kerja Bakti",
-      "isi":
-          "Halo warga RT 05, pada Sabtu mendatang akan diadakan kerja bakti membersihkan lingkungan. Mohon partisipasinya ya!",
-      "tanggal": "18 Okt 2025",
-    },
-    {
-      "pengirim": "Siti Aminah",
-      "judul": "Undangan Rapat Warga",
-      "isi":
-          "Yth. Warga RT 05, kami mengundang Anda untuk hadir dalam rapat warga yang akan dilaksanakan pada Minggu, 20 Oktober 2025 di Balai Warga pukul 10.00 WIB.",
-      "tanggal": "18 Okt 2025",
-    },
-  ];
+  @override
+  State<BroadcastScreen> createState() => _BroadcastScreenState();
+}
 
-  void _showFilterDialog(BuildContext context) {
+class _BroadcastScreenState extends State<BroadcastScreen> {
+  final StreamController<List<Map<String, dynamic>>> _streamController =
+      StreamController.broadcast();
+
+  List<Map<String, dynamic>> _broadcastList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBroadcast();
+  }
+
+  // ===============================
+  //  LOAD DATA DARI BACKEND
+  // ===============================
+  Future<void> _loadBroadcast() async {
+    try {
+      final raw = await BroadcastService.getBroadcastList();
+      _broadcastList = raw.map((e) => Map<String, dynamic>.from(e)).toList();
+      _streamController.add(_broadcastList);
+    } catch (e) {
+      _streamController.add([]);
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Gagal memuat broadcast: $e")));
+      }
+    }
+  }
+
+  // untuk menambahkan broadcast baru dari halaman tambah
+  void addBroadcast(Map<String, dynamic> newItem) {
+    _broadcastList.insert(0, newItem);
+    _streamController.add(_broadcastList);
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
+
+  void _showFilterDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text("Filter Broadcast"),
-          content: const SingleChildScrollView(child: BroadcastFilter()),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("Batal"),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            ElevatedButton(
-              child: const Text("Cari"),
-              onPressed: () {
-                // TODO: Tambahkan logika filter
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Filter Broadcast"),
+        content: const SingleChildScrollView(child: BroadcastFilter()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Cari"),
+          ),
+        ],
+      ),
     );
   }
 
@@ -67,15 +90,25 @@ class BroadcastScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: () => _showFilterDialog(context),
+            onPressed: _showFilterDialog,
           ),
         ],
       ),
+
+      // ===============================
+      //  BUTTON TAMBAH BROADCAST
+      // ===============================
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/tambah-broadcast'),
         backgroundColor: colorScheme.primary,
         child: const Icon(Icons.add),
+        onPressed: () async {
+          final result = await context.pushNamed<Map<String, dynamic>>(
+            'tambah-broadcast',
+          );
+          if (result != null) addBroadcast(result);
+        },
       ),
+
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -91,11 +124,9 @@ class BroadcastScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Daftar Broadcast',
-                  style: theme.textTheme.displayLarge!
-                      .copyWith(color: Colors.white),
-                ),
+                Text('Daftar Broadcast',
+                    style: theme.textTheme.displayLarge!
+                        .copyWith(color: Colors.white)),
                 const SizedBox(height: 6),
                 Text(
                   'Kelola pengumuman resmi untuk seluruh warga.',
@@ -103,6 +134,10 @@ class BroadcastScreen extends StatelessWidget {
                       ?.copyWith(color: Colors.white70),
                 ),
                 const SizedBox(height: 16),
+
+                // ===============================
+                //  TABEL BROADCAST
+                // ===============================
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
@@ -118,40 +153,61 @@ class BroadcastScreen extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: DataTable2(
-                        columnSpacing: 12,
-                        horizontalMargin: 12,
-                        headingRowColor: MaterialStateProperty.all(
-                          colorScheme.primary.withOpacity(0.05),
-                        ),
-                        headingTextStyle: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colorScheme.primary,
-                        ),
-                        columns: const [
-                          DataColumn2(label: Text('Judul')),
-                          DataColumn2(label: Text('Pengirim')),
-                        ],
-                        rows: _broadcastData.map((item) {
-                          return DataRow2(
-                            onTap: () {
-                              context.push(
-                                '/detail-broadcast',
-                                extra: item,
-                              );
-                            },
-                            cells: [
-                              DataCell(
-                                Text(
-                                  item['judul']!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              DataCell(Text(item['pengirim']!)),
+
+                      child: StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: _streamController.stream,
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+
+                          final data = snapshot.data!;
+                          if (data.isEmpty) {
+                            return const Center(
+                                child: Text("Belum ada broadcast"));
+                          }
+
+                          return DataTable2(
+                            columnSpacing: 12,
+                            horizontalMargin: 12,
+                            headingRowColor: MaterialStateProperty.all(
+                              colorScheme.primary.withOpacity(0.05),
+                            ),
+                            headingTextStyle: theme.textTheme.bodyMedium
+                                ?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: colorScheme.primary),
+
+                            columns: const [
+                              DataColumn2(label: Text('Judul')),
+                              DataColumn2(label: Text('Pengirim (ID)')),
                             ],
+
+                            rows: data.map((item) {
+                              return DataRow2(
+                                onTap: () {
+                                  context.pushNamed(
+                                    'detail-broadcast',
+                                    extra: item,
+                                  );
+                                },
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      item['title'] ?? "",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text((item['sender_id'] ?? '-').toString()),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
                           );
-                        }).toList(),
+                        },
                       ),
                     ),
                   ),

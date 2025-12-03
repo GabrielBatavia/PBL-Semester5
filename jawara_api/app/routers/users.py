@@ -6,7 +6,7 @@ from ..deps import get_db, get_current_user
 from .. import models
 from ..schemas import users as user_schemas
 from ..schemas import logs as log_schemas
-from ..models import ActivityLog
+# from ..models import ActivityLog 
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
