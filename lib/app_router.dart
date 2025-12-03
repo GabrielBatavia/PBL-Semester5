@@ -235,10 +235,35 @@ final appRouter = GoRouter(
     ),
 
     // ====== Broadcast ======
-    GoRoute(path: '/broadcast', name: 'broadcast', builder: (c,s) => const BroadcastScreen()),
-    GoRoute(path: '/tambah-broadcast', name: 'tambah-broadcast', builder: (c,s) => const TambahBroadcastScreen()),
-    GoRoute(path: '/detail-broadcast', name: 'detail-broadcast', builder: (c,s) => DetailBroadcastScreen(broadcastData: s.extra as Map<String, dynamic>)),
-    GoRoute(path: '/edit-broadcast', name: 'edit-broadcast', builder: (c,s) => EditBroadcastScreen(broadcastData: s.extra as Map<String, dynamic>)),
+    GoRoute(
+      path: '/broadcast',
+      name: 'broadcast',
+      builder: (context, state) => const BroadcastScreen(),
+    ),
+
+    GoRoute(
+      path: '/tambah-broadcast',
+      name: 'tambah-broadcast',
+      builder: (context, state) => const TambahBroadcastScreen(),
+    ),
+
+    GoRoute(
+      path: '/detail-broadcast',
+      name: 'detail-broadcast',
+      builder: (context, state) {
+        final data = state.extra as Map<String, dynamic>;
+        return DetailBroadcastScreen(broadcastData: data);
+      },
+    ),
+
+    GoRoute(
+      path: '/edit-broadcast',
+      name: 'edit-broadcast',
+      builder: (context, state) {
+        final data = state.extra as Map<String, dynamic>;
+        return EditBroadcastScreen(broadcastData: data);
+      },
+    ),
 
     GoRoute(
       path: '/log-aktivitas',
