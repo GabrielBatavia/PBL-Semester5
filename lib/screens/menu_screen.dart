@@ -136,7 +136,7 @@ class _MenuContent extends StatelessWidget {
         'key': 'laporan',
         'icon': Icons.assessment,
         'title': 'Laporan Keuangan',
-        'action': () => showSubMenuKeuangan(context),
+        'action': () => context.push('/menu-laporan-keuangan'),
       },
       {
         'key': 'broadcast',

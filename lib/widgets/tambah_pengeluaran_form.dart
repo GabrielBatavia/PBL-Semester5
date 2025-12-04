@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:jawaramobile_1/services/expenses_service.dart';
 
 class TambahPengeluaranForm extends StatefulWidget {
   const TambahPengeluaranForm({super.key});
@@ -11,13 +13,17 @@ class TambahPengeluaranForm extends StatefulWidget {
 }
 
 class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
-  // Kunci global untuk mengidentifikasi dan memvalidasi form
   final _formKey = GlobalKey<FormState>();
 
-  String? selectedKategori;
-  File? _receiptImage;
+  final TextEditingController _namaController = TextEditingController();
+  final TextEditingController _nominalController = TextEditingController();
   final TextEditingController _tanggalController = TextEditingController();
+
+  String? selectedKategori;
+  DateTime? _selectedDate;
+  File? _receiptImage;
   final ImagePicker _picker = ImagePicker();
+  bool _isSubmitting = false;
 
   final List<String> kategori = [
     'Operasional RT/RW',
@@ -31,6 +37,8 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
 
   @override
   void dispose() {
+    _namaController.dispose();
+    _nominalController.dispose();
     _tanggalController.dispose();
     super.dispose();
   }
@@ -43,21 +51,85 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
       lastDate: DateTime(2030),
     );
     if (picked != null) {
-      String formattedDate = DateFormat('dd MMM yyyy').format(picked);
       setState(() {
-        _tanggalController.text = formattedDate;
+        _selectedDate = picked;
+        _tanggalController.text = DateFormat('dd MMM yyyy').format(picked);
       });
     }
   }
 
-  void _submitForm() {
-    // Jalankan validasi pada semua form field
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Jika semua valid, lanjutkan proses penyimpanan data
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Menyimpan data...')));
-      // TODO: Tambahkan logika untuk mengirim data ke server/database
+      if (_isSubmitting) return;
+
+      setState(() {
+        _isSubmitting = true;
+      });
+
+      try {
+        final nama = _namaController.text.trim();
+        final kategoriVal = selectedKategori ?? '';
+        final nominal = double.parse(_nominalController.text.replaceAll('.', ''));
+
+        // Add debug print
+        debugPrint('=== SUBMIT FORM ===');
+        debugPrint('Name: $nama');
+        debugPrint('Category: $kategoriVal');
+        debugPrint('Amount: $nominal');
+        debugPrint('Selected Date: $_selectedDate');
+
+        if (_selectedDate == null) {
+          throw Exception('Tanggal belum dipilih');
+        }
+
+        // Format date to YYYY-MM-DD for backend
+        final dateFormatted = DateFormat('yyyy-MM-dd').format(_selectedDate!);
+        debugPrint('Date formatted: $dateFormatted');
+
+        // Call backend API
+        debugPrint('Calling API...');
+        final result = await ExpenseService.createExpense(
+          name: nama,
+          category: kategoriVal,
+          amount: nominal,
+          date: dateFormatted,
+          proofImageUrl: null,
+        );
+
+        debugPrint('API response: $result');
+
+        if (!mounted) return;
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pengeluaran berhasil ditambahkan!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to pengeluaran screen
+        debugPrint('Navigating back...');
+        context.go('/pengeluaran');
+
+      } catch (e) {
+        debugPrint('ERROR: $e');
+        
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal menyimpan: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isSubmitting = false;
+          });
+        }
+      }
     }
   }
 
@@ -71,8 +143,9 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. Validasi Nama Pengeluaran
+          // 1. Nama Pengeluaran
           TextFormField(
+            controller: _namaController,
             decoration: InputDecoration(
               labelText: 'Nama Pengeluaran',
               border: OutlineInputBorder(
@@ -91,7 +164,7 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
           ),
           const SizedBox(height: 20),
 
-          // 2. Validasi Kategori
+          // 2. Kategori
           DropdownButtonFormField<String>(
             value: selectedKategori,
             hint: const Text("Pilih Kategori"),
@@ -122,8 +195,9 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
           ),
           const SizedBox(height: 20),
 
-          // 3. Validasi Nominal
+          // 3. Nominal
           TextFormField(
+            controller: _nominalController,
             decoration: InputDecoration(
               labelText: 'Nominal',
               border: OutlineInputBorder(
@@ -139,7 +213,6 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
               if (value == null || value.isEmpty) {
                 return 'Nominal tidak boleh kosong';
               }
-              // Cek apakah input hanya berisi angka
               if (int.tryParse(value.replaceAll('.', '')) == null) {
                 return 'Nominal harus berupa angka';
               }
@@ -148,7 +221,7 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
           ),
           const SizedBox(height: 20),
 
-          // 4. Validasi Tanggal
+          // 4. Tanggal
           TextFormField(
             controller: _tanggalController,
             decoration: InputDecoration(
@@ -180,8 +253,17 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
           const SizedBox(height: 40),
 
           ElevatedButton(
-            onPressed: _submitForm, // Panggil fungsi submit saat ditekan
-            child: const Text('Simpan'),
+            onPressed: _isSubmitting ? null : _submitForm,
+            child: _isSubmitting
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text('Simpan'),
           ),
         ],
       ),
@@ -189,7 +271,6 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
   }
 
   Widget _buildReceiptPicker(BuildContext context) {
-    // ... (kode ini tidak berubah) ...
     return GestureDetector(
       onTap: () => _pickImage(ImageSource.gallery),
       child: Container(
@@ -200,10 +281,10 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
           color: Colors.grey.shade100,
         ),
         child: _receiptImage == null
-            ? Center(
+            ? const Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.camera_alt_outlined,
                       size: 36,
@@ -223,9 +304,13 @@ class _TambahPengeluaranFormState extends State<TambahPengeluaranForm> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final XFile? picked = await _picker.pickImage(source: source);
-    if (picked != null) {
-      setState(() => _receiptImage = File(picked.path));
+    try {
+      final XFile? picked = await _picker.pickImage(source: source);
+      if (picked != null) {
+        setState(() => _receiptImage = File(picked.path));
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
     }
   }
 }

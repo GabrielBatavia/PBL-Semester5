@@ -1,13 +1,14 @@
 # app/routers/broadcast.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import List
 from ..deps import get_db
 from ..models.broadcast import Broadcast
 from ..schemas.broadcast import BroadcastCreate, BroadcastRead, BroadcastUpdate
 
 router = APIRouter(prefix="/broadcast", tags=["Broadcast"])
 
-@router.get("/", response_model=list[BroadcastRead])
+@router.get("/", response_model=List[BroadcastRead])
 def list_broadcasts(db: Session = Depends(get_db)):
     return db.query(Broadcast).order_by(Broadcast.created_at.desc()).all()
 

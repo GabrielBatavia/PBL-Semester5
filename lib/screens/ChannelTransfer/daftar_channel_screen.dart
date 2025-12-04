@@ -194,8 +194,7 @@ class _DaftarChannelScreenState extends State<DaftarChannelScreen> {
                                       rows: _channels.map((r) {
                                         return DataRow2(
                                           onTap: () {
-                                            // TODO: arahkan ke detail channel jika sudah ada
-                                            context.push('/tambah-channel');
+                                            context.push('/detail-channel', extra: r);
                                           },
                                           cells: [
                                             DataCell(

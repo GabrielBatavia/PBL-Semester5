@@ -1,6 +1,7 @@
 # app/routers/users.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import List
 
 from ..deps import get_db, get_current_user
 from .. import models
@@ -11,7 +12,7 @@ from ..schemas import logs as log_schemas
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.get("/", response_model=list[user_schemas.UserRead])
+@router.get("/", response_model=List[user_schemas.UserRead])
 def list_users(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),

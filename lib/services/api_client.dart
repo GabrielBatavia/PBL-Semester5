@@ -7,7 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 
 class ApiClient {
-  static const String _pcLanBaseUrl = 'http://10.12.14.97:9000';
+  // static const String _pcLanBaseUrl = 'http://10.12.14.97:9000';
+  static const String _pcLanBaseUrl = 'http://192.168.1.4:9000';
   static const String _webBaseUrl   = 'http://127.0.0.1:9000';
   static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';
 

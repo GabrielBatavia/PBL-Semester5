@@ -7,7 +7,7 @@ from pathlib import Path
 from .routers import broadcast
 
 from .db import Base, engine
-from .routers import auth, users, logs, marketplace, ai_agent   # ← TAMBAHKAN marketplace
+from .routers import auth, users, logs, marketplace, ai_agent, broadcast, expenses, payment_channels
 
 # create tables kalau belum ada
 Base.metadata.create_all(bind=engine)
@@ -55,3 +55,5 @@ app.include_router(logs.router)
 app.include_router(ai_agent.router)
 app.include_router(marketplace.router)     
 app.include_router(broadcast.router)
+app.include_router(expenses.router)
+app.include_router(payment_channels.router)

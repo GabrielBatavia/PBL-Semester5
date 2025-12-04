@@ -1,6 +1,8 @@
 // lib/screens/ChannelTransfer/tambah_channel_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/services/payment_channel_service.dart';
 
 class TambahChannelScreen extends StatefulWidget {
   const TambahChannelScreen({super.key});
@@ -14,26 +16,63 @@ class _TambahChannelScreenState extends State<TambahChannelScreen> {
   final _namaCtrl = TextEditingController();
   final _nomorCtrl = TextEditingController();
   final _pemilikCtrl = TextEditingController();
-  final _catatanCtrl = TextEditingController();
+  final _bankNameCtrl = TextEditingController();
   String? _tipe; // bank/ewallet/qris
+  bool _isSubmitting = false;
 
   void _reset() {
     _formKey.currentState?.reset();
     _namaCtrl.clear();
     _nomorCtrl.clear();
     _pemilikCtrl.clear();
-    _catatanCtrl.clear();
+    _bankNameCtrl.clear();
     setState(() => _tipe = null);
   }
 
-  void _simpan() {
+  Future<void> _simpan() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (_isSubmitting) return;
 
-    // TODO: simpan ke server / database
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Channel disimpan')),
-    );
-    Navigator.of(context).pop();
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      await PaymentChannelService.createChannel(
+        name: _namaCtrl.text.trim(),
+        type: _tipe!,
+        accountName: _pemilikCtrl.text.trim(),
+        accountNumber: _nomorCtrl.text.trim(),
+        bankName: _bankNameCtrl.text.trim().isEmpty ? null : _bankNameCtrl.text.trim(),
+        qrisImageUrl: null, // TODO: upload image first if needed
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Channel berhasil ditambahkan!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      context.go('/daftar-channel');
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal menyimpan: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
 
   Widget _field(
@@ -51,7 +90,6 @@ class _TambahChannelScreenState extends State<TambahChannelScreen> {
         validator: validator,
         decoration: InputDecoration(
           labelText: label,
-          // gunakan InputDecorationTheme dari AppTheme (tanpa border manual)
         ),
         style: theme.textTheme.bodyMedium,
       ),
@@ -98,7 +136,7 @@ class _TambahChannelScreenState extends State<TambahChannelScreen> {
     _namaCtrl.dispose();
     _nomorCtrl.dispose();
     _pemilikCtrl.dispose();
-    _catatanCtrl.dispose();
+    _bankNameCtrl.dispose();
     super.dispose();
   }
 
@@ -153,11 +191,11 @@ class _TambahChannelScreenState extends State<TambahChannelScreen> {
                       hint: const Text("-- Pilih Tipe --"),
                       items: const [
                         DropdownMenuItem(
-                            value: 'bank', child: Text('bank')),
+                            value: 'transfer', child: Text('Bank Transfer')),
                         DropdownMenuItem(
-                            value: 'ewallet', child: Text('ewallet')),
+                            value: 'ewallet', child: Text('E-Wallet')),
                         DropdownMenuItem(
-                            value: 'qris', child: Text('qris')),
+                            value: 'qris', child: Text('QRIS')),
                       ],
                       onChanged: (v) => setState(() => _tipe = v),
                       decoration: const InputDecoration(
@@ -174,27 +212,33 @@ class _TambahChannelScreenState extends State<TambahChannelScreen> {
                           (v == null || v.isEmpty) ? "Wajib diisi" : null,
                     ),
                     _field(
-                      "Nama Pemilik",
+                      "Nama Pemilik (A/N)",
                       _pemilikCtrl,
                       validator: (v) =>
                           (v == null || v.isEmpty) ? "Wajib diisi" : null,
                     ),
-                    _uploadPlaceholder("QR"),
-                    _uploadPlaceholder("Thumbnail"),
-                    TextFormField(
-                      controller: _catatanCtrl,
-                      maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: "Catatan (Opsional)",
+                    if (_tipe == 'transfer')
+                      _field(
+                        "Nama Bank (Opsional)",
+                        _bankNameCtrl,
                       ),
-                    ),
+                    _uploadPlaceholder("QR (Opsional)"),
                     const SizedBox(height: 24),
                     Row(
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: _simpan,
-                            child: const Text("Simpan"),
+                            onPressed: _isSubmitting ? null : _simpan,
+                            child: _isSubmitting
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text("Simpan"),
                           ),
                         ),
                         const SizedBox(width: 12),

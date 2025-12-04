@@ -1,5 +1,6 @@
 # app/schemas/auth.py
 from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 
 class TokenResponse(BaseModel):
@@ -16,6 +17,6 @@ class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
     password: str
-    nik: str | None = None
-    phone: str | None = None
-    address: str | None = None
+    nik: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
