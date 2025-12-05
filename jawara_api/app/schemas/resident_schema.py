@@ -10,7 +10,7 @@ class ResidentBase(BaseModel):
     job: Optional[str] = None
     gender: Optional[str] = None
     user_id: Optional[int] = None
-
+    
 
 class ResidentCreate(ResidentBase):
     pass

@@ -31,4 +31,16 @@ class ResidentModel {
       userId: json["user_id"],
     );
   }
+
+  Object? toJson() {
+    return {
+      "name": name,
+      "nik": nik,
+      "birth_date": birthDate,
+      "job": job,
+      "gender": gender,
+      "family_id": familyId,
+    };
+  }
+
 }
