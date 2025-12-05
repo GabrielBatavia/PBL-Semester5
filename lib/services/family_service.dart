@@ -49,6 +49,7 @@ class FamilyService {
   Future<bool> createFamily({
     required String name,
     required int? houseId,
+    required String? status,
   }) async {
     final res = await ApiClient.post(
       '/families',
@@ -69,7 +70,7 @@ class FamilyService {
     required int id,
     required String name,
     required int? houseId,
-    String status = "aktif",
+    required String? status,
   }) async {
     final res = await ApiClient.put(
       '/families/$id',

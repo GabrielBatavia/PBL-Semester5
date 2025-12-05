@@ -41,12 +41,12 @@ class _TabelWargaState extends State<TabelWarga> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text("Data Warga"),
 
       
 
         actions: [
-          
           TextButton.icon(
             onPressed: () async {
               await Navigator.push(
@@ -57,10 +57,16 @@ class _TabelWargaState extends State<TabelWarga> {
               );
               _reload();
             },
-            icon: const Icon(Icons.add, color: Color.fromARGB(255, 122, 142, 228)),
+            icon: const Icon(
+              Icons.add,
+              color: Color.fromARGB(255, 122, 142, 228),
+            ),
             label: const Text(
               "Tambah",
-              style: TextStyle(color: Color.fromARGB(255, 122, 142, 228)),
+              style: TextStyle(
+                color: Color.fromARGB(255, 122, 142, 228),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

@@ -54,7 +54,7 @@ class TabelRumahDetailPage extends StatelessWidget {
                 ),
                 InfoRow(
                   icon: Icons.square_foot,
-                  label: "Area / Luas",
+                  label: "Area / Blok",
                   value: house.area?.toString() ?? "-", 
                 ),
                 InfoRow(
