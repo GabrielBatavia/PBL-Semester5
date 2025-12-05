@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from .routers import broadcast
+from .routers import broadcast 
+from .routers import kegiatan 
 
 from .db import Base, engine
 from .routers import auth, users, logs, marketplace, ai_agent   # ← TAMBAHKAN marketplace
@@ -55,3 +56,4 @@ app.include_router(logs.router)
 app.include_router(ai_agent.router)
 app.include_router(marketplace.router)     
 app.include_router(broadcast.router)
+app.include_router(kegiatan.router)

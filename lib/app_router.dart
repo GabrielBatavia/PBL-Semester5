@@ -219,9 +219,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/detail-kegiatan',
-      name: 'detail-kegiatan',
       builder: (context, state) {
-        final data = state.extra as Map<String, String>;
+        final data = state.extra as Map<String, dynamic>;
         return DetailKegiatanScreen(kegiatanData: data);
       },
     ),
@@ -229,7 +228,7 @@ final appRouter = GoRouter(
       path: '/edit-kegiatan',
       name: 'edit-kegiatan',
       builder: (context, state) {
-        final data = state.extra as Map<String, String>;
+        final data = state.extra as Map<String, dynamic>;
         return EditKegiatanScreen(kegiatanData: data);
       },
     ),

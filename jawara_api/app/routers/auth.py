@@ -1,7 +1,7 @@
 # app/routers/auth.py
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
 
@@ -12,31 +12,36 @@ from ..deps import get_db, get_current_user, SECRET_KEY, ALGORITHM
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# ============================================================
+#   PASSWORD: PAKE PLAIN TEXT (TIDAK DI HASH)
+# ============================================================
 
-def verify_password(plain, hashed):
-    return plain == hashed
+def verify_password(plain: str, stored: str) -> bool:
+    """Bandingkan password plain."""
+    if stored is None:
+        return False
+    return plain == stored
 
 
 def hash_password(password: str) -> str:
-    # JAGA-JAGA: kalau kepanjangan, truncate ke 72 bytes
-    if isinstance(password, bytes):
-        raw = password
-    else:
-        raw = password.encode("utf-8")
-
-    if len(raw) > 72:
-        raw = raw[:72]
-
+    """Tidak hashing apa2 – langsung simpan apa adanya."""
     return password
 
+
+# ============================================================
+#   TOKEN JWT
+# ============================================================
 
 def create_access_token(user_id: int, expires_minutes: int = 60 * 24):
     expire = datetime.utcnow() + timedelta(minutes=expires_minutes)
     to_encode = {"sub": str(user_id), "exp": expire}
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+
+# ============================================================
+#   REGISTER
+# ============================================================
 
 @router.post("/register", response_model=user_schemas.UserRead, status_code=201)
 def register(
@@ -46,32 +51,37 @@ def register(
     existing = db.query(models.User).filter(
         models.User.email == body.email
     ).first()
+
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email sudah terdaftar.",
         )
 
-    # cari role warga (boleh diubah)
-    warga_role = db.query(models.Role).filter(
-        models.Role.name == "warga"
-    ).first()
+    # role default = warga
+    role = db.query(models.Role).filter(models.Role.name == "warga").first()
 
-    user = models.User(
+    new_user = models.User(
         name=body.name,
         email=body.email,
         password_hash=hash_password(body.password),
         nik=body.nik,
         phone=body.phone,
         address=body.address,
-        role_id=warga_role.id if warga_role else None,
-        status="pending",  # menunggu verifikasi admin
+        role_id=role.id if role else None,
+        status="active",         # ← penting: supaya user bisa login
     )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
 
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
+
+
+# ============================================================
+#   LOGIN
+# ============================================================
 
 @router.post("/login", response_model=auth_schemas.TokenResponse)
 def login(
@@ -81,32 +91,36 @@ def login(
     user = db.query(models.User).filter(
         models.User.email == body.email
     ).first()
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email atau password salah.",
         )
 
+    # cek password plain
     if not verify_password(body.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email atau password salah.",
         )
 
-    if user.status not in ("diterima", "active"):
+    # pastikan status user aktif
+    if user.status not in ("active", "diterima"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Akun belum aktif. Hubungi admin.",
+            detail="Akun belum aktif.",
         )
 
+    # buat token JWT
     token = create_access_token(user.id)
     return auth_schemas.TokenResponse(token=token)
 
 
+# ============================================================
+#   CURRENT USER
+# ============================================================
+
 @router.get("/me", response_model=user_schemas.UserRead)
 def get_me(current_user: models.User = Depends(get_current_user)):
-    """
-    Mengembalikan profil user yang sedang login (pakai JWT).
-    Termasuk field role: { id, name, display_name }.
-    """
     return current_user
