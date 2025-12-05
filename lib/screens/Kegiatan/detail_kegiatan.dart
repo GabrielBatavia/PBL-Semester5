@@ -2,9 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/services/kegiatan_service.dart';
 
 class DetailKegiatanScreen extends StatelessWidget {
-  final Map<String, String> kegiatanData;
+  final Map<String, dynamic> kegiatanData;
 
   const DetailKegiatanScreen({super.key, required this.kegiatanData});
 
@@ -29,13 +30,23 @@ class DetailKegiatanScreen extends StatelessWidget {
                 backgroundColor: Theme.of(context).colorScheme.error,
               ),
               child: const Text("Hapus"),
-              onPressed: () {
-                // TODO: hapus dari server
+              onPressed: () async {
+                final id = int.tryParse(kegiatanData['id'] ?? '0') ?? 0;
+
+                final success = await KegiatanService.delete(id);
+
                 Navigator.of(dialogContext).pop();
-                context.pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kegiatan berhasil dihapus')),
-                );
+
+                if (success) {
+                  context.pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Kegiatan berhasil dihapus')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Gagal menghapus kegiatan')),
+                  );
+                }
               },
             ),
           ],
@@ -135,7 +146,7 @@ class DetailKegiatanScreen extends StatelessWidget {
                         _buildDetailRow(
                           context,
                           "Nama Kegiatan",
-                          kegiatanData['nama'] ?? '-',
+                          kegiatanData['name'] ?? '-',
                         ),
                         const Divider(height: 1),
                         _buildDetailRow(
@@ -159,7 +170,7 @@ class DetailKegiatanScreen extends StatelessWidget {
                         _buildDetailRow(
                           context,
                           "Tanggal",
-                          kegiatanData['tanggal'] ?? '-',
+                          kegiatanData['date'] ?? '-',
                         ),
                       ],
                     ),

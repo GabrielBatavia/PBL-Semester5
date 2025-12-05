@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jawaramobile_1/services/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Session {
@@ -59,5 +60,33 @@ class KegiatanService {
     }
 
     return jsonDecode(res.body);
+  }
+
+  // GET DETAIL
+  static Future<Map<String, dynamic>?> getDetail(int id) async {
+    final res = await ApiClient.get('/kegiatan/$id', auth: true);
+
+    if (res.statusCode == 200) {
+      return jsonDecode(res.body) as Map<String, dynamic>;
+    }
+    return null;
+  }
+
+  // CREATE
+  static Future<bool> create(Map<String, dynamic> data) async {
+    final res = await ApiClient.post('/kegiatan', data, auth: true);
+    return res.statusCode == 201;
+  }
+
+  // UPDATE
+  static Future<bool> update(int id, Map<String, dynamic> data) async {
+    final res = await ApiClient.post('/kegiatan/update/$id', data, auth: true);
+    return res.statusCode == 200;
+  }
+
+  // DELETE
+  static Future<bool> delete(int id) async {
+    final res = await ApiClient.post('/kegiatan/delete/$id', {}, auth: true);
+    return res.statusCode == 200;
   }
 }

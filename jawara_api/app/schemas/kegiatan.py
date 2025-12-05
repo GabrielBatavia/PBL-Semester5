@@ -25,10 +25,14 @@ class KegiatanUpdate(BaseModel):
     description: str | None = None
     image_url: str | None = None
 
-class KegiatanRead(KegiatanBase):
+class KegiatanRead(BaseModel):
     id: int
-    created_at: datetime
-    updated_at: datetime
+    name: str
+    kategori: str
+    pj: str
+    lokasi: str
+    tanggal: str
+    deskripsi: str
 
     class Config:
         from_attributes = True

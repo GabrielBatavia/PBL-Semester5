@@ -1,6 +1,7 @@
 // lib/screens/Kegiatan/daftar_kegiatan.dart
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -168,6 +169,10 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
                                 cells: [
                                   DataCell(Text(item['name'] ?? "-")),
                                   DataCell(Text(item['date'] ?? "-")),
+                                  DataCell(Text(item['lokasi'] ?? "-")),
+                                  DataCell(Text(item['pj'] ?? "-")),
+                                  DataCell(Text(item['kategori'] ?? "-")),
+                                  DataCell(Text(item['deskripsi'] ?? "-")),
                                 ],
                               );
                             }).toList(),
