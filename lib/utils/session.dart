@@ -1,9 +1,8 @@
-// lib/utils/session.dart
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionManager {
-  static const String keyUserId = "id";
-  static const String keyRole = "role_id";
+  static const String keyUserId = "user_id";
+  static const String keyRole = "role";
 
   /// Simpan data user setelah login
   static Future<void> saveUserSession({
@@ -21,13 +20,13 @@ class SessionManager {
     return prefs.getInt(keyUserId);
   }
 
-  /// Ambil role user (admin / rt / rw / warga / bendahara)
+  /// Ambil role user
   static Future<String?> getRole() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(keyRole);
   }
 
-  /// Hapus session saat logout
+  /// Hapus session
   static Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(keyUserId);

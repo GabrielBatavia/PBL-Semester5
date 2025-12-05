@@ -24,4 +24,4 @@ class Kegiatan(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     # Relationship → supaya bisa akses user yang membuat kegiatan
-    creator = relationship("User", back_populates="activities")
+    creator = relationship("User", back_populates="kegiatan_list")
