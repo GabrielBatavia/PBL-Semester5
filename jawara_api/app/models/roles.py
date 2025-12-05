@@ -13,4 +13,4 @@ class Role(Base):
     updated_at = Column(DateTime, nullable=True)
 
     # Relasi ke users
-    users = relationship("User", back_populates="role")
+    users = relationship("User", back_populates="roles")
