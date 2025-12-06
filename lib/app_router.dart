@@ -25,6 +25,9 @@ import 'package:jawaramobile_1/screens/pengeluaran/pengeluaran_screen.dart';
 import 'package:jawaramobile_1/screens/pengeluaran/tambah_pengeluaran_screen.dart';
 import 'package:jawaramobile_1/screens/pengeluaran/detail_pengeluaran_screen.dart';
 
+// ====== Laporan Bulanan RW ======
+import 'package:jawaramobile_1/screens/LaporanBulanan/laporan_bulanan_rw_screen.dart';
+
 // ====== Laporan Keuangan ======
 import 'package:jawaramobile_1/screens/LaporanKeuangan/semua_pengeluaran.dart';
 import 'package:jawaramobile_1/screens/LaporanKeuangan/detail_pengeluaran.dart';
@@ -167,6 +170,14 @@ final appRouter = GoRouter(
         return DetailPengeluaranScreen(pengeluaranData: data);
       },
     ),
+
+    // ====== Laporan Bulanan RW ======
+    GoRoute(
+      path: '/laporan-bulanan-rw',
+      name: 'laporan-bulanan-rw',
+      builder: (context, state) => const LaporanBulananRwScreen(),
+    ),
+
 
     // ====== Laporan Keuangan ======
     GoRoute(
