@@ -65,3 +65,56 @@ class PaymentChannel(Base):
     is_active = Column(Integer, default=1)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class FeeCategory(Base):
+    __tablename__ = "fee_categories"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    name = Column(String(150), nullable=False)
+    type = Column(String(50), nullable=False)
+    default_amount = Column(DECIMAL(18, 2), default=0)
+    is_active = Column(Integer, default=1)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class Family(Base):
+    __tablename__ = "families"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    name = Column(String(150), nullable=False)
+    house_id = Column(BigInteger)
+    status = Column(String(20), default="aktif")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class Bill(Base):
+    __tablename__ = "bills"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    family_id = Column(BigInteger, ForeignKey("families.id"))
+    category_id = Column(BigInteger, ForeignKey("fee_categories.id"))
+    code = Column(String(50), nullable=False)
+    amount = Column(DECIMAL(18, 2), nullable=False)
+    period_start = Column(Date, nullable=False)
+    period_end = Column(Date)
+    status = Column(String(20), default="belum_lunas")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    family = relationship("Family")
+    category = relationship("FeeCategory")
+
+class IncomeTransaction(Base):
+    __tablename__ = "income_transactions"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    category_id = Column(BigInteger)
+    family_id = Column(BigInteger)
+    name = Column(String(150), nullable=False)
+    type = Column(String(100))
+    amount = Column(DECIMAL(18, 2), nullable=False)
+    date = Column(Date, nullable=False)
+    proof_image_url = Column(Text)
+    created_by = Column(BigInteger, ForeignKey("users.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

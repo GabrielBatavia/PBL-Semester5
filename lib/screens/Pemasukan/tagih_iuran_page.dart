@@ -2,10 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../widgets/pemasukan/tagih_iuran/tagih_iuran_header.dart';
-import '../../widgets/pemasukan/tagih_iuran/jenis_iuran_section.dart';
-import '../../widgets/pemasukan/tagih_iuran/tanggal_section.dart';
-import '../../widgets/pemasukan/tagih_iuran/tagih_iuran_actions.dart';
+import 'package:jawaramobile_1/services/fee_category_service.dart';
+import 'package:jawaramobile_1/services/bill_service.dart';
+import 'package:intl/intl.dart';
 
 class TagihIuranPage extends StatefulWidget {
   const TagihIuranPage({super.key});
@@ -15,74 +14,116 @@ class TagihIuranPage extends StatefulWidget {
 }
 
 class _TagihIuranPageState extends State<TagihIuranPage> {
-  String? _selectedIuran;
-  DateTime? _selectedDate;
+  List<Map<String, dynamic>> _categories = [];
+  int? _selectedCategoryId;
+  DateTime? _periodStart;
+  DateTime? _periodEnd;
+  double _amount = 0;
+  bool _isLoading = false;
+  bool _isLoadingCategories = true;
 
-  final List<Map<String, String>> _availableIuran = [
-    {
-      "no": "1",
-      "nama": "Bersih Desa",
-      "jenis": "Iuran Bulanan",
-      "nominal": "Rp 10.000",
-    },
-    {
-      "no": "2",
-      "nama": "Sumbangan Acara",
-      "jenis": "Iuran Khusus",
-      "nominal": "Rp 20.000",
-    },
-    {
-      "no": "3",
-      "nama": "Sewa Lapangan",
-      "jenis": "Iuran Khusus",
-      "nominal": "Rp 10.000",
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
 
-  void _selectDate(BuildContext context) async {
+  Future<void> _loadCategories() async {
+    try {
+      final categories = await FeeCategoryService.getCategories();
+      setState(() {
+        _categories = categories;
+        _isLoadingCategories = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingCategories = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat kategori: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  void _selectPeriodStart(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null) {
       setState(() {
-        _selectedDate = picked;
+        _periodStart = picked;
       });
     }
   }
 
-  void _tagihIuran() {
-    if (_selectedIuran == null || _selectedDate == null) {
+  void _selectPeriodEnd(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _periodStart ?? DateTime.now(),
+      firstDate: _periodStart ?? DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null) {
+      setState(() {
+        _periodEnd = picked;
+      });
+    }
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'Pilih Tanggal';
+    return DateFormat('dd MMM yyyy').format(date);
+  }
+
+  void _tagihIuran() async {
+    if (_selectedCategoryId == null || _periodStart == null || _periodEnd == null || _amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Harap pilih jenis iuran dan tanggal"),
+          content: Text("Harap lengkapi semua field"),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Iuran berhasil ditagih ke semua keluarga aktif"),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
-  void _resetForm() {
     setState(() {
-      _selectedIuran = null;
-      _selectedDate = null;
+      _isLoading = true;
     });
-  }
 
-  Map<String, String>? get _selectedIuranData {
-    if (_selectedIuran == null) return null;
-    return _availableIuran
-        .firstWhere((iuran) => iuran['no'] == _selectedIuran);
+    try {
+      final periodStartStr = DateFormat('yyyy-MM-dd').format(_periodStart!);
+      final periodEndStr = DateFormat('yyyy-MM-dd').format(_periodEnd!);
+
+      final result = await BillService.createBillsForAllFamilies(
+        categoryId: _selectedCategoryId!,
+        amount: _amount,
+        periodStart: periodStartStr,
+        periodEnd: periodEndStr,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Iuran berhasil ditagih'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      context.go('/daftar-tagihan');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -111,52 +152,147 @@ class _TagihIuranPageState extends State<TagihIuranPage> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.96),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Tagih Iuran Warga',
+                  style: theme.textTheme.displayLarge?.copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Buat tagihan iuran untuk semua keluarga aktif.',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white70),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.98),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const TagihIuranHeader(),
-                  const SizedBox(height: 24),
-                  JenisIuranSection(
-                    availableIuran: _availableIuran,
-                    selectedIuran: _selectedIuran,
-                    selectedIuranData: _selectedIuranData,
-                    onIuranChanged: (value) {
-                      setState(() {
-                        _selectedIuran = value;
-                      });
-                    },
-                    onIuranCleared: () {
-                      setState(() {
-                        _selectedIuran = null;
-                      });
-                    },
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: _isLoadingCategories
+                        ? const Center(child: CircularProgressIndicator())
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Pilih Kategori Iuran', style: theme.textTheme.titleMedium),
+                              const SizedBox(height: 12),
+                              DropdownButtonFormField<int>(
+                                value: _selectedCategoryId,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Pilih kategori iuran',
+                                ),
+                                items: _categories.map((cat) {
+                                  return DropdownMenuItem<int>(
+                                    value: cat['id'],
+                                    child: Text(cat['name']),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedCategoryId = value;
+                                    final cat = _categories.firstWhere((c) => c['id'] == value);
+                                    _amount = (cat['default_amount'] as num).toDouble();
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              Text('Nominal', style: theme.textTheme.titleMedium),
+                              const SizedBox(height: 12),
+                              TextField(
+                                controller: TextEditingController(text: _amount.toString()),
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  prefixText: 'Rp ',
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _amount = double.tryParse(value) ?? 0;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              Text('Periode Awal', style: theme.textTheme.titleMedium),
+                              const SizedBox(height: 12),
+                              InkWell(
+                                onTap: () => _selectPeriodStart(context),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(_formatDate(_periodStart)),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Text('Periode Akhir', style: theme.textTheme.titleMedium),
+                              const SizedBox(height: 12),
+                              InkWell(
+                                onTap: () => _selectPeriodEnd(context),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(_formatDate(_periodEnd)),
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _selectedCategoryId = null;
+                                          _periodStart = null;
+                                          _periodEnd = null;
+                                          _amount = 0;
+                                        });
+                                      },
+                                      child: const Text('Reset'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    flex: 2,
+                                    child: ElevatedButton(
+                                      onPressed: _isLoading ? null : _tagihIuran,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: colorScheme.primary,
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                      ),
+                                      child: _isLoading
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                              ),
+                                            )
+                                          : const Text('Tagih Iuran', style: TextStyle(color: Colors.white)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                   ),
-                  const SizedBox(height: 24),
-                  TanggalSection(
-                    selectedDate: _selectedDate,
-                    onDateSelected: () => _selectDate(context),
-                  ),
-                  const SizedBox(height: 32),
-                  TagihIuranActions(
-                    onReset: _resetForm,
-                    onTagih: _tagihIuran,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
