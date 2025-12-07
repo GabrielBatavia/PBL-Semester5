@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.deps import get_db
-from app.models import House, Family
+from  .. import models
 from app.schemas.house_schema import HouseCreate, HouseOut, HouseUpdate 
 
 router = APIRouter(prefix="/houses", tags=["Houses"])
@@ -12,30 +12,30 @@ router = APIRouter(prefix="/houses", tags=["Houses"])
 # GET ALL
 @router.get("/", response_model=list[HouseOut])
 def get_houses(search: str | None = None, db: Session = Depends(get_db)):
-    query = db.query(House)
+    query = db.query(models.House)
 
     if search:
         search_term = f"%{search}%"
         query = query.filter(
-            House.address.like(search_term) |
-            House.area.like(search_term)
+            models.House.address.like(search_term) |
+            models.House.like(search_term)
         )
     return query.all()
 
 # GET BY ID
 @router.get("/{id}", response_model=HouseOut)
 def get_house(id: int, db: Session = Depends(get_db)):
-    return db.query(House).filter(House.id == id).first()
+    return db.query(models.House).filter(models.House.id == id).first()
 
 @router.get("/", response_model=list[HouseOut])
 def get_houses(search: str | None = None, db: Session = Depends(get_db)):
-    query = db.query(House)
+    query = db.query(models.House)
 
     if search:
         search_term = f"%{search}%"
         query = query.filter(
-            House.address.like(search_term) |
-            House.area.like(search_term)
+            models.House.address.like(search_term) |
+            models.House.like(search_term)
         )
     return query.all()
 
@@ -43,7 +43,7 @@ def get_houses(search: str | None = None, db: Session = Depends(get_db)):
 # CREATE
 @router.post("/", response_model=HouseCreate)
 def create_house(payload: HouseCreate, db: Session = Depends(get_db)):
-    new_house = House(**payload.dict())
+    new_house = models.House(**payload.dict())
     db.add(new_house)
     db.commit()
     db.refresh(new_house)
@@ -52,7 +52,7 @@ def create_house(payload: HouseCreate, db: Session = Depends(get_db)):
 # UPDATE
 @router.put("/{id}", response_model=HouseUpdate)
 def update_house(id: int, payload: HouseCreate, db: Session = Depends(get_db)):
-    house = db.query(House).filter(House.id == id).first()
+    house = db.query(models.House).filter(models.House.id == id).first()
     if not house:
         return None
 
@@ -66,7 +66,7 @@ def update_house(id: int, payload: HouseCreate, db: Session = Depends(get_db)):
 # DELETE
 @router.delete("/{id}")
 def delete_house(id: int, db: Session = Depends(get_db)):
-    house = db.query(House).filter(House.id == id).first()
+    house = db.query(models.House).filter(models.House.id == id).first()
     if not house:
         return {"deleted": False}
 
@@ -76,5 +76,5 @@ def delete_house(id: int, db: Session = Depends(get_db)):
 
 @router.get("/{id}/families")
 def get_families_by_house(id: int, db: Session = Depends(get_db)):
-    families = db.query(Family).filter(Family.house_id == id).all()
+    families = db.query(models.Family).filter(models.Family.house_id == id).all()
     return families
