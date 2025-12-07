@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.deps import get_db
-from app.models import Resident
+from .. import models
 from app.schemas.resident_schema import ResidentCreate, ResidentUpdate, ResidentOut
 
 router = APIRouter(prefix="/residents", tags=["Residents"])
@@ -10,13 +10,13 @@ router = APIRouter(prefix="/residents", tags=["Residents"])
 # GET BY ID
 @router.get("/{id}", response_model=ResidentOut)
 def get_resident(id: int, db: Session = Depends(get_db)):
-    return db.query(Resident).filter(Resident.id == id).first()
+    return db.query(models.Resident).filter(models.Resident.id == id).first()
 
 
 # CREATE
 @router.post("/", response_model=ResidentOut)
 def create_resident(payload: ResidentCreate, db: Session = Depends(get_db)):
-    new_resident = Resident(**payload.dict())
+    new_resident = models.Resident(**payload.dict())
     db.add(new_resident)
     db.commit()
     db.refresh(new_resident)
@@ -26,7 +26,7 @@ def create_resident(payload: ResidentCreate, db: Session = Depends(get_db)):
 # UPDATE
 @router.put("/{id}", response_model=ResidentOut)
 def update_resident(id: int, payload: ResidentUpdate, db: Session = Depends(get_db)):
-    res = db.query(Resident).filter(Resident.id == id).first()
+    res = db.query(models.Resident).filter(models.Resident.id == id).first()
     if not res:
         return None
 
@@ -39,13 +39,13 @@ def update_resident(id: int, payload: ResidentUpdate, db: Session = Depends(get_
 
 @router.get("/", response_model=list[ResidentOut])
 def get_residents(search: str | None = None, db: Session = Depends(get_db)):
-    query = db.query(Resident)
+    query = db.query(models.Resident)
 
     if search:
         search_term = f"%{search}%"
         query = query.filter(
-            Resident.name.like(search_term) |
-            Resident.nik.like(search_term)
+            models.Resident.name.like(search_term) |
+            models.Resident.nik.like(search_term)
         )
 
     return query.all()
@@ -54,7 +54,7 @@ def get_residents(search: str | None = None, db: Session = Depends(get_db)):
 # DELETE
 @router.delete("/{id}")
 def delete_resident(id: int, db: Session = Depends(get_db)):
-    res = db.query(Resident).filter(Resident.id == id).first()
+    res = db.query(models.Resident).filter(models.Resident.id == id).first()
     if not res:
         return {"deleted": False}
 

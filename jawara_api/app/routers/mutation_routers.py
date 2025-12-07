@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.deps import get_db
-from app.models import Mutasi, House, Family
+from .. import models
 from app.schemas.mutation_schema import MutasiCreate, MutasiUpdate, MutasiOut
 
 router = APIRouter(prefix="/mutasi", tags=["Mutasi"])
@@ -13,8 +13,8 @@ router = APIRouter(prefix="/mutasi", tags=["Mutasi"])
 @router.get("/", response_model=list[MutasiOut])
 def get_all(db: Session = Depends(get_db)):
     query = (
-        db.query(Mutasi, Family.name.label("family_name"))
-        .join(Family, Mutasi.family_id == Family.id)
+        db.query(models.Mutasi, models.Family.name.label("family_name"))
+        .join(models.Family, models.Mutasi.family_id == models.Family.id)
         .all()
     )
 
@@ -41,14 +41,14 @@ def get_all(db: Session = Depends(get_db)):
 @router.post("/", response_model=MutasiOut)
 def create_mutasi(data: MutasiCreate, db: Session = Depends(get_db)):
 
-    family = db.query(Family).filter(Family.id == data.family_id).first()
+    family = db.query(models.Family).filter(models.Family.id == data.family_id).first()
     if not family:
         raise HTTPException(status_code=404, detail="Family not found")
 
     # Buat rumah baru jika alamat baru belum ada
-    new_house = db.query(House).filter(House.address == data.new_address).first()
+    new_house = db.query(models.House).filter(models.House.address == data.new_address).first()
     if not new_house:
-        new_house = House(address=data.new_address, area=None, status="aktif")
+        new_house = models.House(address=data.new_address, area=None, status="aktif")
         db.add(new_house)
         db.commit()
         db.refresh(new_house)
@@ -58,7 +58,7 @@ def create_mutasi(data: MutasiCreate, db: Session = Depends(get_db)):
     db.commit()
 
     # Simpan mutasi
-    mutasi = Mutasi(**data.model_dump())
+    mutasi = models.Mutasi(**data.model_dump())
     db.add(mutasi)
     db.commit()
     db.refresh(mutasi)
@@ -83,9 +83,9 @@ def create_mutasi(data: MutasiCreate, db: Session = Depends(get_db)):
 @router.get("/{id}", response_model=MutasiOut)
 def get_by_id(id: int, db: Session = Depends(get_db)):
     query = (
-        db.query(Mutasi, Family.name.label("family_name"))
-        .join(Family, Mutasi.family_id == Family.id)
-        .filter(Mutasi.id == id)
+        db.query(models.Mutasi, models.Family.name.label("family_name"))
+        .join(models.Family, models.Mutasi.family_id == models.Family.id)
+        .filter(models.Mutasi.id == id)
         .first()
     )
 
@@ -113,7 +113,7 @@ def get_by_id(id: int, db: Session = Depends(get_db)):
 # ============================================================
 @router.put("/{id}", response_model=MutasiOut)
 def update(id: int, payload: MutasiUpdate, db: Session = Depends(get_db)):
-    q = db.query(Mutasi).filter(Mutasi.id == id)
+    q = db.query(models.Mutasi).filter(models.Mutasi.id == id)
     data = q.first()
     if not data:
         raise HTTPException(404, "Mutasi not found")
@@ -124,7 +124,7 @@ def update(id: int, payload: MutasiUpdate, db: Session = Depends(get_db)):
     updated = q.first()
 
     # Ambil nama family
-    family = db.query(Family).filter(Family.id == updated.family_id).first()
+    family = db.query(models.Family).filter(models.Family.id == updated.family_id).first()
 
     return MutasiOut(
         id=updated.id,
@@ -145,7 +145,7 @@ def update(id: int, payload: MutasiUpdate, db: Session = Depends(get_db)):
 # ============================================================
 @router.delete("/{id}")
 def delete(id: int, db: Session = Depends(get_db)):
-    q = db.query(Mutasi).filter(Mutasi.id == id)
+    q = db.query(models.Mutasi).filter(models.Mutasi.id == id)
     data = q.first()
     if not data:
         raise HTTPException(404, "Mutasi not found")
