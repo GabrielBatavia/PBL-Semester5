@@ -65,6 +65,7 @@ import 'package:jawaramobile_1/screens/marketplace/add_marketplace_item_screen.d
 // ====== Lainnya ======
 import 'package:jawaramobile_1/screens/penerimaan_warga_screen.dart';
 import 'package:jawaramobile_1/screens/dashboard_aspirasi.dart';
+import 'models/mutations_model.dart';
 
 
 final appRouter = GoRouter(
@@ -318,17 +319,20 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/mutasi',
       name: 'mutasi',
-      builder: (context, state) => MutasiPage(),
+      builder: (context, state) => TabelMutasi(),
     ),
 
     GoRoute(
       path: '/mutasi-detail',
       name: 'mutasi-detail',
       builder: (context, state) {
-        final data = state.extra as Map<String, dynamic>;
-        return MutasiDetailPage(data: data);
-      },
+        final raw = state.extra as Map<String, dynamic>;
+        final mutasi = MutasiModel.fromJson(raw); // FIX: convert map → model
+
+        return MutasiDetailPage(data: mutasi);
+      },  
     ),
+    
     GoRoute(
       path: '/dashboard-aspirasi',
       name: 'dashboard-aspirasi',
