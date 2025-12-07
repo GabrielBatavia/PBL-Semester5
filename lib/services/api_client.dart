@@ -8,8 +8,8 @@ import 'dart:io' show Platform;
 
 class ApiClient {
   // static const String _pcLanBaseUrl = 'http://10.12.14.97:9000';
-  // static const String _pcLanBaseUrl = 'http://192.168.1.4:9000';
-  static const String _pcLanBaseUrl = 'http://192.168.1.102:9000';
+  static const String _pcLanBaseUrl = 'http://192.168.1.4:9000';
+  // static const String _pcLanBaseUrl = 'http://192.168.1.100:9000';
   static const String _webBaseUrl   = 'http://127.0.0.1:9000';
   static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';
 
@@ -22,7 +22,7 @@ class ApiClient {
     return _pcLanBaseUrl;
   }
 
-  static Future<String?> _getToken() async {
+  static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
@@ -48,7 +48,7 @@ class ApiClient {
     final headers = <String, String>{'Content-Type': 'application/json'};
 
     if (auth) {
-      final token = await _getToken();
+      final token = await getToken();
       if (token != null && token.isNotEmpty) {
         headers['Authorization'] = 'Bearer $token';
       }
@@ -78,7 +78,7 @@ class ApiClient {
     final headers = <String, String>{'Content-Type': 'application/json'};
 
     if (auth) {
-      final token = await _getToken();
+      final token = await getToken();
       if (token != null && token.isNotEmpty) {
         headers['Authorization'] = 'Bearer $token';
       }
@@ -88,6 +88,37 @@ class ApiClient {
       debugPrint('GET  $uri');
       final resp = await http
           .get(uri, headers: headers)
+          .timeout(const Duration(seconds: 10));
+
+      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠ Timeout ke $uri');
+      rethrow;
+    }
+  }
+
+  // ─────────────────────────────────────────────
+
+  static Future<http.Response> patch(
+    String path,
+    Map<String, dynamic> body, {
+    bool auth = false,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final headers = <String, String>{'Content-Type': 'application/json'};
+
+    if (auth) {
+      final token = await getToken();
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+    }
+
+    try {
+      debugPrint('PATCH $uri');
+      final resp = await http
+          .patch(uri, headers: headers, body: jsonEncode(body))
           .timeout(const Duration(seconds: 10));
 
       debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');

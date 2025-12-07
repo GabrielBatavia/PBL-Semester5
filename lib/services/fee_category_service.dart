@@ -38,4 +38,17 @@ class FeeCategoryService {
       throw Exception(error['detail'] ?? 'Failed to create category');
     }
   }
+
+  static Future<void> updateStatus(int id, int isActive) async {
+    final response = await ApiClient.patch(
+      '/fee-categories/$id/status',
+      {'is_active': isActive},
+      auth: true,
+    );
+
+    if (response.statusCode != 200) {
+      final error = json.decode(response.body);
+      throw Exception(error['detail'] ?? 'Failed to update status');
+    }
+  }
 }

@@ -42,4 +42,21 @@ class BillService {
       throw Exception(error['detail'] ?? 'Failed to create bills');
     }
   }
+
+  static Future<Map<String, dynamic>> sendBillNotifications(List<int> billIds) async {
+    final response = await ApiClient.post(
+      '/bills/send-notifications/',
+      {
+        'bill_ids': billIds,
+      },
+      auth: true,
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      final error = json.decode(response.body);
+      throw Exception(error['detail'] ?? 'Failed to send notifications');
+    }
+  }
 }

@@ -1,5 +1,5 @@
 # jawara_api/app/routers/fee_categories.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -25,15 +25,17 @@ class FeeCategoryCreate(BaseModel):
     type: str  # bulanan, insidental, sukarela
     default_amount: float
 
+class FeeCategoryUpdateStatus(BaseModel):
+    is_active: int
+
 @router.get("/", response_model=List[FeeCategoryRead])
 def list_fee_categories(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    """Get all active fee categories"""
+    """Get all fee categories"""
     categories = (
         db.query(models.FeeCategory)
-        .filter(models.FeeCategory.is_active == 1)
         .order_by(models.FeeCategory.name)
         .all()
     )
@@ -58,3 +60,20 @@ def create_fee_category(
     db.refresh(new_category)
     
     return new_category
+
+@router.patch("/{category_id}/status", response_model=FeeCategoryRead)
+def update_category_status(
+    category_id: int,
+    status_update: FeeCategoryUpdateStatus,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """Update fee category status"""
+    category = db.query(models.FeeCategory).filter(models.FeeCategory.id == category_id).first()
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    category.is_active = status_update.is_active
+    db.commit()
+    db.refresh(category)
+    return category
