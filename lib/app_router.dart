@@ -220,9 +220,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/detail-kegiatan',
-      name: 'detail-kegiatan',
       builder: (context, state) {
-        final data = state.extra as Map<String, String>;
+        final data = state.extra as Map<String, dynamic>;
         return DetailKegiatanScreen(kegiatanData: data);
       },
     ),
@@ -230,7 +229,7 @@ final appRouter = GoRouter(
       path: '/edit-kegiatan',
       name: 'edit-kegiatan',
       builder: (context, state) {
-        final data = state.extra as Map<String, String>;
+        final data = state.extra as Map<String, dynamic>;
         return EditKegiatanScreen(kegiatanData: data);
       },
     ),
@@ -241,24 +240,27 @@ final appRouter = GoRouter(
       name: 'broadcast',
       builder: (context, state) => const BroadcastScreen(),
     ),
+
     GoRoute(
       path: '/tambah-broadcast',
       name: 'tambah-broadcast',
       builder: (context, state) => const TambahBroadcastScreen(),
     ),
+
     GoRoute(
       path: '/detail-broadcast',
       name: 'detail-broadcast',
       builder: (context, state) {
-        final data = state.extra as Map<String, String>;
+        final data = state.extra as Map<String, dynamic>;
         return DetailBroadcastScreen(broadcastData: data);
       },
     ),
+
     GoRoute(
       path: '/edit-broadcast',
       name: 'edit-broadcast',
       builder: (context, state) {
-        final data = state.extra as Map<String, String>;
+        final data = state.extra as Map<String, dynamic>;
         return EditBroadcastScreen(broadcastData: data);
       },
     ),

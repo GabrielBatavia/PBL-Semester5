@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+from .routers import broadcast 
+from .routers import kegiatan 
 
 from .db import Base, engine
 from .routers import auth, resident_routers, users, logs, marketplace, ai_agent, family_routers, house_routers, mutation_routers   # ← TAMBAHKAN marketplace
@@ -29,8 +31,9 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_origin_regex=".*",
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -56,3 +59,5 @@ app.include_router(family_routers.router)
 app.include_router(house_routers.router)
 app.include_router(resident_routers.router)
 app.include_router(mutation_routers.router)
+app.include_router(broadcast.router)
+app.include_router(kegiatan.router)
