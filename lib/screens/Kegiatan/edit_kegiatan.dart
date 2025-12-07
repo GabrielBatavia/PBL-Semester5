@@ -5,7 +5,7 @@ import 'package:jawaramobile_1/widgets/kegiatan/tambah_kegiatan_form.dart';
 
 class EditKegiatanScreen extends StatelessWidget {
   // Halaman ini akan menerima data kegiatan yang akan diedit
-  final Map<String, String> kegiatanData;
+  final Map<String, dynamic> kegiatanData;
 
   const EditKegiatanScreen({super.key, required this.kegiatanData});
 
