@@ -1,0 +1,446 @@
+# ========================================
+# JAWARA RT/RW API TESTS - MODUL KEUANGAN
+# ========================================
+# Base URL
+@baseUrl = http://192.168.1.4:9000
+#lakukan login di @name login untuk mendapatkan token
+#isikan token untuk mengaskses per user
+@token = {{login.response.body.access_token}}
+
+# ========================================
+# 1. AUTHENTICATION (Get Token First)
+# ========================================
+
+### Login untuk mendapatkan token
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "bendahara@jawara.com",
+  "password": "123456"
+}
+
+### Register User Baru (Optional)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "bendahara@jawara.com",
+  "password": "bendahara123",
+  "name": "Bendahara RT 01",
+  "role": "bendahara"
+}
+
+
+# ========================================
+# 2. PEMASUKAN - FEE CATEGORIES
+# ========================================
+
+### Get All Fee Categories
+GET {{baseUrl}}/fee-categories/
+Authorization: Bearer {{token}}
+
+### Create Fee Category - Iuran Bulanan
+POST {{baseUrl}}/fee-categories/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Iuran Kebersihan",
+  "type": "bulanan",
+  "default_amount": 50000
+}
+
+### Create Fee Category - Iuran Insidental
+POST {{baseUrl}}/fee-categories/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Iuran 17 Agustus",
+  "type": "insidental",
+  "default_amount": 100000
+}
+
+### Create Fee Category - Iuran Sukarela
+POST {{baseUrl}}/fee-categories/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Sumbangan Masjid",
+  "type": "sukarela",
+  "default_amount": 0
+}
+
+### Update Category Status - Aktifkan (ID: 1)
+PATCH {{baseUrl}}/fee-categories/1/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "is_active": 1
+}
+
+### Update Category Status - Nonaktifkan (ID: 2)
+PATCH {{baseUrl}}/fee-categories/2/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "is_active": 0
+}
+
+
+# ========================================
+# 3. PEMASUKAN - BILLS (TAGIHAN)
+# ========================================
+
+### Get All Bills
+GET {{baseUrl}}/bills/
+Authorization: Bearer {{token}}
+
+### Create Bills for All Families (Bulk Create)
+POST {{baseUrl}}/bills/bulk-create/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category_id": 1,
+  "amount": 50000,
+  "period_start": "2025-01-01",
+  "period_end": "2025-01-31",
+  "status": "belum_lunas"
+}
+
+### Create Bills - Periode Februari
+POST {{baseUrl}}/bills/bulk-create/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category_id": 1,
+  "amount": 50000,
+  "period_start": "2025-02-01",
+  "period_end": "2025-02-28",
+  "status": "belum_lunas"
+}
+
+### Send Bill Notifications (Bulk Notification)
+POST {{baseUrl}}/bills/send-notifications/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "bill_ids": [1, 2, 3, 4, 5]
+}
+
+
+# ========================================
+# 4. PEMASUKAN - INCOME TRANSACTIONS
+# ========================================
+
+### Get All Income Transactions
+GET {{baseUrl}}/income-transactions/
+Authorization: Bearer {{token}}
+
+### Create Income Transaction - Iuran
+POST {{baseUrl}}/income-transactions/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category_id": 1,
+  "family_id": 1,
+  "name": "Iuran Kebersihan Januari",
+  "type": "iuran",
+  "amount": 50000,
+  "date": "2025-01-05"
+}
+
+### Create Income Transaction - Donasi
+POST {{baseUrl}}/income-transactions/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category_id": null,
+  "family_id": null,
+  "name": "Donasi Pembangunan Masjid",
+  "type": "donasi",
+  "amount": 500000,
+  "date": "2025-01-10"
+}
+
+### Create Income Transaction - Lain-lain
+POST {{baseUrl}}/income-transactions/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Penjualan Barang Bekas",
+  "type": "lain_lain",
+  "amount": 150000,
+  "date": "2025-01-15"
+}
+
+
+# ========================================
+# 5. PENGELUARAN - EXPENSES
+# ========================================
+
+### Get All Expenses
+GET {{baseUrl}}/expenses/
+Authorization: Bearer {{token}}
+
+### Create Expense - Operasional
+POST {{baseUrl}}/expenses/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Operasional",
+  "name": "Gaji Satpam Januari",
+  "amount": 1500000,
+  "date": "2025-01-01"
+}
+
+### Create Expense - Pemeliharaan
+POST {{baseUrl}}/expenses/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Pemeliharaan",
+  "name": "Service Pompa Air",
+  "amount": 350000,
+  "date": "2025-01-08"
+}
+
+### Create Expense - Kegiatan
+POST {{baseUrl}}/expenses/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Kegiatan",
+  "name": "Peringatan 17 Agustus",
+  "amount": 2500000,
+  "date": "2025-01-12"
+}
+
+### Create Expense - Lain-lain
+POST {{baseUrl}}/expenses/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Lain-lain",
+  "name": "Pembelian Alat Tulis",
+  "amount": 125000,
+  "date": "2025-01-20"
+}
+
+
+# ========================================
+# 6. LAPORAN KEUANGAN - REPORTS
+# ========================================
+
+### Generate Report - Pemasukan
+GET {{baseUrl}}/reports/generate?report_type=pemasukan&start_date=2025-01-01&end_date=2025-01-31
+Authorization: Bearer {{token}}
+
+### Generate Report - Pengeluaran
+GET {{baseUrl}}/reports/generate?report_type=pengeluaran&start_date=2025-01-01&end_date=2025-01-31
+Authorization: Bearer {{token}}
+
+### Generate Report - Semua (Pemasukan + Pengeluaran)
+GET {{baseUrl}}/reports/generate?report_type=semua&start_date=2025-01-01&end_date=2025-01-31
+Authorization: Bearer {{token}}
+
+### Generate Report - Quarterly
+GET {{baseUrl}}/reports/generate?report_type=semua&start_date=2025-01-01&end_date=2025-03-31
+Authorization: Bearer {{token}}
+
+### Generate Report - Yearly
+GET {{baseUrl}}/reports/generate?report_type=semua&start_date=2025-01-01&end_date=2025-12-31
+Authorization: Bearer {{token}}
+
+
+# ========================================
+# 7. CHANNEL TRANSFER - PAYMENT CHANNELS
+# ========================================
+
+### Get All Payment Channels
+GET {{baseUrl}}/payment-channels/
+Authorization: Bearer {{token}}
+
+### Create Payment Channel - Bank Transfer
+POST {{baseUrl}}/payment-channels/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "BCA - Kas RT",
+  "type": "bank",
+  "account_name": "Kas RT 01 RW 05",
+  "account_number": "1234567890",
+  "bank_name": "BCA"
+}
+
+### Create Payment Channel - E-Wallet
+POST {{baseUrl}}/payment-channels/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "GoPay - Bendahara",
+  "type": "ewallet",
+  "account_name": "Budi Santoso",
+  "account_number": "081234567890"
+}
+
+### Create Payment Channel - QRIS
+POST {{baseUrl}}/payment-channels/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "QRIS Kas RT",
+  "type": "qris",
+  "account_name": "Kas RT 01",
+  "account_number": "-",
+  "qris_image_url": "/static/qris/rt01.jpg"
+}
+
+
+# ========================================
+# 8. INTEGRATION TESTS
+# ========================================
+
+### Test Flow: Create Category → Create Bills → Create Income
+# Step 1: Create Category
+# @name createCategory
+POST {{baseUrl}}/fee-categories/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Test Iuran",
+  "type": "bulanan",
+  "default_amount": 25000
+}
+
+###
+# Step 2: Create Bills menggunakan category_id dari step 1
+@categoryId = {{createCategory.response.body.id}}
+
+POST {{baseUrl}}/bills/bulk-create/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category_id": {{categoryId}},
+  "amount": 25000,
+  "period_start": "2025-01-01",
+  "period_end": "2025-01-31",
+  "status": "belum_lunas"
+}
+
+###
+# Step 3: Create Income Transaction
+POST {{baseUrl}}/income-transactions/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category_id": {{categoryId}},
+  "name": "Pembayaran Test Iuran",
+  "type": "iuran",
+  "amount": 25000,
+  "date": "2025-01-15"
+}
+
+
+# ========================================
+# 9. ERROR HANDLING TESTS
+# ========================================
+
+### Test: Unauthorized Access (No Token)
+GET {{baseUrl}}/fee-categories/
+
+### Test: Invalid Token
+GET {{baseUrl}}/fee-categories/
+Authorization: Bearer invalid_token_here
+
+### Test: Create Category with Invalid Type
+POST {{baseUrl}}/fee-categories/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Invalid Category",
+  "type": "invalid_type",
+  "default_amount": 50000
+}
+
+### Test: Create Bill with Non-existent Category
+POST {{baseUrl}}/bills/bulk-create/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category_id": 99999,
+  "amount": 50000,
+  "period_start": "2025-01-01",
+  "period_end": "2025-01-31",
+  "status": "belum_lunas"
+}
+
+### Test: Generate Report with Invalid Date Range
+GET {{baseUrl}}/reports/generate?report_type=semua&start_date=2025-12-31&end_date=2025-01-01
+Authorization: Bearer {{token}}
+
+### Test: Create Expense with Negative Amount
+POST {{baseUrl}}/expenses/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "Test",
+  "name": "Negative Amount Test",
+  "amount": -50000,
+  "date": "2025-01-01"
+}
+
+
+# ========================================
+# 10. PERFORMANCE TESTS
+# ========================================
+
+### Test: Bulk Create 100 Income Transactions (Load Test)
+# Run this multiple times to test performance
+
+POST {{baseUrl}}/income-transactions/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Load Test Transaction {{$randomInt}}",
+  "type": "lain_lain",
+  "amount": {{$randomInt}},
+  "date": "2025-01-{{$randomInt}}"
+}
+
+
+# ========================================
+# NOTES
+# ========================================
+# 1. Jalankan "Login" terlebih dahulu untuk mendapatkan token
+# 2. Token akan otomatis tersimpan di variable {{token}}
+# 3. Ganti @baseUrl sesuai dengan environment Anda:
+#    - Development: http://192.168.1.4:9000
+#    - Production: https://api.jawara.com
+# 4. Untuk REST Client VS Code: Install extension "REST Client"
+# 5. Untuk Postman: Import file ini sebagai collection
