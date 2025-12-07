@@ -7,7 +7,7 @@ from pathlib import Path
 from .routers import broadcast
 
 from .db import Base, engine
-from .routers import auth, users, logs, marketplace, ai_agent, broadcast, expenses, payment_channels, fee_categories, bills, income_transactions
+from .routers import auth, users, logs, marketplace, ai_agent, broadcast, expenses, payment_channels, fee_categories, bills, income_transactions, reports
 
 # create tables kalau belum ada
 Base.metadata.create_all(bind=engine)
@@ -60,3 +60,4 @@ app.include_router(payment_channels.router)
 app.include_router(fee_categories.router)
 app.include_router(bills.router)
 app.include_router(income_transactions.router)
+app.include_router(reports.router)

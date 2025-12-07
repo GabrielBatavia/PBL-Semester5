@@ -62,13 +62,6 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // opsional: tambah log manual
-        },
-        backgroundColor: colorScheme.primary,
-        child: const Icon(Icons.add),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

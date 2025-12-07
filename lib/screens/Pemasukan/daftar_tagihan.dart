@@ -13,7 +13,9 @@ class DaftarTagihan extends StatefulWidget {
 
 class _DaftarTagihanState extends State<DaftarTagihan> {
   List<Map<String, dynamic>> _bills = [];
+  Set<int> _selectedBills = {}; // Menyimpan ID tagihan yang dipilih
   bool _isLoading = true;
+  bool _isSending = false;
   String? _errorMessage;
 
   @override
@@ -40,6 +42,73 @@ class _DaftarTagihanState extends State<DaftarTagihan> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _sendBillNotifications() async {
+    if (_selectedBills.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih minimal satu tagihan untuk ditagih'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSending = true;
+    });
+
+    try {
+      // Kirim ke backend untuk diproses sebagai notifikasi
+      await BillService.sendBillNotifications(_selectedBills.toList());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${_selectedBills.length} tagihan berhasil dikirim untuk dinotifikasi'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Clear selection
+      setState(() {
+        _selectedBills.clear();
+      });
+
+      // Reload data
+      _loadBills();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal mengirim notifikasi: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
+  }
+
+  void _toggleSelection(int billId) {
+    setState(() {
+      if (_selectedBills.contains(billId)) {
+        _selectedBills.remove(billId);
+      } else {
+        _selectedBills.add(billId);
+      }
+    });
+  }
+
+  void _selectAll() {
+    setState(() {
+      if (_selectedBills.length == _bills.length) {
+        _selectedBills.clear();
+      } else {
+        _selectedBills = _bills.map((bill) => bill['id'] as int).toSet();
+      }
+    });
   }
 
   String _formatCurrency(dynamic amount) {
@@ -115,18 +184,46 @@ class _DaftarTagihanState extends State<DaftarTagihan> {
           onPressed: () => context.go('/menu-pemasukan'),
         ),
         actions: [
+          if (_bills.isNotEmpty)
+            IconButton(
+              icon: Icon(
+                _selectedBills.length == _bills.length 
+                    ? Icons.check_box 
+                    : Icons.check_box_outline_blank
+              ),
+              onPressed: _selectAll,
+              tooltip: 'Pilih Semua',
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadBills,
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/tagih-iuran'),
-        backgroundColor: colorScheme.primary,
-        icon: const Icon(Icons.add),
-        label: const Text('Tagih Iuran'),
-      ),
+      floatingActionButton: _selectedBills.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: _isSending ? null : _sendBillNotifications,
+              backgroundColor: colorScheme.primary,
+              icon: _isSending 
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Icon(Icons.notifications_active),
+              label: Text(_isSending 
+                  ? 'Mengirim...' 
+                  : 'Tagih (${_selectedBills.length})'),
+            )
+          : FloatingActionButton.extended(
+              onPressed: () => context.push('/tagih-iuran'),
+              backgroundColor: colorScheme.secondary,
+              icon: const Icon(Icons.add),
+              label: const Text('Buat Tagihan Baru'),
+            ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -147,9 +244,26 @@ class _DaftarTagihanState extends State<DaftarTagihan> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Pantau status tagihan iuran untuk semua keluarga aktif.',
+                  'Pilih tagihan untuk dikirim notifikasi ke warga.',
                   style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white70),
                 ),
+                if (_selectedBills.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${_selectedBills.length} tagihan dipilih',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 16),
                 Expanded(
                   child: Container(
@@ -196,12 +310,24 @@ class _DaftarTagihanState extends State<DaftarTagihan> {
                                     separatorBuilder: (context, index) => const SizedBox(height: 12),
                                     itemBuilder: (context, index) {
                                       final bill = _bills[index];
+                                      final billId = bill['id'] as int;
+                                      final isSelected = _selectedBills.contains(billId);
+                                      
                                       return Card(
-                                        elevation: 2,
+                                        elevation: isSelected ? 4 : 2,
+                                        color: isSelected ? colorScheme.primary.withOpacity(0.1) : null,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(12),
+                                          side: BorderSide(
+                                            color: isSelected ? colorScheme.primary : Colors.transparent,
+                                            width: 2,
+                                          ),
                                         ),
-                                        child: ListTile(
+                                        child: CheckboxListTile(
+                                          value: isSelected,
+                                          onChanged: (bool? value) {
+                                            _toggleSelection(billId);
+                                          },
                                           contentPadding: const EdgeInsets.all(16),
                                           title: Text(
                                             bill['family_name'] ?? 'Unknown',
@@ -230,31 +356,21 @@ class _DaftarTagihanState extends State<DaftarTagihan> {
                                               ),
                                             ],
                                           ),
-                                          trailing: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          secondary: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                             decoration: BoxDecoration(
                                               color: _getStatusColor(bill['status']).withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(12),
+                                              borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               _getStatusLabel(bill['status']),
                                               style: TextStyle(
                                                 color: _getStatusColor(bill['status']),
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 12,
+                                                fontSize: 10,
                                               ),
                                             ),
                                           ),
-                                          onTap: () {
-                                            context.push('/detail-tagihan', extra: {
-                                              'namaKeluarga': bill['family_name'],
-                                              'jenis': bill['category_name'],
-                                              'kodeTagihan': bill['code'],
-                                              'nominal': _formatCurrency(bill['amount']),
-                                              'periode': '${_formatDate(bill['period_start'])} - ${_formatDate(bill['period_end'])}',
-                                              'status': _getStatusLabel(bill['status']),
-                                            });
-                                          },
                                         ),
                                       );
                                     },

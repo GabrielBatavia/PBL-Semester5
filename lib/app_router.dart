@@ -14,12 +14,12 @@ import 'package:jawaramobile_1/screens/data_warga_rumah.dart';
 
 // ====== Pemasukan ======
 import 'package:jawaramobile_1/screens/Pemasukan/menu_pemasukan.dart'; //aman
-import 'package:jawaramobile_1/screens/Pemasukan/kategori_iuran.dart'; //ngebug
+import 'package:jawaramobile_1/screens/Pemasukan/kategori_iuran.dart'; //done
 import 'package:jawaramobile_1/screens/Pemasukan/detail_kategori_iuran.dart'; //ngebug
-import 'package:jawaramobile_1/screens/Pemasukan/tagih_iuran_page.dart';//ngebug
-import 'package:jawaramobile_1/screens/Pemasukan/daftar_tagihan.dart';//ngebug
-import 'package:jawaramobile_1/screens/Pemasukan/detail_tagihan.dart';//ngebug
-import 'package:jawaramobile_1/screens/Pemasukan/lain_lain.dart';//ngebug
+import 'package:jawaramobile_1/screens/Pemasukan/tagih_iuran_page.dart';//done
+import 'package:jawaramobile_1/screens/Pemasukan/daftar_tagihan.dart';//done
+import 'package:jawaramobile_1/screens/Pemasukan/detail_tagihan.dart';//done
+import 'package:jawaramobile_1/screens/Pemasukan/lain_lain.dart';//done
 
 // ======= dahsboard =============
 //belum ada
@@ -165,13 +165,13 @@ final appRouter = GoRouter(
       builder: (context, state) => const TambahPengeluaranScreen(),
     ),
     GoRoute(
-      path: '/detail-pengeluaran',
-      name: 'detail-pengeluaran',
-      builder: (context, state) {
-        final data = state.extra as Map<String, String>;
-        return DetailPengeluaranScreen(pengeluaranData: data);
-      },
-    ),
+    path: '/detail-pengeluaran',
+    name: 'detail-pengeluaran',
+    builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>; // Change to dynamic
+    return DetailPengeluaranScreen(pengeluaranData: data);
+  },
+),
 
     // ====== Laporan Keuangan ======
     GoRoute(
