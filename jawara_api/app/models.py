@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Column, Integer, String, ForeignKey, DateTime, Text, Float
+    Column, Integer, String, ForeignKey, DateTime, Text, Float, DECIMAL, Date, BigInteger
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -75,3 +75,110 @@ class MarketplaceItem(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     owner = relationship("User", back_populates="marketplace_items")
+
+
+# ==========================================
+# MODUL KEUANGAN - MODELS
+# ==========================================
+
+class FeeCategory(Base):
+    """Model untuk kategori iuran"""
+    __tablename__ = "fee_categories"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    type = Column(String(50), nullable=False)  # bulanan, insidental, sukarela
+    default_amount = Column(DECIMAL(18, 2), nullable=False)
+    is_active = Column(Integer, default=1)  # 1=active, 0=inactive
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    bills = relationship("Bill", back_populates="category")
+
+
+class Family(Base):
+    """Model untuk data keluarga"""
+    __tablename__ = "families"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    head_name = Column(String(255), nullable=False)  # ✅ Ganti dari family_head ke head_name
+    address = Column(String(500), nullable=True)
+    phone = Column(String(50), nullable=True)
+    status = Column(String(50), default="aktif")  # aktif, nonaktif
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    bills = relationship("Bill", back_populates="family")
+    income_transactions = relationship("IncomeTransaction", back_populates="family")
+
+
+class Bill(Base):
+    """Model untuk tagihan"""
+    __tablename__ = "bills"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    family_id = Column(BigInteger, ForeignKey("families.id"), nullable=True)
+    category_id = Column(BigInteger, ForeignKey("fee_categories.id"), nullable=True)
+    code = Column(String(100), unique=True, nullable=False)
+    amount = Column(DECIMAL(18, 2), nullable=False)
+    period_start = Column(Date, nullable=False)
+    period_end = Column(Date, nullable=True)
+    status = Column(String(50), default="belum_lunas")  # belum_lunas, lunas, terlambat
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    family = relationship("Family", back_populates="bills")
+    category = relationship("FeeCategory", back_populates="bills")
+
+
+class IncomeTransaction(Base):
+    """Model untuk transaksi pemasukan"""
+    __tablename__ = "income_transactions"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    category_id = Column(BigInteger, ForeignKey("fee_categories.id"), nullable=True)
+    family_id = Column(BigInteger, ForeignKey("families.id"), nullable=True)
+    name = Column(String(255), nullable=False)
+    type = Column(String(50), nullable=True)  # iuran, donasi, lain_lain
+    amount = Column(DECIMAL(18, 2), nullable=False)
+    date = Column(Date, nullable=False)
+    proof_image_url = Column(Text, nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    family = relationship("Family", back_populates="income_transactions")
+    creator = relationship("User")
+
+
+class ExpenseTransaction(Base):
+    """Model untuk transaksi pengeluaran"""
+    __tablename__ = "expense_transactions"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    category = Column(String(100), nullable=True)  # ✅ Ini STRING bukan ForeignKey
+    name = Column(String(255), nullable=False)
+    amount = Column(DECIMAL(18, 2), nullable=False)
+    date = Column(Date, nullable=False)
+    proof_image_url = Column(Text, nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    creator = relationship("User")
+
+
+class PaymentChannel(Base):
+    """Model untuk channel transfer"""
+    __tablename__ = "payment_channels"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    type = Column(String(50), nullable=False)  # bank, ewallet, qris
+    account_name = Column(String(255), nullable=False)
+    account_number = Column(String(100), nullable=False)
+    bank_name = Column(String(100), nullable=True)
+    qris_image_url = Column(Text, nullable=True)
+    is_active = Column(Integer, default=1)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
