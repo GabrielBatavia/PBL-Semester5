@@ -3,9 +3,16 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+
+
 class TokenResponse(BaseModel):
-    token: str
+    access_token: str  
     token_type: str = "bearer"
+    user: Optional[UserResponse] = None  
 
 
 class LoginRequest(BaseModel):

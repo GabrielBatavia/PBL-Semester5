@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
+import hashlib
 
 from ..db import SessionLocal
 from .. import models
@@ -15,21 +16,41 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def verify_password(plain, hashed):
-    return plain == hashed
-
-
 def hash_password(password: str) -> str:
-    # JAGA-JAGA: kalau kepanjangan, truncate ke 72 bytes
-    if isinstance(password, bytes):
-        raw = password
-    else:
-        raw = password.encode("utf-8")
+    """
+    Hash password using SHA256 + bcrypt
+    SHA256 ensures consistent length (64 hex chars) before bcrypt
+    """
+    # Pre-hash with SHA256 to handle any length password
+    prehashed = hashlib.sha256(password.encode('utf-8')).hexdigest()
+    # Then hash with bcrypt (prehashed is always 64 chars, safe for bcrypt)
+    return pwd_context.hash(prehashed)
 
-    if len(raw) > 72:
-        raw = raw[:72]
 
-    return password
+def verify_password(plain: str, hashed: str) -> bool:
+    """
+    Verify password using SHA256 + bcrypt
+    
+    Special handling for legacy passwords:
+    - If hash starts with $2b$, try direct bcrypt verify first (legacy)
+    - If that fails, try SHA256 + bcrypt (new method)
+    """
+    try:
+        # Try new method (SHA256 + bcrypt)
+        prehashed = hashlib.sha256(plain.encode('utf-8')).hexdigest()
+        if pwd_context.verify(prehashed, hashed):
+            return True
+    except Exception:
+        pass
+    
+    try:
+        # Try legacy method (direct bcrypt) for old passwords
+        if pwd_context.verify(plain, hashed):
+            return True
+    except Exception:
+        pass
+    
+    return False
 
 
 def create_access_token(user_id: int, expires_minutes: int = 60 * 24):
@@ -48,29 +69,24 @@ def register(
     ).first()
     if existing:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email sudah terdaftar.",
+            status_code=400,
+            detail="Email sudah terdaftar"
         )
-
-    # cari role warga (boleh diubah)
-    warga_role = db.query(models.Role).filter(
-        models.Role.name == "warga"
-    ).first()
-
-    user = models.User(
+    
+    # Hash password using SHA256 + bcrypt
+    hashed_pw = hash_password(body.password)
+    
+    new_user = models.User(
         name=body.name,
         email=body.email,
-        password_hash=hash_password(body.password),
-        nik=body.nik,
-        phone=body.phone,
-        address=body.address,
-        role_id=warga_role.id if warga_role else None,
-        status="pending",  # menunggu verifikasi admin
+        password_hash=hashed_pw,
     )
-    db.add(user)
+    
+    db.add(new_user)
     db.commit()
-    db.refresh(user)
-    return user
+    db.refresh(new_user)
+    
+    return new_user
 
 
 @router.post("/login", response_model=auth_schemas.TokenResponse)
@@ -81,26 +97,38 @@ def login(
     user = db.query(models.User).filter(
         models.User.email == body.email
     ).first()
+    
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email atau password salah.",
+            status_code=401,
+            detail="Email atau password salah"
         )
-
+    
+    # Verify password (handles both legacy and new hashes)
     if not verify_password(body.password, user.password_hash):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email atau password salah.",
+            status_code=401,
+            detail="Email atau password salah"
         )
-
-    if user.status not in ("diterima", "active"):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Akun belum aktif. Hubungi admin.",
-        )
-
+    
+    # Auto-upgrade legacy passwords to new format
+    if user.password_hash and not user.password_hash.startswith("$2b$12$"):
+        # Re-hash password with new method
+        user.password_hash = hash_password(body.password)
+        db.commit()
+    
+    # Create access token
     token = create_access_token(user.id)
-    return auth_schemas.TokenResponse(token=token)
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+        }
+    }
 
 
 @router.get("/me", response_model=user_schemas.UserRead)
