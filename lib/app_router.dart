@@ -20,6 +20,10 @@ import 'package:jawaramobile_1/screens/Pemasukan/daftar_tagihan.dart';
 import 'package:jawaramobile_1/screens/Pemasukan/detail_tagihan.dart';
 import 'package:jawaramobile_1/screens/Pemasukan/lain_lain.dart';
 
+// ====== Pesan Warga ======
+import 'package:jawaramobile_1/screens/PesanWarga/pesan_warga_screen.dart';
+
+
 // ====== Pengeluaran ======
 import 'package:jawaramobile_1/screens/pengeluaran/pengeluaran_screen.dart';
 import 'package:jawaramobile_1/screens/pengeluaran/tambah_pengeluaran_screen.dart';
@@ -176,6 +180,13 @@ final appRouter = GoRouter(
       path: '/laporan-bulanan-rw',
       name: 'laporan-bulanan-rw',
       builder: (context, state) => const LaporanBulananRwScreen(),
+    ),
+
+    // ====== Pesan Warga ======
+    GoRoute(
+      path: '/pesan-warga',
+      name: 'pesan-warga',
+      builder: (context, state) => const PesanWargaScreen(),
     ),
 
 
