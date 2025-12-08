@@ -51,7 +51,7 @@ class AuthService {
     if (res.statusCode == 200 && res.body.isNotEmpty) {
       final data = jsonDecode(res.body) as Map<String, dynamic>?;
 
-      final token = data?['token'] as String?;
+      final token = data?['access_token'] as String?;
       if (token != null && token.isNotEmpty) {
         await ApiClient.saveToken(token);
         await fetchAndCacheProfile(); // safe now

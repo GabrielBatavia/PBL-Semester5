@@ -118,3 +118,21 @@ class IncomeTransaction(Base):
     created_by = Column(BigInteger, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class Activity(Base):
+    """Model untuk kegiatan warga"""
+    __tablename__ = "activities"
+    
+    id = Column(BigInteger, primary_key=True, index=True)
+    name = Column(String(200), nullable=False)
+    category = Column(String(100), nullable=True)  # kebersihan, keagamaan, pendidikan, olahraga, dll
+    pic_name = Column(String(150), nullable=True)  # Penanggung jawab
+    location = Column(String(200), nullable=True)
+    date = Column(Date, nullable=False)
+    description = Column(Text, nullable=True)
+    image_url = Column(Text, nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    creator = relationship("User")
