@@ -24,6 +24,31 @@ class LogService {
   }
 
   // ─────────────────────────────────────────────
+  // GET LATEST LOGS (3 terbaru, tanpa auth)
+  // ─────────────────────────────────────────────
+  
+  static Future<List<LogEntry>> fetchLatestLogs({int limit = 3}) async {
+    try {
+      final http.Response res = await ApiClient.get(
+        '/logs/latest?limit=$limit',
+        auth: false, // Tidak perlu auth untuk dashboard
+      );
+
+      if (res.statusCode == 200 && res.body.isNotEmpty) {
+        final data = jsonDecode(res.body) as List<dynamic>;
+        return data
+            .map((e) => LogEntry.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+
+      return [];
+    } catch (e) {
+      print('Error fetching latest logs: $e');
+      return [];
+    }
+  }
+
+  // ─────────────────────────────────────────────
   // STREAM FIX (tidak boleh kirim null)
   // ─────────────────────────────────────────────
 

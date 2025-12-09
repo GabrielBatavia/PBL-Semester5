@@ -1,9 +1,16 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'api_client.dart';
 
 class ExpenseService {
-  static Future<List<Map<String, dynamic>>> getExpenses() async {
-    final response = await ApiClient.get('/expenses', auth: true);
+  final IApiClient _apiClient;
+
+  // Constructor dengan dependency injection
+  ExpenseService({IApiClient? apiClient})
+      : _apiClient = apiClient ?? ApiClient();
+
+  Future<List<Map<String, dynamic>>> getExpenses() async {
+    final response = await _apiClient.get('/expenses', auth: true);
     if (response.statusCode == 200) {
       final List data = json.decode(response.body);
       return data.cast<Map<String, dynamic>>();
@@ -11,14 +18,14 @@ class ExpenseService {
     throw Exception('Failed to load expenses');
   }
 
-  static Future<Map<String, dynamic>> createExpense({
+  Future<Map<String, dynamic>> createExpense({
     required String name,
     required String category,
     required double amount,
     required String date, // format: YYYY-MM-DD
     String? proofImageUrl,
   }) async {
-    final response = await ApiClient.post(
+    final response = await _apiClient.post(
       '/expenses/',
       {
         'name': name,

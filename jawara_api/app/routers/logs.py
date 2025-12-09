@@ -22,3 +22,18 @@ def list_logs(
         .all()
     )
     return logs
+
+
+@router.get("/latest", response_model=List[log_schemas.LogRead])
+def get_latest_logs(
+    limit: int = 3,
+    db: Session = Depends(get_db),
+):
+    """Get latest activity logs without authentication"""
+    logs = (
+        db.query(models.ActivityLog)
+        .order_by(models.ActivityLog.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    return logs
