@@ -2,7 +2,7 @@
 # JAWARA RT/RW API TESTS - MODUL KEUANGAN
 # ========================================
 # Base URL
-@baseUrl = http://192.168.1.2:9000
+@baseUrl = http://192.168.2.25:9000
 #lakukan login di @name login untuk mendapatkan token
 #isikan token untuk mengaskses per user
 @token = {{login.response.body.access_token}}
