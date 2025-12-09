@@ -63,7 +63,7 @@ import 'package:jawaramobile_1/screens/marketplace/add_marketplace_item_screen.d
 
 
 // ====== Lainnya ======
-import 'package:jawaramobile_1/screens/penerimaan_warga_screen.dart';
+import 'package:jawaramobile_1/screens/PenerimaanWarga/citizen_request_list_page.dart';
 import 'package:jawaramobile_1/screens/dashboard_aspirasi.dart';
 import 'models/mutations_model.dart';
 
@@ -313,7 +313,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/penerimaan-warga',
       name: 'penerimaan-warga',
-      builder: (context, state) => const PenerimaanWargaScreen(),
+      builder: (context, state) => CitizenRequestListPage(),
     ),
 
     GoRoute(

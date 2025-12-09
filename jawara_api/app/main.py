@@ -8,7 +8,7 @@ from .routers import broadcast
 from .routers import kegiatan 
 
 from .db import Base, engine
-from .routers import auth, resident_routers, users, logs, marketplace, ai_agent, family_routers, house_routers, mutation_routers   # ← TAMBAHKAN marketplace
+from .routers import auth, resident_routers, users, logs, marketplace, ai_agent, family_routers, house_routers, mutation_routers, citizen_request_routers   # ← TAMBAHKAN marketplace
 
 # create tables kalau belum ada
 Base.metadata.create_all(bind=engine)
@@ -59,5 +59,6 @@ app.include_router(family_routers.router)
 app.include_router(house_routers.router)
 app.include_router(resident_routers.router)
 app.include_router(mutation_routers.router)
+app.include_router(citizen_request_routers.router)
 app.include_router(broadcast.router)
 app.include_router(kegiatan.router)

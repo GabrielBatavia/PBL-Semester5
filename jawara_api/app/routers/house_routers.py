@@ -17,8 +17,7 @@ def get_houses(search: str | None = None, db: Session = Depends(get_db)):
     if search:
         search_term = f"%{search}%"
         query = query.filter(
-            models.House.address.like(search_term) |
-            models.House.like(search_term)
+            models.House.address.like(search_term)
         )
     return query.all()
 
@@ -27,21 +26,9 @@ def get_houses(search: str | None = None, db: Session = Depends(get_db)):
 def get_house(id: int, db: Session = Depends(get_db)):
     return db.query(models.House).filter(models.House.id == id).first()
 
-@router.get("/", response_model=list[HouseOut])
-def get_houses(search: str | None = None, db: Session = Depends(get_db)):
-    query = db.query(models.House)
-
-    if search:
-        search_term = f"%{search}%"
-        query = query.filter(
-            models.House.address.like(search_term) |
-            models.House.like(search_term)
-        )
-    return query.all()
-
 
 # CREATE
-@router.post("/", response_model=HouseCreate)
+@router.post("/", response_model=HouseOut)
 def create_house(payload: HouseCreate, db: Session = Depends(get_db)):
     new_house = models.House(**payload.dict())
     db.add(new_house)
