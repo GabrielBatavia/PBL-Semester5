@@ -1,58 +1,33 @@
 // lib/screens/Kegiatan/daftar_kegiatan.dart
 
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jawaramobile_1/widgets/kegiatan/kegiatan_filter.dart';
 
-class KegiatanScreen extends StatelessWidget {
+import '../../models/kegiatan.dart';
+import '../../services/kegiatan_service.dart';
+import '../../widgets/kegiatan/kegiatan_filter.dart';
+
+class KegiatanScreen extends StatefulWidget {
   const KegiatanScreen({super.key});
 
-  // Data dummy
-  final List<Map<String, String>> _kegiatanData = const [
-    {
-      "nama": "Kerja Bakti Bulanan",
-      "kategori": "Kebersihan & Keamanan",
-      "pj": "Pak RT",
-      "tanggal": "21 Oktober 2025",
-      "lokasi": "Lingkungan RT 05",
-      "deskripsi": "Membersihkan selokan dan area umum.",
-    },
-    {
-      "nama": "Rapat Karang Taruna",
-      "kategori": "Komunitas & Sosial",
-      "pj": "Ketua Karang Taruna",
-      "tanggal": "10 Oktober 2025",
-      "lokasi": "Balai Desa Kidal",
-      "deskripsi":
-          "Pembubaran panitia PHBN sekaligus membahas rencana kegiatan akhir tahun.",
-    },
-    {
-      "nama": "Jalan Sehat",
-      "kategori": "Kesehatan & Olahraga",
-      "pj": "Karang Taruna",
-      "tanggal": "30 September 2025",
-      "lokasi": "Lapangan SD Negeri Kidal",
-      "deskripsi": "Jalan sehat, senam, dan pembagian doorprize.",
-    },
-    {
-      "nama": "Upacara 17 Agustus",
-      "kategori": "Komunitas & Sosial",
-      "pj": "Karang Taruna",
-      "tanggal": "17 Agustus 2025",
-      "lokasi": "Candi Kidal",
-      "deskripsi":
-          "Upacara peringatan detik-detik proklamasi kemerdekaan Republik Indonesia.",
-    },
-    {
-      "nama": "Seminar Warga",
-      "kategori": "Pendidikan",
-      "pj": "Kepala Desa",
-      "tanggal": "17 Juli 2025",
-      "lokasi": "Balai Desa Kidal",
-      "deskripsi": "Seminar tentang bahaya judi online.",
-    },
-  ];
+  @override
+  State<KegiatanScreen> createState() => _KegiatanScreenState();
+}
+
+class _KegiatanScreenState extends State<KegiatanScreen> {
+  late Future<List<Kegiatan>> _futureKegiatan;
+
+  @override
+  void initState() {
+    super.initState();
+    _reload();
+  }
+
+  /// reload data dari API
+  Future<void> _reload() async {
+    _futureKegiatan = KegiatanService.instance.fetchKegiatan();
+    setState(() {});
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
@@ -71,7 +46,7 @@ class KegiatanScreen extends StatelessWidget {
             ElevatedButton(
               child: const Text("Cari"),
               onPressed: () {
-                // TODO: Tambahkan logika filter
+                // TODO: tambahkan filter ke fetchKegiatan kalau mau
                 Navigator.of(context).pop();
               },
             ),
@@ -81,40 +56,23 @@ class KegiatanScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text("Konfirmasi Hapus"),
-          content: const Text(
-            "Apakah Anda yakin ingin menghapus kegiatan ini? Aksi ini tidak dapat dibatalkan.",
-          ),
-          actions: [
-            TextButton(
-              child: const Text("Batal"),
-              onPressed: () => Navigator.of(dialogContext).pop(),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-              child: const Text("Hapus"),
-              onPressed: () {
-                // TODO: implement delete
-                Navigator.of(dialogContext).pop();
-                context.pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kegiatan berhasil dihapus')),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
+  /// Format tanggal dari DateTime → "17 Agustus 2025"
+  String _formatTanggal(DateTime d) {
+    const bulan = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    return '${d.day} ${bulan[d.month - 1]} ${d.year}';
   }
 
   @override
@@ -182,37 +140,79 @@ class KegiatanScreen extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: DataTable2(
-                        columnSpacing: 12,
-                        horizontalMargin: 12,
-                        headingRowColor: MaterialStateProperty.all(
-                          colorScheme.primary.withOpacity(0.05),
-                        ),
-                        headingTextStyle: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
-                        columns: const [
-                          DataColumn2(label: Text('Nama Kegiatan')),
-                          DataColumn2(label: Text('Tanggal')),
-                        ],
-                        rows: _kegiatanData.map((item) {
-                          return DataRow2(
-                            onTap: () {
-                              context.push('/detail-kegiatan', extra: item);
-                            },
-                            cells: [
-                              DataCell(
-                                Text(
-                                  item['nama']!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                      child: FutureBuilder<List<Kegiatan>>(
+                        future: _futureKegiatan,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text(
+                                'Error: ${snapshot.error}',
+                                textAlign: TextAlign.center,
                               ),
-                              DataCell(Text(item['tanggal']!)),
-                            ],
+                            );
+                          }
+
+                          final data = snapshot.data ?? [];
+
+                          if (data.isEmpty) {
+                            return const Center(
+                              child: Text('Belum ada kegiatan tercatat.'),
+                            );
+                          }
+
+                          return RefreshIndicator(
+                            onRefresh: _reload,
+                            child: ListView.builder(
+                              physics:
+                                  const AlwaysScrollableScrollPhysics(),
+                              itemCount: data.length,
+                              itemBuilder: (context, index) {
+                                final item = data[index];
+                                final tanggal =
+                                    _formatTanggal(item.tanggal);
+
+                                return Card(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 6),
+                                  child: ListTile(
+                                    title: Text(
+                                      item.nama,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    subtitle: Text(tanggal),
+                                    trailing: const Icon(
+                                      Icons.chevron_right,
+                                      size: 20,
+                                    ),
+                                    onTap: () {
+                                      context.push(
+                                        '/detail-kegiatan',
+                                        extra: {
+                                          'id': item.id.toString(),
+                                          'nama': item.nama,
+                                          'kategori': item.kategori ?? '',
+                                          'pj': item.pj ?? '',
+                                          'lokasi': item.lokasi ?? '',
+                                          'tanggal': tanggal,
+                                          'deskripsi':
+                                              item.deskripsi ?? '',
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
                           );
-                        }).toList(),
+                        },
                       ),
                     ),
                   ),

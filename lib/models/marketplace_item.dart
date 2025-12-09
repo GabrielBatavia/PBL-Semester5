@@ -1,4 +1,3 @@
-// lib/models/marketplace_item.dart
 class MarketplaceItem {
   final int id;
   final String title;
@@ -6,6 +5,7 @@ class MarketplaceItem {
   final double price;
   final String? unit;
   final String? imageUrl;
+  final String? veggieClass;   // 🔹 jenis sayuran
   final int ownerId;
   final DateTime createdAt;
 
@@ -16,6 +16,7 @@ class MarketplaceItem {
     required this.price,
     this.unit,
     this.imageUrl,
+    this.veggieClass,
     required this.ownerId,
     required this.createdAt,
   });
@@ -28,6 +29,7 @@ class MarketplaceItem {
       price: (json['price'] as num).toDouble(),
       unit: json['unit'],
       imageUrl: json['image_url'],
+      veggieClass: json['veggie_class'], // 🔹
       ownerId: json['owner_id'],
       createdAt: DateTime.parse(json['created_at']),
     );

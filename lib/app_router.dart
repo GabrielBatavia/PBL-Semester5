@@ -11,6 +11,9 @@ import 'package:jawaramobile_1/screens/Mutasi/mutasi_page.dart';
 import 'package:jawaramobile_1/screens/dashboard_screen.dart';
 import 'package:jawaramobile_1/screens/data_warga_rumah.dart';
 
+// ===== Pengguna ======
+import 'package:jawaramobile_1/screens/pengguna_screen.dart';
+
 // ====== Pemasukan ======
 import 'package:jawaramobile_1/screens/Pemasukan/menu_pemasukan.dart';
 import 'package:jawaramobile_1/screens/Pemasukan/kategori_iuran.dart';
@@ -60,6 +63,10 @@ import 'package:jawaramobile_1/screens/ChannelTransfer/tambah_channel_screen.dar
 // ====marketplace sayuran=====
 import 'package:jawaramobile_1/screens/marketplace/marketplace_screen.dart';
 import 'package:jawaramobile_1/screens/marketplace/add_marketplace_item_screen.dart';
+
+
+// ====== Pesan Warga ======
+import 'package:jawaramobile_1/screens/pesan_warga/pesan_warga_screen.dart';
 
 
 // ====== Lainnya ======
@@ -342,9 +349,23 @@ final appRouter = GoRouter(
     ),
 
     GoRoute(
+      path: '/pesan-warga',
+      name: 'pesan-warga',
+      builder: (context, state) => const PesanWargaScreen(),
+    ),
+
+
+    GoRoute(
       path: '/marketplace-add-item',
       name: 'marketplace-add-item',
       builder: (context, state) => const AddMarketplaceItemScreen(),
     ),
+
+    GoRoute(
+      path: '/pengguna',
+      name: 'pengguna',
+      builder: (context, state) => const PenggunaScreen(),
+    ),
+
   ],
 );

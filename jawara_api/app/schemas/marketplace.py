@@ -1,5 +1,5 @@
-# app/schemas/marketplace.py
-from pydantic import BaseModel
+# jawara_api/app/schemas/marketplace.py
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -9,10 +9,11 @@ class MarketplaceItemBase(BaseModel):
     description: Optional[str] = None
     price: float
     unit: Optional[str] = None
+    veggie_class: Optional[str] = None
 
 
 class MarketplaceItemCreate(MarketplaceItemBase):
-    pass  # semua field dari base, image di-handle via upload file
+    pass
 
 
 class MarketplaceItemRead(MarketplaceItemBase):
@@ -21,5 +22,5 @@ class MarketplaceItemRead(MarketplaceItemBase):
     owner_id: int
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
+

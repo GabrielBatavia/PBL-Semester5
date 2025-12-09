@@ -199,31 +199,52 @@ class _MarketplaceCard extends StatelessWidget {
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.title,
-                    style: theme.textTheme.titleLarge,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.title,
+                              style: theme.textTheme.titleLarge,
+                            ),
+                          ),
+                          if (item.veggieClass != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade50,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                item.veggieClass!,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: Colors.green.shade700,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      if (item.description != null && item.description!.isNotEmpty)
+                        Text(
+                          item.description!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Rp ${item.price.toStringAsFixed(0)}'
+                        '${item.unit != null ? ' / ${item.unit}' : ''}',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  if (item.description != null && item.description!.isNotEmpty)
-                    Text(
-                      item.description!,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Rp ${item.price.toStringAsFixed(0)}'
-                    '${item.unit != null ? ' / ${item.unit}' : ''}',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ],
-              ),
+
             ),
           ),
         ],

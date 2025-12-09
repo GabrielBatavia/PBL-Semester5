@@ -28,7 +28,8 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
 
   final ImagePicker _imagePicker = ImagePicker();
 
-  final List<String> _kategoriOptions = [
+  /// Opsi kategori yang ditampilkan di UI
+  final List<String> _kategoriOptions = const [
     'Komunitas & Sosial',
     'Kebersihan & Keamanan',
     'Kesehatan & Olahraga',
@@ -36,16 +37,42 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
     'Lainnya',
   ];
 
+  /// Mapping nilai kategori lama dari DB -> label UI
+  String? _mapKategoriFromDb(String? raw) {
+    if (raw == null) return null;
+    switch (raw.toLowerCase()) {
+      case 'rapat':
+        return 'Komunitas & Sosial';
+      case 'kebersihan':
+        return 'Kebersihan & Keamanan';
+      case 'olahraga':
+        return 'Kesehatan & Olahraga';
+      case 'pendidikan':
+        return 'Pendidikan';
+      case 'kegiatan':
+      default:
+        return 'Lainnya';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     final data = widget.initialData;
+
     _namaController = TextEditingController(text: data?['nama']);
     _pjController = TextEditingController(text: data?['pj']);
     _tanggalController = TextEditingController(text: data?['tanggal']);
     _lokasiController = TextEditingController(text: data?['lokasi']);
     _deskripsiController = TextEditingController(text: data?['deskripsi']);
-    _selectedKategori = data?['kategori'];
+
+    // 🔥 Pastikan value dropdown hanya di-set jika ada di _kategoriOptions
+    final mapped = _mapKategoriFromDb(data?['kategori']);
+    if (mapped != null && _kategoriOptions.contains(mapped)) {
+      _selectedKategori = mapped;
+    } else {
+      _selectedKategori = null;
+    }
   }
 
   @override
@@ -89,7 +116,7 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Menyimpan data kegiatan...')),
       );
-      // TODO: kirim ke backend
+      // TODO: kirim ke backend (pakai _selectedKategori sebagai kategori)
     }
   }
 
