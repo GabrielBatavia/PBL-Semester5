@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 
 class CitizenRequestBase(BaseModel):
@@ -9,7 +10,14 @@ class CitizenRequestBase(BaseModel):
     identity_image_url: str | None = None
 
 class CitizenRequestCreate(CitizenRequestBase):
-    pass
+    name: str
+    nik: str
+    email: str
+    gender: str
+    status: Optional[str] = "pending"
+
+    
+    processed_by: Optional[int] = None
 
 class CitizenRequestUpdate(BaseModel):
     status: str | None = None

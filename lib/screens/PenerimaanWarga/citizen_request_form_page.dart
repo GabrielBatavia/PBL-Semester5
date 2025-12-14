@@ -1,5 +1,7 @@
+// lib/screens/PenerimaanWarga/citizen_request_form_page.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../models/citizen_request_model.dart';
@@ -11,7 +13,8 @@ class CitizenRequestFormPage extends StatefulWidget {
   const CitizenRequestFormPage({super.key, this.data});
 
   @override
-  State<CitizenRequestFormPage> createState() => _CitizenRequestFormPageState();
+  State<CitizenRequestFormPage> createState() =>
+      _CitizenRequestFormPageState();
 }
 
 class _CitizenRequestFormPageState extends State<CitizenRequestFormPage> {
@@ -36,7 +39,12 @@ class _CitizenRequestFormPageState extends State<CitizenRequestFormPage> {
     status = widget.data?.status ?? "pending";
   }
 
+  // ======================
+  // PICK IMAGE (MOBILE ONLY)
+  // ======================
   Future<void> pickImage() async {
+    if (kIsWeb) return;
+
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
 
@@ -47,6 +55,9 @@ class _CitizenRequestFormPageState extends State<CitizenRequestFormPage> {
     }
   }
 
+  // ======================
+  // SUBMIT
+  // ======================
   Future<void> submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -63,21 +74,51 @@ class _CitizenRequestFormPageState extends State<CitizenRequestFormPage> {
     bool success;
 
     if (widget.data == null) {
-      success = await CitizenRequestService().createWithImage(req, selectedImage);
+      // CREATE
+      if (kIsWeb) {
+        // WEB → JSON
+        success = await CitizenRequestService().create(req);
+      } else {
+        // MOBILE → MULTIPART
+        success = await CitizenRequestService()
+            .createWithImage(req, selectedImage);
+      }
     } else {
+      // UPDATE → PUT JSON
       success = await CitizenRequestService()
-          .updateWithImage(widget.data!.id!, req, selectedImage);
+          .update(widget.data!.id!, req);
     }
 
-    if (success) Navigator.pop(context);
+  }
+
+  // ======================
+  // IMAGE PREVIEW
+  // ======================
+  Widget _buildImagePreview() {
+    if (kIsWeb) {
+      return const Center(
+        child: Text("Upload foto aktif di Mobile"),
+      );
+    }
+
+    if (selectedImage != null) {
+      return Image.file(selectedImage!, fit: BoxFit.cover);
+    }
+
+    if (widget.data?.identityImageUrl != null) {
+      return Image.network(widget.data!.identityImageUrl!, fit: BoxFit.cover);
+    }
+
+    return const Center(child: Text("Tap untuk pilih gambar"));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text(widget.data == null ? "Tambah Pengajuan" : "Edit Pengajuan"),
+        title: Text(widget.data == null
+            ? "Tambah Pengajuan"
+            : "Edit Pengajuan"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -98,7 +139,6 @@ class _CitizenRequestFormPageState extends State<CitizenRequestFormPage> {
                 controller: emailC,
                 decoration: const InputDecoration(labelText: "Email"),
               ),
-
               DropdownButtonFormField<String>(
                 value: gender,
                 decoration: const InputDecoration(labelText: "Gender"),
@@ -108,9 +148,7 @@ class _CitizenRequestFormPageState extends State<CitizenRequestFormPage> {
                 ],
                 onChanged: (val) => gender = val,
               ),
-
               const SizedBox(height: 20),
-
               DropdownButtonFormField<String>(
                 value: status,
                 decoration: const InputDecoration(labelText: "Status"),
@@ -119,39 +157,25 @@ class _CitizenRequestFormPageState extends State<CitizenRequestFormPage> {
                   DropdownMenuItem(value: "approved", child: Text("Disetujui")),
                   DropdownMenuItem(value: "rejected", child: Text("Ditolak")),
                 ],
-                onChanged: (value) {
-                  setState(() {
-                    status = value!;
-                  });
-                },
+                onChanged: (v) => setState(() => status = v!),
               ),
-
               const SizedBox(height: 20),
-
-              Text(
+              const Text(
                 "Foto KTP / Identitas",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-
               GestureDetector(
                 onTap: pickImage,
                 child: Container(
                   height: 180,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: selectedImage != null
-                      ? Image.file(selectedImage!, fit: BoxFit.cover)
-                      : widget.data?.identityImageUrl != null
-                          ? Image.network(widget.data!.identityImageUrl!)
-                          : const Center(child: Text("Tap untuk pilih gambar")),
+                  child: _buildImagePreview(),
                 ),
               ),
-
-              const SizedBox(height: 20),
-
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: submit,
                 child: Text(widget.data == null ? "Simpan" : "Update"),

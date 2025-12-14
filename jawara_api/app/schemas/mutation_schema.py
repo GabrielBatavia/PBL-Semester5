@@ -4,7 +4,6 @@ from datetime import date,datetime
 
 class MutasiBase(BaseModel):
     family_id: int
-    family_name: str
     old_address: str | None = None
     new_address: str | None = None
     mutation_type: str
@@ -23,6 +22,7 @@ class MutasiUpdate(MutasiBase):
 
 class MutasiOut(MutasiBase):
     id: int
+    family_name: str
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
