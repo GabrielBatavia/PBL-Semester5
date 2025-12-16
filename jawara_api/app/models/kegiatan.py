@@ -1,6 +1,7 @@
 # app/models/kegiatan.py
 
 from sqlalchemy import Column, Integer, String, Text, Date, DateTime, ForeignKey
+from sqlalchemy.dialects.mysql import BIGINT
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from ..db import Base
@@ -18,7 +19,7 @@ class Kegiatan(Base):
     image_url = Column(String(255), nullable=True)
 
     # FOREIGN KEY → created_by = user.id
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_by = Column(BIGINT(unsigned=True), ForeignKey("users.id"), nullable=False)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

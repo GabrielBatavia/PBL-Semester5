@@ -146,6 +146,7 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
                         return Padding(
                           padding: const EdgeInsets.all(16),
                           child: DataTable2(
+                            minWidth: 900,
                             columnSpacing: 12,
                             horizontalMargin: 12,
                             headingRowColor: MaterialStateProperty.all(
@@ -157,8 +158,12 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
                               color: colorScheme.primary,
                             ),
                             columns: const [
-                              DataColumn2(label: Text('Nama Kegiatan')),
+                              DataColumn2(label: Text('Nama')),
                               DataColumn2(label: Text('Tanggal')),
+                              DataColumn2(label: Text('Lokasi')),
+                              DataColumn2(label: Text('PIC')),
+                              DataColumn2(label: Text('Kategori')),
+                              DataColumn2(label: Text('Deskripsi')),
                             ],
                             rows: data.map((item) {
                               return DataRow2(
@@ -168,11 +173,17 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
                                 ),
                                 cells: [
                                   DataCell(Text(item['name'] ?? "-")),
-                                  DataCell(Text(item['date'] ?? "-")),
-                                  DataCell(Text(item['lokasi'] ?? "-")),
-                                  DataCell(Text(item['pj'] ?? "-")),
-                                  DataCell(Text(item['kategori'] ?? "-")),
-                                  DataCell(Text(item['deskripsi'] ?? "-")),
+                                  DataCell(Text(item['date']?.toString() ?? "-")),
+                                  DataCell(Text(item['location'] ?? "-")),
+                                  DataCell(Text(item['pic_name'] ?? "-")),
+                                  DataCell(Text(item['category'] ?? "-")),
+                                  DataCell(
+                                    Text(
+                                      item['description'] ?? "-",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                                 ],
                               );
                             }).toList(),
