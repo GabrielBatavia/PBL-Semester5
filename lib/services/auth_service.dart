@@ -129,8 +129,8 @@ class AuthService {
   // ─────────────────────────────────────────────
 
   Future<void> logout() async {
-    await ApiClient.clearToken();
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyToken);
     await prefs.remove(_keyRoleName);
     await prefs.remove(_keyUserName);
   }

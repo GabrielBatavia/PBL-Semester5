@@ -6,49 +6,108 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# --- Tambah root path agar import tidak error ---
+# Arahkan ke folder root project (yang berisi folder app/)
 ROOT_DIR = Path(__file__).resolve().parents[1]
+
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+import pytest
+from fastapi.testclient import TestClient
+
 from app.main import app
-from app.db import Base
-from app.deps import get_db
+from app.db import SessionLocal
+from app import models
+from app.routers.auth import hash_password, create_access_token
 
-# --- Database khusus testing ---
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# --- Override dependency untuk FastAPI testing ---
-def override_get_db():
+@pytest.fixture
+def db():
+    """Session DB per test."""
+    db = SessionLocal()
     try:
-        db = TestingSessionLocal()
         yield db
     finally:
         db.close()
 
-app.dependency_overrides[get_db] = override_get_db
 
-# --- Setup DB (create tables) ---
-@pytest.fixture(scope="session", autouse=True)
-def setup_database():
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
-# --- Fixture client FastAPI ---
-@pytest.fixture()
+@pytest.fixture
 def client():
+    """FastAPI TestClient untuk panggil endpoint tanpa server beneran."""
     return TestClient(app)
 
-# --- Fixture DB jika dibutuhkan ---
-@pytest.fixture()
-def db():
-    db = TestingSessionLocal()
+
+@pytest.fixture
+def warga_role(db):
+    """Pastikan role 'warga' ada di DB, kalau belum ya dibuat."""
+    role = db.query(models.Role).filter(models.Role.name == "warga").first()
+    if not role:
+        role = models.Role(name="warga", display_name="Warga")
+        db.add(role)
+        db.commit()
+        db.refresh(role)
+    return role
+
+
+@pytest.fixture
+def test_user(db, warga_role):
+    """
+    User default untuk testing (status sudah 'diterima').
+    Semua data terkait user ini dibersihkan di akhir test.
+    """
+    email = "test_user_pytest@example.com"
+
+    # Bersihkan sisa user lama kalau ada
+    existing = db.query(models.User).filter(models.User.email == email).first()
+    if existing:
+        db.query(models.ActivityLog).filter(
+            models.ActivityLog.actor_id == existing.id
+        ).delete()
+        db.query(models.Kegiatan).filter(
+            models.Kegiatan.created_by_id == existing.id
+        ).delete()
+        db.query(models.MarketplaceItem).filter(
+            models.MarketplaceItem.owner_id == existing.id
+        ).delete()
+        db.query(models.CitizenMessage).filter(
+            models.CitizenMessage.user_id == existing.id
+        ).delete()
+        db.delete(existing)
+        db.commit()
+
+    user = models.User(
+        name="Test User",
+        email=email,
+        password_hash=hash_password("password123"),
+        status="diterima",
+        role_id=warga_role.id,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
     try:
-        yield db
+        yield user
     finally:
-        db.close()
+        # Bersihkan data terkait user test
+        db.query(models.ActivityLog).filter(
+            models.ActivityLog.actor_id == user.id
+        ).delete()
+        db.query(models.Kegiatan).filter(
+            models.Kegiatan.created_by_id == user.id
+        ).delete()
+        db.query(models.MarketplaceItem).filter(
+            models.MarketplaceItem.owner_id == user.id
+        ).delete()
+        db.query(models.CitizenMessage).filter(
+            models.CitizenMessage.user_id == user.id
+        ).delete()
+        db.delete(user)
+        db.commit()
+
+
+@pytest.fixture
+def auth_header(test_user):
+    """Header Authorization: Bearer <token> untuk user test."""
+    token = create_access_token(test_user.id)
+    return {"Authorization": f"Bearer {token}"}

@@ -34,7 +34,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
         showMenuPopUp(context);
         break;
       case 3:
-        // TODO: route pengguna
+        context.go('/pengguna'); 
         break;
     }
   }

@@ -1,5 +1,5 @@
 # app/schemas/users.py
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 class RoleRead(BaseModel):
@@ -7,8 +7,7 @@ class RoleRead(BaseModel):
     name: str
     display_name: str | None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserBase(BaseModel):
@@ -35,5 +34,4 @@ class UserRead(UserBase):
     id: int
     role: RoleRead | None = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
