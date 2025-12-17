@@ -17,16 +17,21 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 #   PASSWORD: PAKE PLAIN TEXT (TIDAK DI HASH)
 # ============================================================
 
-def verify_password(plain: str, stored: str) -> bool:
-    """Bandingkan password plain."""
-    if stored is None:
-        return False
-    return plain == stored
+from passlib.context import CryptContext
 
+# Gunakan bcrypt
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def verify_password(plain: str, stored_hash: str) -> bool:
+    """Cek apakah password plain cocok dengan hash."""
+    if stored_hash is None:
+        return False
+    return pwd_context.verify(plain, stored_hash)
 
 def hash_password(password: str) -> str:
-    """Tidak hashing apa2 – langsung simpan apa adanya."""
-    return password
+    """Hash password sebelum disimpan."""
+    return pwd_context.hash(password)
+
 
 
 # ============================================================

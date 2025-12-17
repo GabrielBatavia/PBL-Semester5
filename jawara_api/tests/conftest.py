@@ -1,6 +1,10 @@
 # tests/conftest.py
 import sys
 from pathlib import Path
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 # Arahkan ke folder root project (yang berisi folder app/)
 ROOT_DIR = Path(__file__).resolve().parents[1]

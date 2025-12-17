@@ -59,7 +59,7 @@ class _HouseFormPageState extends State<HouseFormPage> {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(ok ? "Berhasil disimpan" : "Gagal menyimpan")),
+      SnackBar(content: Text(ok ? "Berhasil disimpan" : "Ber-proses")),
     );
 
     if (ok) Navigator.pop(context);

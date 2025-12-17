@@ -4,9 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.deps import get_db
-from app.models import Family
-from app.models import Resident
-from app.models import House
+from .. import models
+
 
 from app.schemas.family_schema import (
     FamilyCreate, FamilyUpdate, FamilyOut, FamilyExtended
@@ -14,16 +13,16 @@ from app.schemas.family_schema import (
 
 router = APIRouter(prefix="/families", tags=["Family"])
 
-# ─────────────────────────────────────────────
-# GET families
-# ─────────────────────────────────────────────
-@router.get("/", response_model=list[FamilyOut])
-def get_families(search: str | None = None, db: Session = Depends(get_db)):
-    query = db.query(Family)
-    if search:
-        pattern = f"%{search}%"
-        query = query.filter(Family.name.like(pattern))
-    return query.all()
+# # ─────────────────────────────────────────────
+# # GET families
+# # ─────────────────────────────────────────────
+# @router.get("/", response_model=list[FamilyOut])
+# def get_families(search: str | None = None, db: Session = Depends(get_db)):
+#     query = db.query(models.Family)
+#     if search:
+#         pattern = f"%{search}%"
+#         query = query.filter(models.Family.name.like(pattern))
+#     return query.all()
 
 
 # ─────────────────────────────────────────────
@@ -31,20 +30,20 @@ def get_families(search: str | None = None, db: Session = Depends(get_db)):
 # ─────────────────────────────────────────────
 @router.get("/extended", response_model=list[FamilyExtended])
 def get_families(search: str | None = None, db: Session = Depends(get_db)):
-    query = db.query(Family)
+    query = db.query(models.Family)
     if search:
         pattern = f"%{search}%"
-        query = query.filter(Family.name.like(pattern))
+        query = query.filter(models.Family.name.like(pattern))
     families =query.all()
     result = []
 
     for fam in families:
-        count = db.query(Resident).filter(Resident.family_id == fam.id).count()
+        count = db.query(models.Resident).filter(models.Resident.family_id == fam.id).count()
 
         # ambil alamat dari tabel House
         address = None
         if fam.house_id:
-            house = db.query(House).filter(House.id == fam.house_id).first()
+            house = db.query(models.House).filter(models.House.id == fam.house_id).first()
             address = house.address if house else None
 
         result.append({
@@ -64,14 +63,14 @@ def get_families(search: str | None = None, db: Session = Depends(get_db)):
 # ─────────────────────────────────────────────
 @router.get("/{id}", response_model=FamilyOut)
 def get_family(id: int, db: Session = Depends(get_db)):
-    return db.query(Family).filter(Family.id == id).first()
+    return db.query(models.Family).filter(models.Family.id == id).first()
 
 @router.get("/", response_model=list[FamilyOut])
 def get_families(search: str | None = None, db: Session = Depends(get_db)):
-    query = db.query(Family)
+    query = db.query(models.Family)
 
     if search:
-        query = query.filter(Family.name.like(f"%{search}%"))
+        query = query.filter(models.Family.name.like(f"%{search}%"))
 
     return query.all()
 
@@ -80,7 +79,7 @@ def get_families(search: str | None = None, db: Session = Depends(get_db)):
 # ─────────────────────────────────────────────
 @router.post("/", response_model=FamilyOut)
 def create_family(payload: FamilyCreate, db: Session = Depends(get_db)):
-    fam = Family(**payload.dict())
+    fam = models.Family(**payload.dict())
     db.add(fam)
     db.commit()
     db.refresh(fam)
@@ -92,7 +91,7 @@ def create_family(payload: FamilyCreate, db: Session = Depends(get_db)):
 # ─────────────────────────────────────────────
 @router.put("/{id}", response_model=FamilyOut)
 def update_family(id: int, payload: FamilyUpdate, db: Session = Depends(get_db)):
-    fam = db.query(Family).filter(Family.id == id).first()
+    fam = db.query(models.Family).filter(models.Family.id == id).first()
     if not fam:
         return None
 
@@ -109,7 +108,7 @@ def update_family(id: int, payload: FamilyUpdate, db: Session = Depends(get_db))
 # ─────────────────────────────────────────────
 @router.delete("/{id}")
 def delete_family(id: int, db: Session = Depends(get_db)):
-    fam = db.query(Family).filter(Family.id == id).first()
+    fam = db.query(models.Family).filter(models.Family.id == id).first()
     if not fam:
         return {"deleted": False}
 
@@ -123,7 +122,7 @@ def delete_family(id: int, db: Session = Depends(get_db)):
 @router.get("/{family_id}/residents") # <-- PATH INI HARUS ADA
 def get_family_residents(family_id: int, db: Session = Depends(get_db)):
     # Lakukan Query ke database
-    residents = db.query(Resident).filter(Resident.family_id == family_id).all()
+    residents = db.query(models.Resident).filter(models.Resident.family_id == family_id).all()
     
     # Pastikan data yang dikembalikan sesuai dengan skema Resident/ResidentOut
     return residents

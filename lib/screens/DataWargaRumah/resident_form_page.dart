@@ -20,37 +20,41 @@ class _FormResidentPageState extends State<FormResidentPage> {
   final nikController = TextEditingController();
   final jobController = TextEditingController();
   final birthController = TextEditingController();
+
   String? gender;
+  int? selectedFamilyId;
 
   List<FamilyModel> families = [];
-  int? selectedFamilyId;
+
+  bool get isEdit => widget.existingData != null;
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.existingData != null) {
+    if (isEdit) {
       final r = widget.existingData!;
       nameController.text = r.name;
       nikController.text = r.nik ?? "";
       jobController.text = r.job ?? "";
       birthController.text = r.birthDate ?? "";
       gender = r.gender;
+      selectedFamilyId = r.familyId;
     }
+
     _loadFamilies();
-}
+  }
 
-
-  void _loadFamilies() async {
+  Future<void> _loadFamilies() async {
     families = await FamilyService.instance.fetchFamilies();
     setState(() {});
   }
 
-  void _submit() async {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
     final resident = ResidentModel(
-      id: 0,
+      id: isEdit ? widget.existingData!.id : 0,
       name: nameController.text,
       nik: nikController.text,
       birthDate: birthController.text,
@@ -60,26 +64,40 @@ class _FormResidentPageState extends State<FormResidentPage> {
       userId: null,
     );
 
-    final success = await ResidentService.instance.createResident(resident);
+    bool success;
+
+    if (isEdit) {
+      success = await ResidentService.instance.updateResident(
+        resident.id,
+        resident,
+      );
+    } else {
+      success = await ResidentService.instance.createResident(resident);
+    }
+
     if (!mounted) return;
 
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Data warga berhasil ditambahkan")),
-      );
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Gagal menambah warga")),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? isEdit
+                  ? "Data warga berhasil diperbarui"
+                  : "Data warga berhasil ditambahkan"
+              : "Gagal menyimpan data warga",
+        ),
+      ),
+    );
+
+    if (success) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Tambah Data Warga")),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      appBar: AppBar(
+        title: Text(isEdit ? "Edit Data Warga" : "Tambah Data Warga"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: families.isEmpty
@@ -107,7 +125,9 @@ class _FormResidentPageState extends State<FormResidentPage> {
 
                     TextFormField(
                       controller: birthController,
-                      decoration: const InputDecoration(labelText: "Tanggal Lahir"),
+                      decoration:
+                          const InputDecoration(labelText: "Tanggal Lahir"),
+                      readOnly: true,
                       onTap: () async {
                         FocusScope.of(context).unfocus();
                         final picked = await showDatePicker(
@@ -123,17 +143,19 @@ class _FormResidentPageState extends State<FormResidentPage> {
                       },
                     ),
 
-                    DropdownButtonFormField(
+                    DropdownButtonFormField<String>(
+                      value: gender,
                       decoration:
                           const InputDecoration(labelText: "Jenis Kelamin"),
                       items: const [
                         DropdownMenuItem(value: "L", child: Text("Laki-laki")),
                         DropdownMenuItem(value: "P", child: Text("Perempuan")),
                       ],
-                      onChanged: (v) => gender = v,
+                      onChanged: (v) => setState(() => gender = v),
                     ),
 
                     DropdownButtonFormField<int>(
+                      value: selectedFamilyId,
                       decoration:
                           const InputDecoration(labelText: "Keluarga"),
                       items: families.map((f) {
@@ -142,7 +164,8 @@ class _FormResidentPageState extends State<FormResidentPage> {
                           child: Text(f.name),
                         );
                       }).toList(),
-                      onChanged: (v) => selectedFamilyId = v,
+                      onChanged: (v) =>
+                          setState(() => selectedFamilyId = v),
                       validator: (v) =>
                           v == null ? "Pilih keluarga" : null,
                     ),
