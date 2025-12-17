@@ -16,7 +16,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
     if (location.startsWith('/dashboard')) return 0;
-    if (location.startsWith('/laporan')) return 1;
+    if (location.startsWith('/laporan-bulanan-rw')) return 1;
     if (location.startsWith('/menu-popup')) return 2;
     if (location.startsWith('/pengguna')) return 3;
     return 0;
@@ -27,17 +27,23 @@ class _BottomNavbarState extends State<BottomNavbar> {
       case 0:
         context.go('/dashboard');
         break;
+
       case 1:
-        // TODO: route laporan
+        // route laporan bulanan RW
+        context.push('/laporan-bulanan-rw');
         break;
+
       case 2:
         showMenuPopUp(context);
         break;
+
       case 3:
-        // TODO: route pengguna
+        // route manajemen / pengguna
+        context.go('/pengguna'); 
         break;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

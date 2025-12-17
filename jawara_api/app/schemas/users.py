@@ -7,8 +7,7 @@ class RoleRead(BaseModel):
     name: str
     display_name: Optional[str]
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserBase(BaseModel):
@@ -35,5 +34,4 @@ class UserRead(UserBase):
     id: int
     role: Optional[RoleRead] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

@@ -7,25 +7,40 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 
 class ApiClient {
-  // static const String _pcLanBaseUrl = 'http://10.12.14.97:9000';
-  static const String _pcLanBaseUrl = 'http://192.168.2.25:9000';
-  // static const String _pcLanBaseUrl = 'http://192.168.1.100:9000';
-  static const String _webBaseUrl   = 'http://192.168.2.25:9000';
-  static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';
+  static const String _pcLocalBaseUrl    = 'http://127.0.0.1:9000'; // backend di laptop
+  static const String _webBaseUrl        = 'http://127.0.0.1:9000'; // flutter web
+  static const String _androidAdbBaseUrl = 'http://127.0.0.1:9000'; // HP fisik via adb reverse
+  static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';  // emulator Android
 
   static String get baseUrl {
     if (kIsWeb) return _webBaseUrl;
+
     if (Platform.isAndroid) {
-      const bool useEmulator = false;
-      return useEmulator ? _androidEmuBaseUrl : _pcLanBaseUrl;
+      // HP fisik pakai kabel + `adb reverse tcp:9000 tcp:9000`
+      const bool useAdbReverse = true;
+      const bool useEmulator   = false;
+
+      if (useEmulator) {
+        return _androidEmuBaseUrl;
+      }
+      if (useAdbReverse) {
+        return _androidAdbBaseUrl;
+      }
+
+      // fallback kalau suatu saat mau pakai LAN langsung
+      return _pcLocalBaseUrl;
     }
-    return _pcLanBaseUrl;
+
+    // desktop / iOS
+    return _pcLocalBaseUrl;
   }
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
+
+  static Future<String?> getToken() => _getToken();
 
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -36,8 +51,6 @@ class ApiClient {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
   }
-
-  // ─────────────────────────────────────────────
 
   static Future<http.Response> post(
     String path,
@@ -67,8 +80,6 @@ class ApiClient {
       rethrow;
     }
   }
-
-  // ─────────────────────────────────────────────
 
   static Future<http.Response> get(
     String path, {

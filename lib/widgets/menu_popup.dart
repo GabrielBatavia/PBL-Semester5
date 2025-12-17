@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:jawaramobile_1/utils/session.dart';
 import '../services/auth_service.dart';
 
 bool _allowedForRole(String role, String menuKey) {
@@ -94,7 +94,7 @@ class _MenuPopUpContent extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return FutureBuilder<String?>(
-      future: AuthService.instance.getCachedRoleName(),
+      future: SessionManager.getRole(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
@@ -157,7 +157,7 @@ class _MenuPopUpContent extends StatelessWidget {
             'key': 'pesan-warga',
             'icon': Icons.chat_bubble_outline,
             'title': 'Pesan Warga',
-            'action': () => showFeatureNotReady(context),
+            'action': () => context.push('/pesan-warga'),
           },
           {
             'key': 'penerimaan-warga',
@@ -264,10 +264,9 @@ class _MenuPopUpContent extends StatelessWidget {
                         return InkWell(
                           onTap: () {
                             Navigator.pop(context);
-                            Future.delayed(
-                              const Duration(milliseconds: 100),
-                              () => (item['action'] as VoidCallback)(),
-                            );
+                            Future.microtask(() {
+                              if (context.mounted) item['action']();
+                            });
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Container(

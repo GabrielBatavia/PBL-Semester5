@@ -4,10 +4,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from .routers import broadcast
+from .routers import broadcast 
+from .routers import kegiatan 
 
 from .db import Base, engine
-from .routers import auth, users, logs, marketplace, ai_agent, broadcast, expenses, payment_channels, fee_categories, bills, income_transactions, reports,activities
+from .routers import auth, resident_routers, users, logs, marketplace, ai_agent, family_routers, house_routers, mutation_routers, marketplace, ai_agent, messages, kegiatan, citizen_request_routers, broadcast, expenses, payment_channels, fee_categories, bills, income_transactions, reports,activities   # ← TAMBAHKAN marketplace
 
 # create tables kalau belum ada
 Base.metadata.create_all(bind=engine)
@@ -54,6 +55,13 @@ app.include_router(users.router)
 app.include_router(logs.router)
 app.include_router(ai_agent.router)
 app.include_router(marketplace.router)     
+app.include_router(messages.router) 
+app.include_router(kegiatan.router)
+app.include_router(family_routers.router)
+app.include_router(house_routers.router)
+app.include_router(resident_routers.router)
+app.include_router(mutation_routers.router)
+app.include_router(citizen_request_routers.router)
 app.include_router(broadcast.router)
 app.include_router(expenses.router)
 app.include_router(payment_channels.router)
@@ -62,3 +70,4 @@ app.include_router(bills.router)
 app.include_router(income_transactions.router)
 app.include_router(reports.router)
 app.include_router(activities.router)
+app.include_router(kegiatan.router)

@@ -12,8 +12,9 @@ import '../models/marketplace_item.dart';
 import 'api_client.dart';
 
 class MarketplaceService {
-  MarketplaceService._();
-  static final MarketplaceService instance = MarketplaceService._();
+  MarketplaceService();
+
+  static MarketplaceService instance = MarketplaceService();
 
   final _itemsController = StreamController<List<MarketplaceItem>>.broadcast();
   Stream<List<MarketplaceItem>> get items$ => _itemsController.stream;
@@ -50,6 +51,7 @@ class MarketplaceService {
     required double price,
     String? description,
     String? unit,
+    String? veggieClass,   // 🔹
     File? imageFile,
   }) async {
     final uri = Uri.parse('${ApiClient.baseUrl}/marketplace/items');
@@ -64,6 +66,9 @@ class MarketplaceService {
     }
     if (unit != null && unit.isNotEmpty) {
       request.fields['unit'] = unit;
+    }
+    if (veggieClass != null && veggieClass.isNotEmpty) {
+      request.fields['veggie_class'] = veggieClass;   // 🔹
     }
 
     // kirim file gambar (opsional)
@@ -95,6 +100,7 @@ class MarketplaceService {
       throw Exception('Gagal menambahkan item (${resp.statusCode})');
     }
   }
+
 
   /// POST /marketplace/analyze-image – kirim foto ke backend AI (mock)
   /// (pastikan endpoint ini sudah ada di FastAPI, kalau belum, tombol di UI jangan dipakai dulu)

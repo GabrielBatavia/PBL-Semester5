@@ -1,9 +1,8 @@
 // lib/widgets/dashboard_chart.dart
-
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:jawaramobile_1/theme/AppTheme.dart';
 import 'package:jawaramobile_1/services/activitiy_service.dart';
+import 'package:fl_chart/fl_chart.dart'; // pastikan fl_chart sudah ada di pubspec
 
 class DashboardChart extends StatefulWidget {
   const DashboardChart({super.key});
@@ -85,16 +84,64 @@ class _DashboardChartState extends State<DashboardChart> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    // contoh data statis (bisa nanti di-connect ke API)
+    final sections = <PieChartSectionData>[
+      PieChartSectionData(
+        value: 30,
+        title: 'Keagamaan\n30%',
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        color: const Color(0xFF7C3AED),
+      ),
+      PieChartSectionData(
+        value: 20,
+        title: 'Pendidikan\n20%',
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        color: const Color(0xFF4F46E5),
+      ),
+      PieChartSectionData(
+        value: 10,
+        title: 'Olahraga\n10%',
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        color: const Color(0xFF22C55E),
+      ),
+      PieChartSectionData(
+        value: 40,
+        title: 'Sosial\n40%',
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        color: const Color(0xFF9333EA),
+      ),
+    ];
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+            color: Colors.black.withOpacity(0.07),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -190,31 +237,3 @@ class _DashboardChartState extends State<DashboardChart> {
     );
   }
 }
-
-class _LegendDot extends StatelessWidget {
-  final Color color;
-  final String label;
-
-  const _LegendDot({required this.color, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
-        ),
-      ],
-    );
-  }
-}
-

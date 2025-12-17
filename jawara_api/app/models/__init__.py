@@ -136,3 +136,8 @@ class Activity(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     creator = relationship("User")
+from .kegiatan import Kegiatan
+from .family import Family
+from .house import House
+from .resident import Resident
+from .mutasi import Mutasi

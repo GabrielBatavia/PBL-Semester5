@@ -148,7 +148,7 @@ class _MenuContent extends StatelessWidget {
         'key': 'pesan-warga',
         'icon': Icons.chat_bubble,
         'title': 'Pesan Warga',
-        'action': () => _showFeatureNotReady(context),
+        'action': () => context.push('/pesan-warga'),
       },
       {
         'key': 'penerimaan-warga',

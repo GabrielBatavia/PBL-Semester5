@@ -1,9 +1,9 @@
 # app/routers/auth.py
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 from jose import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import hashlib
 
 from ..db import SessionLocal
@@ -13,8 +13,10 @@ from ..deps import get_db, get_current_user, SECRET_KEY, ALGORITHM
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# ============================================================
+#   PASSWORD: PAKE PLAIN TEXT (TIDAK DI HASH)
+# ============================================================
 
 def hash_password(password: str) -> str:
     """
@@ -52,12 +54,19 @@ def verify_password(plain: str, hashed: str) -> bool:
     
     return False
 
+# ============================================================
+#   TOKEN JWT
+# ============================================================
 
 def create_access_token(user_id: int, expires_minutes: int = 60 * 24):
-    expire = datetime.utcnow() + timedelta(minutes=expires_minutes)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes)
     to_encode = {"sub": str(user_id), "exp": expire}
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+
+# ============================================================
+#   REGISTER
+# ============================================================
 
 @router.post("/register", response_model=user_schemas.UserRead, status_code=201)
 def register(
@@ -67,6 +76,7 @@ def register(
     existing = db.query(models.User).filter(
         models.User.email == body.email
     ).first()
+
     if existing:
         raise HTTPException(
             status_code=400,
@@ -88,6 +98,10 @@ def register(
     
     return new_user
 
+
+# ============================================================
+#   LOGIN
+# ============================================================
 
 @router.post("/login", response_model=auth_schemas.TokenResponse)
 def login(
@@ -131,10 +145,10 @@ def login(
     }
 
 
+# ============================================================
+#   CURRENT USER
+# ============================================================
+
 @router.get("/me", response_model=user_schemas.UserRead)
 def get_me(current_user: models.User = Depends(get_current_user)):
-    """
-    Mengembalikan profil user yang sedang login (pakai JWT).
-    Termasuk field role: { id, name, display_name }.
-    """
     return current_user
