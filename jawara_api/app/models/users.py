@@ -20,4 +20,6 @@ class User(Base):
 
     role = relationship("Role", back_populates="users")
     broadcasts = relationship("Broadcast", back_populates="sender", cascade="all,delete-orphan")
+    logs = relationship("ActivityLog", back_populates="actor")
+    marketplace_items = relationship("MarketplaceItem", back_populates="owner", cascade="all, delete-orphan")
     kegiatan_list = relationship("Kegiatan", back_populates="creator")

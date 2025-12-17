@@ -3,44 +3,39 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jawaramobile_1/utils/safe_navigation.dart';
 import 'package:jawaramobile_1/widgets/pengeluaran_filter.dart';
+import 'package:jawaramobile_1/services/expenses_service.dart';
 
-class Pengeluaran extends StatelessWidget {
+class Pengeluaran extends StatefulWidget {
   const Pengeluaran({super.key});
 
-  // Data dummy
-  final List<Map<String, String>> _pengeluaranData = const [
-    {
-      "nama": "Beli Sapu",
-      "kategori": "Keamanan & Kebersihan",
-      "tanggal": "22 Oktober 2025",
-      "nominal": "Rp 25.000",
-    },
-    {
-      "nama": "Perbaikan Lampu Jalan",
-      "kategori": "Pemeliharaan Fasilitas",
-      "tanggal": "17 Oktober 2025",
-      "nominal": "Rp 150.000",
-    },
-    {
-      "nama": "Santunan anak Yatim",
-      "kategori": "Kegiatan Sosial",
-      "tanggal": "15 Oktober 2025",
-      "nominal": "Rp 50.000",
-    },
-    {
-      "nama": "Pembangunan Pos RW",
-      "kategori": "Pembangunan",
-      "tanggal": "11 September 2025",
-      "nominal": "Rp 320.000",
-    },
-    {
-      "nama": "Lomba 17an",
-      "kategori": "Kegiatan Warga",
-      "tanggal": "10 Agustus 2025",
-      "nominal": "Rp 500.000",
-    },
-  ];
+  @override
+  State<Pengeluaran> createState() => _PengeluaranState();
+}
+
+class _PengeluaranState extends State<Pengeluaran> {
+  List<Map<String, dynamic>> _pengeluaranData = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExpenses();
+  }
+
+  Future<void> _loadExpenses() async {
+    try {
+      final data = await ExpenseService.getExpenses();
+      setState(() {
+        _pengeluaranData = data;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      // Handle error
+    }
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
@@ -127,45 +122,56 @@ class Pengeluaran extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: DataTable2(
-                        columnSpacing: 12,
-                        horizontalMargin: 12,
-                        headingRowColor: MaterialStateProperty.all(
-                          colorScheme.primary.withOpacity(0.05),
-                        ),
-                        headingTextStyle: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
-                        columns: const [
-                          DataColumn2(label: Text('Nama')),
-                          DataColumn2(label: Text('Nominal'), numeric: true),
-                        ],
-                        rows: _pengeluaranData.map((item) {
-                          return DataRow2(
-                            onTap: () {
-                              context.push(
-                                '/detail-pengeluaran-all',
-                                extra: item,
-                              );
-                            },
-                            cells: [
-                              DataCell(Text(item['nama']!)),
-                              DataCell(
-                                Text(
-                                  item['nominal']!,
-                                  style: TextStyle(
-                                    color: theme.colorScheme.error,
-                                    fontWeight: FontWeight.bold,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: _isLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : _pengeluaranData.isEmpty
+                              ? const Center(
+                                  child: Text('Tidak ada data pengeluaran'),
+                                )
+                              : DataTable2(
+                                  columnSpacing: 12,
+                                  horizontalMargin: 12,
+                                  headingRowHeight: 56,
+                                  dataRowHeight: 56,
+                                  headingRowColor: MaterialStateProperty.all(
+                                    colorScheme.primary.withOpacity(0.05),
                                   ),
+                                  headingTextStyle: theme.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.primary,
+                                      ),
+                                  columns: const [
+                                    DataColumn2(label: Text('Nama'), size: ColumnSize.L),
+                                    DataColumn2(label: Text('Nominal'), numeric: true),
+                                  ],
+                                  rows: _pengeluaranData.map((item) {
+                                    return DataRow2(
+                                      onTap: () {
+                                        context.safePush(
+                                          '/detail-pengeluaran-all',
+                                          extra: item,
+                                        );
+                                      },
+                                      cells: [
+                                        DataCell(Text(item['name']?.toString() ?? '-')),
+                                        DataCell(
+                                          Text(
+                                            'Rp ${item['amount']?.toString() ?? '0'}',
+                                            style: TextStyle(
+                                              color: theme.colorScheme.error,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
                                 ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
                     ),
                   ),
                 ),

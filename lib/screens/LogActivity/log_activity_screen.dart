@@ -62,13 +62,6 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // opsional: tambah log manual
-        },
-        backgroundColor: colorScheme.primary,
-        child: const Icon(Icons.add),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -164,15 +157,21 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
                             ],
                             rows: logs.map((log) {
                               return DataRow2(
-                                onTap: () => context.push(
-                                  '/detail-log-aktivitas',
-                                  extra: {
-                                    'no': log.id.toString(),
-                                    'deskripsi': log.description,
-                                    'aktor': log.actorName,
-                                    'tanggal': log.formattedDate,
-                                  },
-                                ),
+                                onTap: () {
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    if (mounted) {
+                                      context.push(
+                                        '/detail-log-aktivitas',
+                                        extra: {
+                                          'no': log.id.toString(),
+                                          'deskripsi': log.description,
+                                          'aktor': log.actorName,
+                                          'tanggal': log.formattedDate,
+                                        },
+                                      );
+                                    }
+                                  });
+                                },
                                 cells: [
                                   DataCell(
                                     Text(

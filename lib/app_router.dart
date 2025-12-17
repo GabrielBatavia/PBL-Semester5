@@ -6,6 +6,7 @@ import 'package:jawaramobile_1/screens/Auth/login_screens.dart';
 import 'package:jawaramobile_1/screens/Auth/register_screens.dart';
 import 'package:jawaramobile_1/screens/Mutasi/mutasi_detail_page.dart';
 import 'package:jawaramobile_1/screens/Mutasi/mutasi_page.dart';
+import 'package:jawaramobile_1/models/payment_channel.dart';  
 
 // ====== Screens Utama ======
 import 'package:jawaramobile_1/screens/dashboard_screen.dart';
@@ -15,36 +16,39 @@ import 'package:jawaramobile_1/screens/data_warga_rumah.dart';
 import 'package:jawaramobile_1/screens/pengguna_screen.dart';
 
 // ====== Pemasukan ======
-import 'package:jawaramobile_1/screens/Pemasukan/menu_pemasukan.dart';
-import 'package:jawaramobile_1/screens/Pemasukan/kategori_iuran.dart';
-import 'package:jawaramobile_1/screens/Pemasukan/detail_kategori_iuran.dart';
-import 'package:jawaramobile_1/screens/Pemasukan/tagih_iuran_page.dart';
-import 'package:jawaramobile_1/screens/Pemasukan/daftar_tagihan.dart';
-import 'package:jawaramobile_1/screens/Pemasukan/detail_tagihan.dart';
-import 'package:jawaramobile_1/screens/Pemasukan/lain_lain.dart';
+import 'package:jawaramobile_1/screens/Pemasukan/menu_pemasukan.dart'; //aman
+import 'package:jawaramobile_1/screens/Pemasukan/kategori_iuran.dart'; //done
+import 'package:jawaramobile_1/screens/Pemasukan/detail_kategori_iuran.dart'; //ngebug
+import 'package:jawaramobile_1/screens/Pemasukan/tagih_iuran_page.dart';//done
+import 'package:jawaramobile_1/screens/Pemasukan/daftar_tagihan.dart';//done
+import 'package:jawaramobile_1/screens/Pemasukan/detail_tagihan.dart';//done
+import 'package:jawaramobile_1/screens/Pemasukan/lain_lain.dart';//done
+
+// ======= dahsboard =============
+//belum ada
 
 // ====== Pesan Warga ======
 import 'package:jawaramobile_1/screens/PesanWarga/pesan_warga_screen.dart';
 
 
 // ====== Pengeluaran ======
-import 'package:jawaramobile_1/screens/pengeluaran/pengeluaran_screen.dart';
-import 'package:jawaramobile_1/screens/pengeluaran/tambah_pengeluaran_screen.dart';
-import 'package:jawaramobile_1/screens/pengeluaran/detail_pengeluaran_screen.dart';
+import 'package:jawaramobile_1/screens/pengeluaran/pengeluaran_screen.dart'; //done
+import 'package:jawaramobile_1/screens/pengeluaran/tambah_pengeluaran_screen.dart'; //done
+import 'package:jawaramobile_1/screens/pengeluaran/detail_pengeluaran_screen.dart'; //error
 
 // ====== Laporan Bulanan RW ======
 import 'package:jawaramobile_1/screens/LaporanBulanan/laporan_bulanan_rw_screen.dart';
 
 // ====== Laporan Keuangan ======
-import 'package:jawaramobile_1/screens/LaporanKeuangan/semua_pengeluaran.dart';
-import 'package:jawaramobile_1/screens/LaporanKeuangan/detail_pengeluaran.dart';
-import 'package:jawaramobile_1/screens/LaporanKeuangan/semua_pemasukan.dart';
-import 'package:jawaramobile_1/screens/LaporanKeuangan/detail_pemasukan.dart';
-import 'package:jawaramobile_1/screens/LaporanKeuangan/cetak_laporan_screen.dart';
-import 'package:jawaramobile_1/screens/LaporanKeuangan/menu_laporan_keuangan.dart';
+import 'package:jawaramobile_1/screens/LaporanKeuangan/semua_pengeluaran.dart'; //aman
+import 'package:jawaramobile_1/screens/LaporanKeuangan/detail_pengeluaran.dart'; //error nampilin
+import 'package:jawaramobile_1/screens/LaporanKeuangan/semua_pemasukan.dart'; //aman
+import 'package:jawaramobile_1/screens/LaporanKeuangan/detail_pemasukan.dart'; //aman
+import 'package:jawaramobile_1/screens/LaporanKeuangan/cetak_laporan_screen.dart'; // belum ada backend
+import 'package:jawaramobile_1/screens/LaporanKeuangan/menu_laporan_keuangan.dart'; //aman
 
-// ====== Kegiatan ======
-import 'package:jawaramobile_1/screens/Kegiatan/daftar_kegiatan.dart';
+// ====== Kegiatan ====== (belum nyambung ke menu semua)
+import 'package:jawaramobile_1/screens/Kegiatan/daftar_kegiatan.dart'; 
 import 'package:jawaramobile_1/screens/Kegiatan/tambah_kegiatan.dart';
 import 'package:jawaramobile_1/screens/Kegiatan/detail_kegiatan.dart';
 import 'package:jawaramobile_1/screens/Kegiatan/edit_kegiatan.dart';
@@ -64,8 +68,9 @@ import 'package:jawaramobile_1/screens/ManajemenPengguna/daftar_pengguna_screen.
 import 'package:jawaramobile_1/screens/ManajemenPengguna/tambah_pengguna_screen.dart';
 
 // ====== Channel Transfer ======
-import 'package:jawaramobile_1/screens/ChannelTransfer/daftar_channel_screen.dart';
-import 'package:jawaramobile_1/screens/ChannelTransfer/tambah_channel_screen.dart';
+import 'package:jawaramobile_1/screens/ChannelTransfer/daftar_channel_screen.dart'; //done sambung backend
+import 'package:jawaramobile_1/screens/ChannelTransfer/tambah_channel_screen.dart'; //done sambung backend
+import 'package:jawaramobile_1/screens/ChannelTransfer/detail_channel_screen.dart'; //done
 
 // ====marketplace sayuran=====
 import 'package:jawaramobile_1/screens/marketplace/marketplace_screen.dart';
@@ -175,13 +180,13 @@ final appRouter = GoRouter(
       builder: (context, state) => const TambahPengeluaranScreen(),
     ),
     GoRoute(
-      path: '/detail-pengeluaran',
-      name: 'detail-pengeluaran',
-      builder: (context, state) {
-        final data = state.extra as Map<String, String>;
-        return DetailPengeluaranScreen(pengeluaranData: data);
-      },
-    ),
+    path: '/detail-pengeluaran',
+    name: 'detail-pengeluaran',
+    builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>; // Change to dynamic
+    return DetailPengeluaranScreen(pengeluaranData: data);
+  },
+),
 
     // ====== Laporan Bulanan RW ======
     GoRoute(
@@ -330,6 +335,14 @@ final appRouter = GoRouter(
       name: 'tambah-channel',
       builder: (context, state) => const TambahChannelScreen(),
     ),
+    GoRoute(
+    path: '/detail-channel',
+    name: 'detail-channel',
+    builder: (context, state) {
+      final data = state.extra as PaymentChannel;
+    return DetailChannelScreen(channelData: data);
+    },
+  ),
 
     GoRoute(
       path: '/channel-transfer',

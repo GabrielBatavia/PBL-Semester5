@@ -8,7 +8,7 @@ from .routers import broadcast
 from .routers import kegiatan 
 
 from .db import Base, engine
-from .routers import auth, resident_routers, users, logs, marketplace, ai_agent, family_routers, house_routers, mutation_routers, marketplace, ai_agent, messages, kegiatan, citizen_request_routers   # ← TAMBAHKAN marketplace
+from .routers import auth, resident_routers, users, logs, marketplace, ai_agent, family_routers, house_routers, mutation_routers, marketplace, ai_agent, messages, kegiatan, citizen_request_routers, broadcast, expenses, payment_channels, fee_categories, bills, income_transactions, reports,activities   # ← TAMBAHKAN marketplace
 
 # create tables kalau belum ada
 Base.metadata.create_all(bind=engine)
@@ -63,4 +63,11 @@ app.include_router(resident_routers.router)
 app.include_router(mutation_routers.router)
 app.include_router(citizen_request_routers.router)
 app.include_router(broadcast.router)
+app.include_router(expenses.router)
+app.include_router(payment_channels.router)
+app.include_router(fee_categories.router)
+app.include_router(bills.router)
+app.include_router(income_transactions.router)
+app.include_router(reports.router)
+app.include_router(activities.router)
 app.include_router(kegiatan.router)

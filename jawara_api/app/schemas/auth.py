@@ -1,10 +1,18 @@
 # app/schemas/auth.py
 from pydantic import BaseModel, EmailStr
+from typing import Optional
+
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: str
 
 
 class TokenResponse(BaseModel):
-    token: str
+    access_token: str  
     token_type: str = "bearer"
+    user: Optional[UserResponse] = None  
 
 
 class LoginRequest(BaseModel):
@@ -16,6 +24,6 @@ class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
     password: str
-    nik: str | None = None
-    phone: str | None = None
-    address: str | None = None
+    nik: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None

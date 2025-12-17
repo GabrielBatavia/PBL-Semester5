@@ -35,7 +35,7 @@ class ApiClient {
     return _pcLocalBaseUrl;
   }
 
-  static Future<String?> _getToken() async {
+  static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
@@ -61,7 +61,7 @@ class ApiClient {
     final headers = <String, String>{'Content-Type': 'application/json'};
 
     if (auth) {
-      final token = await _getToken();
+      final token = await getToken();
       if (token != null && token.isNotEmpty) {
         headers['Authorization'] = 'Bearer $token';
       }
@@ -89,7 +89,7 @@ class ApiClient {
     final headers = <String, String>{'Content-Type': 'application/json'};
 
     if (auth) {
-      final token = await _getToken();
+      final token = await getToken();
       if (token != null && token.isNotEmpty) {
         headers['Authorization'] = 'Bearer $token';
       }
@@ -108,7 +108,10 @@ class ApiClient {
       rethrow;
     }
   }
-  static Future<http.Response> put(
+
+  // ─────────────────────────────────────────────
+
+  static Future<http.Response> patch(
     String path,
     Map<String, dynamic> body, {
     bool auth = false,
@@ -117,43 +120,22 @@ class ApiClient {
     final headers = <String, String>{'Content-Type': 'application/json'};
 
     if (auth) {
-      final token = await _getToken();
-      if (token != null) headers['Authorization'] = 'Bearer $token';
+      final token = await getToken();
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
     }
 
     try {
-      debugPrint('PUT  $uri');
+      debugPrint('PATCH $uri');
       final resp = await http
-          .put(uri, headers: headers, body: jsonEncode(body))
+          .patch(uri, headers: headers, body: jsonEncode(body))
           .timeout(const Duration(seconds: 10));
-      debugPrint('→ ${resp.statusCode}');
+
+      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
       return resp;
     } on TimeoutException {
-      debugPrint('⚠️ Timeout ke $uri');
-      rethrow;
-    }
-  }
-  static Future<http.Response> delete(
-    String path, {
-    bool auth = false,
-  }) async {
-    final uri = Uri.parse('$baseUrl$path');
-    final headers = <String, String>{'Content-Type': 'application/json'};
-
-    if (auth) {
-      final token = await _getToken();
-      if (token != null) headers['Authorization'] = 'Bearer $token';
-    }
-
-    try {
-      debugPrint('DELETE $uri');
-      final resp = await http
-          .delete(uri, headers: headers)
-          .timeout(const Duration(seconds: 10));
-      debugPrint('→ ${resp.statusCode}');
-      return resp;
-    } on TimeoutException {
-      debugPrint('⚠️ Timeout ke $uri');
+      debugPrint('⚠ Timeout ke $uri');
       rethrow;
     }
   }

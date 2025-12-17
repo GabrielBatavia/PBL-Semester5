@@ -9,7 +9,6 @@ bool _allowedForRole(String role, String menuKey) {
       return true;
     case 'bendahara':
       return [
-        'dashboard',
         'pemasukan',
         'pengeluaran',
         'laporan',

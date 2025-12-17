@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from jose import jwt
 from datetime import datetime, timedelta, timezone
+import hashlib
 
 from ..db import SessionLocal
 from .. import models
@@ -17,22 +18,41 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 #   PASSWORD: PAKE PLAIN TEXT (TIDAK DI HASH)
 # ============================================================
 
-from passlib.context import CryptContext
-
-# Gunakan bcrypt
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def verify_password(plain: str, stored_hash: str) -> bool:
-    """Cek apakah password plain cocok dengan hash."""
-    if stored_hash is None:
-        return False
-    return pwd_context.verify(plain, stored_hash)
-
 def hash_password(password: str) -> str:
-    """Hash password sebelum disimpan."""
-    return pwd_context.hash(password)
+    """
+    Hash password using SHA256 + bcrypt
+    SHA256 ensures consistent length (64 hex chars) before bcrypt
+    """
+    # Pre-hash with SHA256 to handle any length password
+    prehashed = hashlib.sha256(password.encode('utf-8')).hexdigest()
+    # Then hash with bcrypt (prehashed is always 64 chars, safe for bcrypt)
+    return pwd_context.hash(prehashed)
 
 
+def verify_password(plain: str, hashed: str) -> bool:
+    """
+    Verify password using SHA256 + bcrypt
+    
+    Special handling for legacy passwords:
+    - If hash starts with $2b$, try direct bcrypt verify first (legacy)
+    - If that fails, try SHA256 + bcrypt (new method)
+    """
+    try:
+        # Try new method (SHA256 + bcrypt)
+        prehashed = hashlib.sha256(plain.encode('utf-8')).hexdigest()
+        if pwd_context.verify(prehashed, hashed):
+            return True
+    except Exception:
+        pass
+    
+    try:
+        # Try legacy method (direct bcrypt) for old passwords
+        if pwd_context.verify(plain, hashed):
+            return True
+    except Exception:
+        pass
+    
+    return False
 
 # ============================================================
 #   TOKEN JWT
@@ -59,28 +79,23 @@ def register(
 
     if existing:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email sudah terdaftar.",
+            status_code=400,
+            detail="Email sudah terdaftar"
         )
-
-    # role default = warga
-    role = db.query(models.Role).filter(models.Role.name == "warga").first()
-
+    
+    # Hash password using SHA256 + bcrypt
+    hashed_pw = hash_password(body.password)
+    
     new_user = models.User(
         name=body.name,
         email=body.email,
-        password_hash=hash_password(body.password),
-        nik=body.nik,
-        phone=body.phone,
-        address=body.address,
-        role_id=role.id if role else None,
-        status="active",         # ← penting: supaya user bisa login
+        password_hash=hashed_pw,
     )
-
+    
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-
+    
     return new_user
 
 
@@ -96,30 +111,38 @@ def login(
     user = db.query(models.User).filter(
         models.User.email == body.email
     ).first()
-
+    
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email atau password salah.",
+            status_code=401,
+            detail="Email atau password salah"
         )
-
-    # cek password plain
+    
+    # Verify password (handles both legacy and new hashes)
     if not verify_password(body.password, user.password_hash):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email atau password salah.",
+            status_code=401,
+            detail="Email atau password salah"
         )
-
-    # pastikan status user aktif
-    if user.status not in ("active", "diterima"):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Akun belum aktif.",
-        )
-
-    # buat token JWT
+    
+    # Auto-upgrade legacy passwords to new format
+    if user.password_hash and not user.password_hash.startswith("$2b$12$"):
+        # Re-hash password with new method
+        user.password_hash = hash_password(body.password)
+        db.commit()
+    
+    # Create access token
     token = create_access_token(user.id)
-    return auth_schemas.TokenResponse(token=token)
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+        }
+    }
 
 
 # ============================================================

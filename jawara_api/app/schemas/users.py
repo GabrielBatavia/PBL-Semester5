@@ -1,11 +1,11 @@
 # app/schemas/users.py
-from pydantic import BaseModel, EmailStr, ConfigDict
-
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 class RoleRead(BaseModel):
     id: int
     name: str
-    display_name: str | None
+    display_name: Optional[str]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -13,25 +13,25 @@ class RoleRead(BaseModel):
 class UserBase(BaseModel):
     name: str
     email: EmailStr
-    nik: str | None = None
-    phone: str | None = None
-    address: str | None = None
-    status: str | None = None
+    nik: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    status: Optional[str] = None
 
 
 class UserCreate(UserBase):
     password: str
-    role_id: int | None = None
+    role_id: Optional[int] = None
 
 
 class UserUpdate(BaseModel):
-    name: str | None = None
-    role_id: int | None = None
-    status: str | None = None
+    name: Optional[str] = None
+    role_id: Optional[int] = None
+    status: Optional[str] = None
 
 
 class UserRead(UserBase):
     id: int
-    role: RoleRead | None = None
+    role: Optional[RoleRead] = None
 
     model_config = ConfigDict(from_attributes=True)

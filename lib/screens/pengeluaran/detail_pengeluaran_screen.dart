@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 
 class DetailPengeluaranScreen extends StatelessWidget {
-  // Data pengeluaran akan diterima melalui constructor
-  final Map<String, String> pengeluaranData;
+  // Change from Map<String, String> to Map<String, dynamic>
+  final Map<String, dynamic> pengeluaranData;
 
   const DetailPengeluaranScreen({super.key, required this.pengeluaranData});
 
@@ -71,13 +71,13 @@ class DetailPengeluaranScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  pengeluaranData['nama'] ?? '-',
+                  pengeluaranData['nama']?.toString() ?? '-',
                   style: theme.textTheme.displayLarge
                       ?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  pengeluaranData['tanggal'] ?? '-',
+                  pengeluaranData['tanggal']?.toString() ?? '-',
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: Colors.white70),
                 ),
@@ -98,26 +98,26 @@ class DetailPengeluaranScreen extends StatelessWidget {
                         _buildDetailRow(
                           context,
                           "Nama Pengeluaran",
-                          pengeluaranData['nama'] ?? '-',
+                          pengeluaranData['nama']?.toString() ?? '-',
                         ),
                         const Divider(height: 1),
                         _buildDetailRow(
                           context,
                           "Jenis Pengeluaran",
-                          pengeluaranData['kategori'] ?? '-',
+                          pengeluaranData['kategori']?.toString() ?? '-',
                         ),
                         const Divider(height: 1),
                         _buildDetailRow(
                           context,
                           "Nominal",
-                          pengeluaranData['nominal'] ?? 'Rp 0',
+                          pengeluaranData['nominal']?.toString() ?? 'Rp 0',
                           isNominal: true,
                         ),
                         const Divider(height: 1),
                         _buildDetailRow(
                           context,
                           "Tanggal",
-                          pengeluaranData['tanggal'] ?? '-',
+                          pengeluaranData['tanggal']?.toString() ?? '-',
                         ),
                       ],
                     ),
