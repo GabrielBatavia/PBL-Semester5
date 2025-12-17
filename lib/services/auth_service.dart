@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'api_client.dart';
+import 'package:jawaramobile_1/utils/session.dart';
 
 class AuthService {
   AuthService._();
@@ -95,32 +96,19 @@ class AuthService {
     try {
       final res = await ApiClient.get('/auth/me', auth: true);
 
-      if (res.statusCode != 200) {
-        debugPrint("⚠ /auth/me gagal: ${res.statusCode}");
-        return;
-      }
+      if (res.statusCode != 200 || res.body.isEmpty) return;
 
-      if (res.body.isEmpty) {
-        debugPrint("⚠ /auth/me empty body");
-        return;
-      }
+      final data = jsonDecode(res.body);
 
-      final data = jsonDecode(res.body) as Map<String, dynamic>?;
+      final roleName = data['role']?['name']?.toLowerCase() ?? 'warga';
+      final userId = data['id'] ?? 0;
 
-      if (data == null) {
-        debugPrint("⚠ /auth/me returned null JSON");
-        return;
-      }
+      // 🔥 Simpan ke SessionManager
+      await SessionManager.saveUserSession(
+        userId: userId,
+        role: roleName,
+      );
 
-
-      final prefs = await SharedPreferences.getInstance();
-
-      final roleName =
-          (data['role']?['name'] as String?)?.toLowerCase() ?? 'warga';
-      final userName = data['name'] as String? ?? '';
-
-      await prefs.setString(_keyRoleName, roleName);
-      await prefs.setString(_keyUserName, userName);
     } catch (e) {
       debugPrint("⚠ fetchAndCacheProfile error: $e");
     }

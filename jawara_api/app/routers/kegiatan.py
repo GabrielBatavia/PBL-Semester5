@@ -1,98 +1,33 @@
-# app/routers/kegiatan.py
-
-from typing import List
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from ..deps import get_db
+from ..models.kegiatan import Kegiatan
+from ..models.users import User
+from pydantic import BaseModel
 
-from .. import models, schemas
-from ..deps import get_db, get_current_user
+router = APIRouter(prefix="/kegiatan", tags=["Kegiatan"])
 
-router = APIRouter(
-    prefix="/kegiatan",
-    tags=["kegiatan"],
-)
+class RoleFilter(BaseModel):
+    user_id: int
+    role: str
 
+@router.post("/filter-by-role")
+def get_kegiatan_by_role(body: RoleFilter, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == body.user_id).first()
+    if not user:
+        return []
 
-@router.get("/", response_model=List[schemas.KegiatanOut])
-def list_kegiatan(
-    skip: int = 0,
-    limit: int = 50,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    # 🔥 untuk sekarang: tampilkan SEMUA kegiatan yang tidak dihapus
-    kegiatan = (
-        db.query(models.Kegiatan)
-        .filter(models.Kegiatan.is_deleted == False)  # noqa: E712
-        .order_by(models.Kegiatan.tanggal.desc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
-    return kegiatan
+    role = body.role.lower()
 
+    # RT → kegiatan yang dibuat oleh user tersebut
+    if role == "rt":
+        return db.query(Kegiatan).filter(Kegiatan.created_by == body.user_id).all()
 
-@router.post("/", response_model=schemas.KegiatanOut, status_code=status.HTTP_201_CREATED)
-def create_kegiatan(
-    body: schemas.KegiatanCreate,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    keg = models.Kegiatan(
-        nama=body.nama,
-        kategori=body.kategori,
-        pj=body.pj,
-        tanggal=body.tanggal,
-        lokasi=body.lokasi,
-        deskripsi=body.deskripsi,
-        created_by_id=current_user.id,
-    )
-    db.add(keg)
-    db.commit()
-    db.refresh(keg)
-    return keg
+    # RW → tampilkan semua kegiatan dari seluruh RT
+    if role == "rw":
+        rt_users = db.query(User.id).filter(User.role == "rt").all()
+        rt_ids = [u[0] for u in rt_users]
+        return db.query(Kegiatan).filter(Kegiatan.created_by.in_(rt_ids)).all()
 
-
-@router.put("/{kegiatan_id}", response_model=schemas.KegiatanOut)
-def update_kegiatan(
-    kegiatan_id: int,
-    body: schemas.KegiatanUpdate,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    keg = db.query(models.Kegiatan).filter(
-        models.Kegiatan.id == kegiatan_id,
-        models.Kegiatan.is_deleted == False,  # noqa: E712
-    ).first()
-
-    if not keg:
-        raise HTTPException(status_code=404, detail="Kegiatan tidak ditemukan")
-
-    # untuk sekarang belum cek role/owner
-    for field, value in body.model_dump(exclude_unset=True).items():
-        setattr(keg, field, value)
-
-    db.commit()
-    db.refresh(keg)
-    return keg
-
-
-@router.delete("/{kegiatan_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_kegiatan(
-    kegiatan_id: int,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    keg = db.query(models.Kegiatan).filter(
-        models.Kegiatan.id == kegiatan_id,
-        models.Kegiatan.is_deleted == False,  # noqa: E712
-    ).first()
-
-    if not keg:
-        raise HTTPException(status_code=404, detail="Kegiatan tidak ditemukan")
-
-    # soft delete
-    keg.is_deleted = True
-    db.commit()
-    return
+    # admin → semua kegiatan
+    return db.query(Kegiatan).all()

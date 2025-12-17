@@ -1,7 +1,7 @@
 # jawara_api/app/models.py
 
 from sqlalchemy import (
-    Column, String, ForeignKey, DateTime, Text, Float,  Integer, Date, Boolean
+    Column, Integer, String, ForeignKey, DateTime, Text, Float, Enum, Date, Boolean, Float,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -157,3 +157,58 @@ class Kegiatan(Base):
 
     # kolom baru untuk soft delete, kita tambahkan di DB (langkah 2)
     is_deleted = Column(Boolean, default=False, nullable=False)
+class Family(Base):
+    __tablename__ = "families"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    house_id = Column(Integer, ForeignKey("houses.id"), nullable=True)
+    status = Column(String, default="aktif")
+
+    # Relationship
+    house = relationship("House", back_populates="families") 
+    residents = relationship("Resident", back_populates="family") 
+    mutations = relationship("Mutasi", back_populates="family")
+
+
+class House(Base):
+    __tablename__ = "houses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    address = Column(String(255), nullable=False)
+    area = Column(String(50), nullable=True)
+    status = Column(String(255), nullable=False)
+    # relasi ke Family
+    families = relationship("Family", back_populates="house")
+    
+class Resident(Base):
+    __tablename__ = "residents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    nik = Column(String(100), nullable=True)
+    gender = Column(String(50), nullable=True)
+    birth_date = Column(String(50), nullable=True)
+    job = Column(String(100), nullable=True)
+    gender = Column(String(1), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    family_id = Column(Integer, ForeignKey("families.id", ondelete="CASCADE"))
+    family = relationship("Family", back_populates="residents")
+
+class Mutasi(Base):
+    __tablename__ = "mutations"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    family_id = Column(Integer, ForeignKey("families.id", ondelete="CASCADE"))
+    old_address = Column(String(255))
+    new_address = Column(String(255))
+    mutation_type = Column(
+        Enum("masuk", "keluar", "pindah", name="mutation_type"),
+        nullable=False
+    )
+    reason = Column(Text)
+    date = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    family = relationship("Family", back_populates="mutations")

@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:jawaramobile_1/theme/AppTheme.dart';
+import 'package:jawaramobile_1/services/kegiatan_service.dart';
 
 class TambahKegiatanForm extends StatefulWidget {
-  final Map<String, String>? initialData;
+  final Map<String, dynamic>? initialData;
 
   const TambahKegiatanForm({super.key, this.initialData});
 
@@ -111,12 +112,54 @@ class _TambahKegiatanFormState extends State<TambahKegiatanForm> {
     }
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
+  void _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final isEdit = widget.initialData != null;
+    final kegiatanId = int.tryParse(widget.initialData?['id'] ?? '0');
+
+    final Map<String, dynamic> data = {
+      'nama': _namaController.text.trim(),
+      'kategori': _selectedKategori,
+      'pj': _pjController.text.trim(),
+      'lokasi': _lokasiController.text.trim(),
+      'tanggal': _tanggalController.text.trim(),
+      'deskripsi': _deskripsiController.text.trim(),
+    };
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Menyimpan data...')),
+    );
+
+    bool success = false;
+
+    if (isEdit) {
+      success = await KegiatanService.update(kegiatanId!, data);
+    } else {
+      success = await KegiatanService.create(data);
+    }
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.pop(context); // balik ke list / detail
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Menyimpan data kegiatan...')),
+        SnackBar(
+          content: Text(isEdit
+              ? 'Kegiatan berhasil diperbarui!'
+              : 'Kegiatan berhasil ditambahkan!'),
+          backgroundColor: Colors.green,
+        ),
       );
-      // TODO: kirim ke backend (pakai _selectedKategori sebagai kategori)
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isEdit
+              ? 'Gagal memperbarui kegiatan'
+              : 'Gagal menambahkan kegiatan'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

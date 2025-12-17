@@ -28,36 +28,44 @@ class TambahBroadcastScreen extends StatelessWidget {
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.96),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Buat Broadcast Baru',
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Kirim informasi penting ke seluruh warga dalam satu kali klik.',
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 20),
-                  const TambahBroadcastForm(),
-                ],
+
+            /// MATERIAL WRAP — FIX UTAMA SUPAYA TEXTFIELD TIDAK ERROR
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.96),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.12),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Buat Broadcast Baru',
+                      style: theme.textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Kirim informasi penting ke seluruh warga dalam satu kali klik.',
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // FORM INPUT
+                    const TambahBroadcastForm(),
+                  ],
+                ),
               ),
             ),
           ),

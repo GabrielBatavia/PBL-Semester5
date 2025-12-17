@@ -1,39 +1,38 @@
 # app/schemas/kegiatan.py
+
+from pydantic import BaseModel
 from datetime import date, datetime
-from typing import Optional
-
-from pydantic import BaseModel, ConfigDict
-
 
 class KegiatanBase(BaseModel):
-    nama: str
-    kategori: Optional[str] = None
-    pj: Optional[str] = None
-    tanggal: date
-    lokasi: Optional[str] = None
-    deskripsi: Optional[str] = None
-
+    name: str
+    category: str
+    pic_name: str | None = None
+    location: str
+    date: date
+    description: str | None = None
+    image_url: str | None = None
+    created_by: int
 
 class KegiatanCreate(KegiatanBase):
     pass
 
-
 class KegiatanUpdate(BaseModel):
-    nama: Optional[str] = None
-    kategori: Optional[str] = None
-    pj: Optional[str] = None
-    tanggal: Optional[date] = None
-    lokasi: Optional[str] = None
-    deskripsi: Optional[str] = None
+    name: str | None = None
+    category: str | None = None
+    pic_name: str | None = None
+    location: str | None = None
+    date: date | None = None
+    description: str | None = None
+    image_url: str | None = None
 
-
-class KegiatanOut(KegiatanBase):
+class KegiatanRead(BaseModel):
     id: int
-    image_url: Optional[str] = None
-    created_by_id: int
-    created_at: datetime
-    updated_at: datetime
-    is_deleted: bool
+    name: str
+    kategori: str
+    pj: str
+    lokasi: str
+    tanggal: str
+    deskripsi: str
 
-    # pengganti orm_mode=True di Pydantic v2
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True

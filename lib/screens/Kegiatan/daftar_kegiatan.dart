@@ -1,11 +1,13 @@
 // lib/screens/Kegiatan/daftar_kegiatan.dart
 
+import 'dart:async';
+import 'dart:convert';
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../models/kegiatan.dart';
-import '../../services/kegiatan_service.dart';
-import '../../widgets/kegiatan/kegiatan_filter.dart';
+import 'package:jawaramobile_1/services/kegiatan_service.dart';
+import 'package:jawaramobile_1/widgets/kegiatan/kegiatan_filter.dart';
+import 'package:jawaramobile_1/utils/session.dart';
 
 class KegiatanScreen extends StatefulWidget {
   const KegiatanScreen({super.key});
@@ -15,64 +17,64 @@ class KegiatanScreen extends StatefulWidget {
 }
 
 class _KegiatanScreenState extends State<KegiatanScreen> {
-  late Future<List<Kegiatan>> _futureKegiatan;
+  final StreamController<List<Map<String, dynamic>>> _streamController =
+      StreamController.broadcast();
+
+  List<Map<String, dynamic>> _kegiatanList = [];
 
   @override
   void initState() {
     super.initState();
-    _reload();
+    _loadKegiatan();
   }
 
-  /// reload data dari API
-  Future<void> _reload() async {
-    _futureKegiatan = KegiatanService.instance.fetchKegiatan();
-    setState(() {});
+  Future<void> _loadKegiatan() async {
+    try {
+      final int userId = await Session.getUserId();
+      final String role = await Session.getUserRole();
+
+      final raw = await KegiatanService.getKegiatanByRole(
+        userId: userId,
+        role: role,
+      );
+
+      _kegiatanList = raw.map((e) => Map<String, dynamic>.from(e)).toList();
+      _streamController.add(_kegiatanList);
+    } catch (e) {
+      _streamController.add([]);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal memuat kegiatan: $e")),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
   }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text("Filter Kegiatan"),
-          content: const SingleChildScrollView(child: KegiatanFilter()),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("Batal"),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            ElevatedButton(
-              child: const Text("Cari"),
-              onPressed: () {
-                // TODO: tambahkan filter ke fetchKegiatan kalau mau
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Filter Kegiatan"),
+        content: const SingleChildScrollView(child: KegiatanFilter()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cari"),
+          ),
+        ],
+      ),
     );
-  }
-
-  /// Format tanggal dari DateTime → "17 Agustus 2025"
-  String _formatTanggal(DateTime d) {
-    const bulan = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
-    return '${d.day} ${bulan[d.month - 1]} ${d.year}';
   }
 
   @override
@@ -115,105 +117,68 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
               children: [
                 Text(
                   'Daftar Kegiatan',
-                  style: theme.textTheme.displayLarge!
-                      .copyWith(color: Colors.white),
+                  style:
+                      theme.textTheme.displayLarge!.copyWith(color: Colors.white),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  'Pantau seluruh agenda kampung dalam satu tampilan.',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: Colors.white70),
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
+
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.96),
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
-                          blurRadius: 18,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: FutureBuilder<List<Kegiatan>>(
-                        future: _futureKegiatan,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
+                    child: StreamBuilder<List<Map<String, dynamic>>>(
+                      stream: _streamController.stream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
 
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                'Error: ${snapshot.error}',
-                                textAlign: TextAlign.center,
-                              ),
-                            );
-                          }
-
-                          final data = snapshot.data ?? [];
-
-                          if (data.isEmpty) {
-                            return const Center(
-                              child: Text('Belum ada kegiatan tercatat.'),
-                            );
-                          }
-
-                          return RefreshIndicator(
-                            onRefresh: _reload,
-                            child: ListView.builder(
-                              physics:
-                                  const AlwaysScrollableScrollPhysics(),
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                final item = data[index];
-                                final tanggal =
-                                    _formatTanggal(item.tanggal);
-
-                                return Card(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 6),
-                                  child: ListTile(
-                                    title: Text(
-                                      item.nama,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    subtitle: Text(tanggal),
-                                    trailing: const Icon(
-                                      Icons.chevron_right,
-                                      size: 20,
-                                    ),
-                                    onTap: () {
-                                      context.push(
-                                        '/detail-kegiatan',
-                                        extra: {
-                                          'id': item.id.toString(),
-                                          'nama': item.nama,
-                                          'kategori': item.kategori ?? '',
-                                          'pj': item.pj ?? '',
-                                          'lokasi': item.lokasi ?? '',
-                                          'tanggal': tanggal,
-                                          'deskripsi':
-                                              item.deskripsi ?? '',
-                                        },
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
+                        final data = snapshot.data!;
+                        if (data.isEmpty) {
+                          return const Center(
+                            child: Text("Tidak ada kegiatan"),
                           );
-                        },
-                      ),
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: DataTable2(
+                            columnSpacing: 12,
+                            horizontalMargin: 12,
+                            headingRowColor: MaterialStateProperty.all(
+                              colorScheme.primary.withOpacity(0.05),
+                            ),
+                            headingTextStyle:
+                                theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                            columns: const [
+                              DataColumn2(label: Text('Nama Kegiatan')),
+                              DataColumn2(label: Text('Tanggal')),
+                            ],
+                            rows: data.map((item) {
+                              return DataRow2(
+                                onTap: () => context.push(
+                                  '/detail-kegiatan',
+                                  extra: item,
+                                ),
+                                cells: [
+                                  DataCell(Text(item['name'] ?? "-")),
+                                  DataCell(Text(item['date'] ?? "-")),
+                                  DataCell(Text(item['lokasi'] ?? "-")),
+                                  DataCell(Text(item['pj'] ?? "-")),
+                                  DataCell(Text(item['kategori'] ?? "-")),
+                                  DataCell(Text(item['deskripsi'] ?? "-")),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
