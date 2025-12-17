@@ -39,6 +39,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
 
       case 3:
         // route manajemen / pengguna
+        context.go('/pengguna'); 
         break;
     }
   }

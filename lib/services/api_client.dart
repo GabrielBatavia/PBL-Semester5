@@ -7,23 +7,40 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 
 class ApiClient {
-  static const String _pcLanBaseUrl = 'http://10.12.14.97:9000';
-  static const String _webBaseUrl   = 'http://127.0.0.1:9000';
-  static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';
+  static const String _pcLocalBaseUrl    = 'http://127.0.0.1:9000'; // backend di laptop
+  static const String _webBaseUrl        = 'http://127.0.0.1:9000'; // flutter web
+  static const String _androidAdbBaseUrl = 'http://127.0.0.1:9000'; // HP fisik via adb reverse
+  static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';  // emulator Android
 
   static String get baseUrl {
     if (kIsWeb) return _webBaseUrl;
+
     if (Platform.isAndroid) {
-      const bool useEmulator = false;
-      return useEmulator ? _androidEmuBaseUrl : _pcLanBaseUrl;
+      // HP fisik pakai kabel + `adb reverse tcp:9000 tcp:9000`
+      const bool useAdbReverse = true;
+      const bool useEmulator   = false;
+
+      if (useEmulator) {
+        return _androidEmuBaseUrl;
+      }
+      if (useAdbReverse) {
+        return _androidAdbBaseUrl;
+      }
+
+      // fallback kalau suatu saat mau pakai LAN langsung
+      return _pcLocalBaseUrl;
     }
-    return _pcLanBaseUrl;
+
+    // desktop / iOS
+    return _pcLocalBaseUrl;
   }
 
   static Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
+
+  static Future<String?> getToken() => _getToken();
 
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -34,8 +51,6 @@ class ApiClient {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
   }
-
-  // ─────────────────────────────────────────────
 
   static Future<http.Response> post(
     String path,
@@ -66,8 +81,6 @@ class ApiClient {
     }
   }
 
-  // ─────────────────────────────────────────────
-
   static Future<http.Response> get(
     String path, {
     bool auth = false,
@@ -92,6 +105,55 @@ class ApiClient {
       return resp;
     } on TimeoutException {
       debugPrint('⚠ Timeout ke $uri');
+      rethrow;
+    }
+  }
+  static Future<http.Response> put(
+    String path,
+    Map<String, dynamic> body, {
+    bool auth = false,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final headers = <String, String>{'Content-Type': 'application/json'};
+
+    if (auth) {
+      final token = await _getToken();
+      if (token != null) headers['Authorization'] = 'Bearer $token';
+    }
+
+    try {
+      debugPrint('PUT  $uri');
+      final resp = await http
+          .put(uri, headers: headers, body: jsonEncode(body))
+          .timeout(const Duration(seconds: 10));
+      debugPrint('→ ${resp.statusCode}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠️ Timeout ke $uri');
+      rethrow;
+    }
+  }
+  static Future<http.Response> delete(
+    String path, {
+    bool auth = false,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final headers = <String, String>{'Content-Type': 'application/json'};
+
+    if (auth) {
+      final token = await _getToken();
+      if (token != null) headers['Authorization'] = 'Bearer $token';
+    }
+
+    try {
+      debugPrint('DELETE $uri');
+      final resp = await http
+          .delete(uri, headers: headers)
+          .timeout(const Duration(seconds: 10));
+      debugPrint('→ ${resp.statusCode}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠️ Timeout ke $uri');
       rethrow;
     }
   }

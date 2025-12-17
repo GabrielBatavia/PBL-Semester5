@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+
+tensorflow-cpu
+numpy
+scikit-learn
+scikit-image
+opencv-python-headless
+pillow
+
+# kalau di training kamu pakai library tambahan, tambahkan juga

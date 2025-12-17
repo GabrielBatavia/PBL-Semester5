@@ -1,75 +1,61 @@
 // lib/widgets/dashboard_header.dart
-
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:jawaramobile_1/theme/AppTheme.dart';
 
 class DashboardHeader extends StatelessWidget {
-  const DashboardHeader({super.key});
+  final String role;
+
+  const DashboardHeader({super.key, required this.role});
+
+  String get _roleLabel {
+    switch (role) {
+      case 'rt':
+        return 'Ketua RT';
+      case 'rw':
+        return 'Ketua RW';
+      case 'bendahara':
+        return 'Bendahara';
+      case 'sekretaris':
+        return 'Sekretaris';
+      case 'admin':
+        return 'Admin Sistem';
+      default:
+        return 'Warga';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
+          CircleAvatar(
+            radius: 24,
+            child: Text(
+              _roleLabel[0],
+              style: const TextStyle(fontSize: 22),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: colorScheme.primary,
-                child: Text(
-                  'P',
-                  style: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              Text('Hai, $_roleLabel', style: theme.textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(
+                'Welcome Back 👋',
+                style: theme.textTheme.bodyMedium!
+                    .copyWith(color: Colors.grey[600]),
               ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hai, Admin',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.darkBrown,
-                    ),
-                  ),
-                  Text(
-                    'Welcome Back 👋',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface.withOpacity(0.7),
-                    ),
-                  ),
-                ],
-              )
             ],
           ),
-          IconButton(
-            onPressed: () {},
-            icon: FaIcon(
-              FontAwesomeIcons.bell,
-              color: colorScheme.primary,
-              size: 18,
-            ),
-          )
+          const Spacer(),
+          const Icon(Icons.notifications_none),
         ],
       ),
     );

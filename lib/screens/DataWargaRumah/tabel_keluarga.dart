@@ -1,94 +1,243 @@
-// lib/screens/DataWargaRumah/tabel_keluarga.dart
-
 import 'package:flutter/material.dart';
+import '../../services/family_service.dart';
+import '../../models/family_model.dart';
+import '../../utils/debouncer.dart';
+import 'keluarga_form_page.dart';
+import 'keluarga_detail_page.dart';
+import '../../widgets/info_row.dart';
 
-class TabelKeluarga extends StatelessWidget {
+class TabelKeluarga extends StatefulWidget {
   const TabelKeluarga({super.key});
 
-  final List<Map<String, dynamic>> keluarga = const [
-    {
-      "nama_keluarga": "Keluarga Ijat",
-      "jumlah_anggota": 4,
-      "alamat": "Jl. Kenanga No.12"
-    },
-    {
-      "nama_keluarga": "Keluarga Mara Nunez",
-      "jumlah_anggota": 3,
-      "alamat": "Jl. Melati No.8"
-    },
-  ];
+  @override
+  State<TabelKeluarga> createState() => _TabelKeluargaState();
+}
+
+class _TabelKeluargaState extends State<TabelKeluarga> {
+  final TextEditingController searchCtrl = TextEditingController();
+  final _debouncer = Debouncer(milliseconds: 400);
+
+  late Future<List<FamilyModel>> _futureFamilies;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureFamilies = FamilyService.instance.fetchFamilies();
+  }
+
+  void _reload() {
+    setState(() {
+      _futureFamilies = FamilyService.instance.fetchFamilies(
+        search: searchCtrl.text.trim(),
+      );
+    });
+  }
+
+  void _onSearchChanged() {
+    _debouncer.run(() => _reload());
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Tabel Data Keluarga",
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.bold,
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text("Data Keluarga"),
+        actions: [
+          // TOMBOL TAMBAH (ADD BUTTON)
+          TextButton.icon(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FamilyFormPage(),
+                ),
+              );
+              _reload();
+            },
+            icon: const Icon(
+              Icons.add,
+              // Menggunakan warna yang sama dengan TabelWarga
+              color: Color.fromARGB(255, 122, 142, 228),
+            ),
+            label: const Text(
+              "Tambah",
+              style: TextStyle(
+                // Menggunakan warna dan fontWeight yang sama dengan TabelWarga
+                color: Color.fromARGB(255, 122, 142, 228),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+        ],
+      ),
+
+      body: Column(
+        children: [
+          // SEARCH BAR
+          Padding(
+            // Menggunakan padding yang sama dengan TabelWarga
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: searchCtrl,
+              onChanged: (_) => _onSearchChanged(),
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                hintText: "Cari nama keluarga...", // Disesuaikan
+                // Border style disamakan dengan TabelWarga
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ],
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columnSpacing: 16,
-                headingRowColor: MaterialStateProperty.all(
-                  colorScheme.primary.withOpacity(0.06),
-                ),
-                headingTextStyle: theme.textTheme.titleSmall?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-                columns: const [
-                  DataColumn(label: Text("Nama Keluarga")),
-                  DataColumn(label: Text("Jumlah Anggota")),
-                  DataColumn(label: Text("Alamat")),
-                ],
-                rows: keluarga.map((k) {
-                  return DataRow(
-                    cells: [
-                      DataCell(
-                        Text(
-                          k["nama_keluarga"],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          "${k["jumlah_anggota"]}",
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          k["alamat"],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
+                // Menghapus filled: true dan fillColor
               ),
+            ),
+          ),
+
+          // LIST DATA
+          Expanded(
+            child: FutureBuilder<List<FamilyModel>>(
+              future: _futureFamilies,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return const Center(child: Text("Gagal memuat data"));
+                }
+
+                final data = snapshot.data ?? [];
+
+                if (data.isEmpty) {
+                  return const Center(
+                    child: Text("Tidak ada data keluarga"),
+                  );
+                }
+
+                return ListView.builder(
+                  // Menggunakan padding yang sama dengan TabelWarga
+                  padding: const EdgeInsets.all(12),
+                  itemCount: data.length,
+                  itemBuilder: (_, i) {
+                    final f = data[i];
+
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailKeluargaPage(family: f),
+                          ),
+                        );
+                      },
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        // Menggunakan margin yang sama dengan TabelWarga
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: const [
+                                  Icon(Icons.family_restroom,
+                                      size: 30, color: Colors.blue), // Disesuaikan
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Detail Keluarga", // Disesuaikan
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              InfoRow(
+                                icon: Icons.people, // Disesuaikan
+                                label: "Nama Keluarga", // Disesuaikan
+                                value: f.name,
+                              ),
+
+                              InfoRow(
+                                icon: Icons.format_list_numbered,
+                                label: "Jumlah Anggota",
+                                value: "${f.jumlahAnggota}",
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              // TOMBOL EDIT & HAPUS
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  // EDIT
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              FamilyFormPage(existing: f),
+                                        ),
+                                      );
+                                      _reload();
+                                    },
+                                    icon: const Icon(Icons.edit,
+                                        color: Colors.blue),
+                                    label: const Text(
+                                      "Edit",
+                                      style: TextStyle(color: Colors.blue),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 10), // Jarak disamakan
+
+                                  // DELETE
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      final ok = await FamilyService.instance
+                                          .deleteFamily(f.id);
+
+                                      if (!mounted) return;
+
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            ok
+                                                ? "Berhasil dihapus"
+                                                : "Gagal menghapus",
+                                          ),
+                                        ),
+                                      );
+
+                                      _reload();
+                                    },
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                    label: const Text(
+                                      "Hapus",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],

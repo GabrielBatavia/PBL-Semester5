@@ -1,146 +1,133 @@
-// lib/screens/Mutasi/mutasi_detail_page.dart
-
 import 'package:flutter/material.dart';
+import '../../widgets/info_row.dart';
+import '../../models/mutations_model.dart';
 
 class MutasiDetailPage extends StatelessWidget {
-  final Map<String, dynamic> data;
+  final MutasiModel data;
 
   const MutasiDetailPage({super.key, required this.data});
 
-  Widget _buildDetailRow(
-    BuildContext context,
-    String label,
-    String value,
-  ) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              label,
-              style:
-                  theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            flex: 3,
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  String _capitalize(String text) {
+    if (text.isEmpty) return "-";
+    final lower = text.toLowerCase();
+    return lower[0].toUpperCase() + lower.substring(1);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Detail Mutasi Warga"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        title: const Text("Detail Mutasi"),
+        centerTitle: true,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  data['keluarga'] ?? '-',
-                  style: theme.textTheme.displayLarge
-                      ?.copyWith(color: Colors.white),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  data['jenis'] ?? '',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: Colors.white70),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.97),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.12),
-                        blurRadius: 18,
-                        offset: const Offset(0, 8),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // HEADER CARD (Seperti Detail Keluarga)
+            Card(
+              elevation: 4,
+              shadowColor: Colors.blue.withOpacity(0.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 32,
+                      backgroundColor: Colors.blue.shade100,
+                      child: Icon(
+                        Icons.swap_horiz,
+                        size: 38,
+                        color: Colors.blue.shade700,
                       ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 18,
                     ),
-                    child: Column(
-                      children: [
-                        _buildDetailRow(
-                          context,
-                          "Keluarga",
-                          data['keluarga'] ?? '-',
-                        ),
-                        const Divider(height: 1),
-                        _buildDetailRow(
-                          context,
-                          "Alamat Lama",
-                          data['alamatLama'] ?? '-',
-                        ),
-                        const Divider(height: 1),
-                        _buildDetailRow(
-                          context,
-                          "Alamat Baru",
-                          data['alamatBaru'] ?? '-',
-                        ),
-                        const Divider(height: 1),
-                        _buildDetailRow(
-                          context,
-                          "Tanggal Mutasi",
-                          data['tanggal'] ?? '-',
-                        ),
-                        const Divider(height: 1),
-                        _buildDetailRow(
-                          context,
-                          "Jenis Mutasi",
-                          data['jenis'] ?? '-',
-                        ),
-                        const Divider(height: 1),
-                        _buildDetailRow(
-                          context,
-                          "Alasan",
-                          data['alasan'] ?? '-',
-                        ),
-                      ],
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _capitalize(data.mutationType),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "Keluarga: ${data.familyName}",
+                            style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+
+            const SizedBox(height: 20),
+
+            // DETAIL CARD
+            Card(
+              elevation: 3,
+              shadowColor: Colors.blue.withOpacity(0.3),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    InfoRow(
+                      icon: Icons.family_restroom,
+                      label: "Nama Keluarga",
+                      value: data.familyName ?? '-',
+                    ),
+                    InfoRow(
+                      icon: Icons.badge,
+                      label: "Family ID",
+                      value: "${data.familyId}",
+                    ),
+                    InfoRow(
+                      icon: Icons.sync_alt,
+                      label: "Jenis Mutasi",
+                      value: _capitalize(data.mutationType),
+                    ),
+                    InfoRow(
+                      icon: Icons.calendar_today,
+                      label: "Tanggal",
+                      value: data.date,
+                    ),
+                    if (data.mutationType != "masuk")
+                      InfoRow(
+                        icon: Icons.location_off,
+                        label: "Alamat Lama",
+                        value: data.oldAddress ?? "-",
+                      ),
+                    if (data.mutationType != "keluar")
+                      InfoRow(
+                        icon: Icons.location_on,
+                        label: "Alamat Baru",
+                        value: data.newAddress ?? "-",
+                      ),
+                    InfoRow(
+                      icon: Icons.info_outline,
+                      label: "Alasan",
+                      value: data.reason ?? "-",
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

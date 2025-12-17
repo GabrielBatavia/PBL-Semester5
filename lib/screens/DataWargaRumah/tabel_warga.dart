@@ -1,109 +1,230 @@
-// lib/screens/DataWargaRumah/tabel_warga.dart
-
 import 'package:flutter/material.dart';
+import 'package:jawaramobile_1/screens/DataWargaRumah/warga_detail_page.dart';
+import '../../widgets/info_row.dart';
+import '../../models/resident_model.dart';
+import '../../services/resident_service.dart';
+import '../../utils/debouncer.dart';
+import 'resident_form_page.dart';
 
-class TabelWarga extends StatelessWidget {
+
+class TabelWarga extends StatefulWidget {
   const TabelWarga({super.key});
 
-  final List<Map<String, dynamic>> warga = const [
-    {
-      "nama": "Hanif",
-      "nik": "1234567890123456",
-      "umur": 22,
-      "pekerjaan": "Mahasiswa"
-    },
-    {
-      "nama": "Siti",
-      "nik": "1234567890123457",
-      "umur": 25,
-      "pekerjaan": "Guru"
-    },
-    {
-      "nama": "Budi",
-      "nik": "1234567890123458",
-      "umur": 30,
-      "pekerjaan": "Wiraswasta"
-    },
-  ];
+  @override
+  State<TabelWarga> createState() => _TabelWargaState();
+}
+
+class _TabelWargaState extends State<TabelWarga> {
+  final _controller = TextEditingController();
+  final _debouncer = Debouncer(milliseconds: 500);
+
+  late Future<List<ResidentModel>> _futureResidents;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureResidents = ResidentService.instance.fetchResidents();
+  }
+
+  void _reload() {
+    setState(() {
+      _futureResidents =
+          ResidentService.instance.fetchResidents(search: _controller.text);
+    });
+  }
+
+  void _onSearchChanged() {
+    _debouncer.run(() => _reload());
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text("Data Warga"),
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Tabel Data Warga",
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.bold,
+      
+
+        actions: [
+          TextButton.icon(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FormResidentPage(),
+                ),
+              );
+              _reload();
+            },
+            icon: const Icon(
+              Icons.add,
+              color: Color.fromARGB(255, 122, 142, 228),
+            ),
+            label: const Text(
+              "Tambah",
+              style: TextStyle(
+                color: Color.fromARGB(255, 122, 142, 228),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+        ],
+      ),
+
+      body: Column(
+        children: [
+          // SEARCH BAR
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: _controller,
+              onChanged: (_) => _onSearchChanged(),
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                hintText: "Cari nama / NIK...",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ],
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columnSpacing: 16,
-                headingRowColor: MaterialStateProperty.all(
-                  colorScheme.primary.withOpacity(0.06),
-                ),
-                headingTextStyle: theme.textTheme.titleSmall?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-                columns: const [
-                  DataColumn(label: Text("Nama")),
-                  DataColumn(label: Text("NIK")),
-                  DataColumn(label: Text("Umur")),
-                  DataColumn(label: Text("Pekerjaan")),
-                ],
-                rows: warga.map((w) {
-                  return DataRow(
-                    cells: [
-                      DataCell(
-                        Text(
-                          w["nama"],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          w["nik"],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          "${w["umur"]}",
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          w["pekerjaan"],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
               ),
+            ),
+          ),
+
+          Expanded(
+            child: FutureBuilder<List<ResidentModel>>(
+              future: _futureResidents,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return const Center(child: Text("Gagal memuat data warga"));
+                }
+
+                final residents = snapshot.data ?? [];
+
+                if (residents.isEmpty) {
+                  return const Center(child: Text("Tidak ada data warga"));
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: residents.length,
+                  itemBuilder: (context, i) {
+                    final r = residents[i];
+
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(16),
+
+
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => TabelWargaDetailPage(resident: r),
+                          ),
+                        );
+                      },
+
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 3,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: const [
+                                  Icon(Icons.home, size: 30, color: Colors.blue),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Detail Warga",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                ],
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              InfoRow(
+                                icon: Icons.person,
+                                label: "Nama",
+                                value: r.name,
+                              ),
+
+                              InfoRow(
+                                icon: Icons.credit_card,
+                                label: "NIK",
+                                value: r.nik ?? "-",
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  // EDIT
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              FormResidentPage(existingData: r),
+                                        ),
+                                      );
+                                      _reload();
+                                    },
+                                    icon: const Icon(Icons.edit, color: Colors.blue),
+                                    label: const Text(
+                                      "Edit",
+                                      style: TextStyle(color: Colors.blue),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 10),
+
+                                  // DELETE
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      final ok = await ResidentService.instance
+                                          .deleteResident(r.id);
+
+                                      if (!mounted) return;
+
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(ok
+                                              ? "Berhasil dihapus"
+                                              : "Gagal menghapus"),
+                                        ),
+                                      );
+                                      _reload();
+                                    },
+                                    icon: const Icon(Icons.delete, color: Colors.red),
+                                    label: const Text(
+                                      "Hapus",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],

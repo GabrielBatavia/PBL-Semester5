@@ -11,6 +11,9 @@ import 'package:jawaramobile_1/screens/Mutasi/mutasi_page.dart';
 import 'package:jawaramobile_1/screens/dashboard_screen.dart';
 import 'package:jawaramobile_1/screens/data_warga_rumah.dart';
 
+// ===== Pengguna ======
+import 'package:jawaramobile_1/screens/pengguna_screen.dart';
+
 // ====== Pemasukan ======
 import 'package:jawaramobile_1/screens/Pemasukan/menu_pemasukan.dart';
 import 'package:jawaramobile_1/screens/Pemasukan/kategori_iuran.dart';
@@ -69,9 +72,14 @@ import 'package:jawaramobile_1/screens/marketplace/marketplace_screen.dart';
 import 'package:jawaramobile_1/screens/marketplace/add_marketplace_item_screen.dart';
 
 
+// ====== Pesan Warga ======
+import 'package:jawaramobile_1/screens/pesan_warga/pesan_warga_screen.dart';
+
+
 // ====== Lainnya ======
-import 'package:jawaramobile_1/screens/penerimaan_warga_screen.dart';
+import 'package:jawaramobile_1/screens/PenerimaanWarga/citizen_request_list_page.dart';
 import 'package:jawaramobile_1/screens/dashboard_aspirasi.dart';
+import 'models/mutations_model.dart';
 
 
 final appRouter = GoRouter(
@@ -334,23 +342,26 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/penerimaan-warga',
       name: 'penerimaan-warga',
-      builder: (context, state) => const PenerimaanWargaScreen(),
+      builder: (context, state) => CitizenRequestListPage(),
     ),
 
     GoRoute(
       path: '/mutasi',
       name: 'mutasi',
-      builder: (context, state) => MutasiPage(),
+      builder: (context, state) => TabelMutasi(),
     ),
 
     GoRoute(
       path: '/mutasi-detail',
       name: 'mutasi-detail',
       builder: (context, state) {
-        final data = state.extra as Map<String, dynamic>;
-        return MutasiDetailPage(data: data);
-      },
+        final raw = state.extra as Map<String, dynamic>;
+        final mutasi = MutasiModel.fromJson(raw); // FIX: convert map → model
+
+        return MutasiDetailPage(data: mutasi);
+      },  
     ),
+    
     GoRoute(
       path: '/dashboard-aspirasi',
       name: 'dashboard-aspirasi',
@@ -366,9 +377,23 @@ final appRouter = GoRouter(
     ),
 
     GoRoute(
+      path: '/pesan-warga',
+      name: 'pesan-warga',
+      builder: (context, state) => const PesanWargaScreen(),
+    ),
+
+
+    GoRoute(
       path: '/marketplace-add-item',
       name: 'marketplace-add-item',
       builder: (context, state) => const AddMarketplaceItemScreen(),
     ),
+
+    GoRoute(
+      path: '/pengguna',
+      name: 'pengguna',
+      builder: (context, state) => const PenggunaScreen(),
+    ),
+
   ],
 );
