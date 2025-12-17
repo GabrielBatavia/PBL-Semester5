@@ -1,6 +1,7 @@
 # app/schemas/auth.py
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from app.models.users import User
 
 
 class UserResponse(BaseModel):

@@ -1,3 +1,5 @@
+# app/models/roles.py
+
 from sqlalchemy import Column, BigInteger, String, DateTime
 from sqlalchemy.dialects.mysql import BIGINT
 from sqlalchemy.orm import relationship

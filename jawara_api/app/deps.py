@@ -8,6 +8,9 @@ from .db import SessionLocal
 from . import models
 from jose import jwt, JWTError
 
+from .db import SessionLocal
+from app.models.users import User 
+
 # harus cocok dengan yang dipakai di auth.py
 SECRET_KEY = "SUPER_SECRET_JAWARA_KEY"   # ganti di env kalau production
 ALGORITHM = "HS256"

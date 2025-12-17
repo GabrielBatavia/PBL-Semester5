@@ -21,7 +21,6 @@ class MarketplaceService {
 
   List<MarketplaceItem> _cache = [];
 
-  // Ambil token yang sama seperti ApiClient
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
@@ -29,19 +28,41 @@ class MarketplaceService {
 
   /// GET /marketplace/items
   Future<void> fetchItems() async {
-    final res = await ApiClient.get(
-      '/marketplace/items',
-      auth: true,
-    );
+    try {
+      final res = await ApiClient.get(
+        '/marketplace/items',
+        auth: true,
+      );
 
-    if (res.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(res.body) as List<dynamic>;
-      _cache = data
-          .map((e) => MarketplaceItem.fromJson(e as Map<String, dynamic>))
-          .toList();
-      _itemsController.add(_cache);
-    } else {
-      throw Exception('Gagal memuat marketplace (${res.statusCode})');
+      // debug kecil biar kelihatan di log
+      // ignore: avoid_print
+      print('MarketplaceService.fetchItems → status=${res.statusCode}');
+
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body);
+
+        if (decoded is! List) {
+          // kalau backend tiba-tiba kirim objek, jangan sampai crash
+          _itemsController.addError(
+            'Format data marketplace tidak valid (bukan list)',
+          );
+          return;
+        }
+
+        final items = decoded
+            .map((e) => MarketplaceItem.fromJson(e as Map<String, dynamic>))
+            .toList()
+            .cast<MarketplaceItem>();
+
+        _cache = items;
+        _itemsController.add(_cache);
+      } else {
+        _itemsController.addError(
+          'Gagal memuat marketplace (${res.statusCode})',
+        );
+      }
+    } catch (e) {
+      _itemsController.addError('Error memuat marketplace: $e');
     }
   }
 
@@ -51,7 +72,7 @@ class MarketplaceService {
     required double price,
     String? description,
     String? unit,
-    String? veggieClass,   // 🔹
+    String? veggieClass,
     File? imageFile,
   }) async {
     final uri = Uri.parse('${ApiClient.baseUrl}/marketplace/items');
@@ -68,10 +89,9 @@ class MarketplaceService {
       request.fields['unit'] = unit;
     }
     if (veggieClass != null && veggieClass.isNotEmpty) {
-      request.fields['veggie_class'] = veggieClass;   // 🔹
+      request.fields['veggie_class'] = veggieClass;
     }
 
-    // kirim file gambar (opsional)
     if (imageFile != null) {
       final mime = lookupMimeType(imageFile.path) ?? 'image/jpeg';
       final parts = mime.split('/');
@@ -101,12 +121,9 @@ class MarketplaceService {
     }
   }
 
-
-  /// POST /marketplace/analyze-image – kirim foto ke backend AI (mock)
-  /// (pastikan endpoint ini sudah ada di FastAPI, kalau belum, tombol di UI jangan dipakai dulu)
+  /// POST /marketplace/analyze-image – kirim foto ke backend AI
   Future<Map<String, dynamic>> analyzeImage(File imageFile) async {
-    final uri =
-        Uri.parse('${ApiClient.baseUrl}/marketplace/analyze-image');
+    final uri = Uri.parse('${ApiClient.baseUrl}/marketplace/analyze-image');
     final token = await _getToken();
 
     final request = http.MultipartRequest('POST', uri);

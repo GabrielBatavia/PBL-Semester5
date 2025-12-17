@@ -26,8 +26,8 @@ IDX_TO_CLASS: Dict[int, str] = {
 
 # File model SVM pipeline jalur 1 (hasil joblib.dump di notebook)
 MODEL_PATH = os.getenv("MODEL_PATH", "SVM_RBF_X1.pkl")
-# Optional: scaler_X1 (disimpan tapi TIDAK dipakai di sini)
-SCALER_PATH = os.getenv("SCALER_PATH", "scaler_X1.pkl")
+SCALER_PATH = os.getenv("SCALER_PATH", "scaler_X1.pkl")  # hanya untuk tugas
+PCA_PATH = os.getenv("PCA_PATH", "pca_hog1.pkl")        # 🔹 PCA HOG jalur 1
 
 app = FastAPI(title="Jawara Veggie Classifier - SVM Jalur 1")
 
@@ -237,13 +237,42 @@ def extract_hog_features(gray_roi,
     return hog_vec.astype(np.float32)
 
 
+# =========================================================
+# LOAD MODEL, PCA, (OPTIONAL) SCALER
+# =========================================================
+
+model = None
+pca_hog1 = None
+scaler_X1 = None  # tidak dipakai langsung
+
+try:
+    model = joblib.load(MODEL_PATH)
+    print(f"✅ Loaded model pipeline from {MODEL_PATH}")
+except Exception as e:
+    print(f"❌ Failed to load model: {e}")
+
+try:
+    pca_hog1 = joblib.load(PCA_PATH)
+    print(f"✅ Loaded PCA for HOG from {PCA_PATH}")
+except Exception as e:
+    print(f"❌ Failed to load PCA: {e}")
+
+if os.path.exists(SCALER_PATH):
+    try:
+        scaler_X1 = joblib.load(SCALER_PATH)
+        print(f"ℹ️ Loaded scaler_X1 from {SCALER_PATH} (not used directly).")
+    except Exception as e:
+        print(f"⚠️ Failed to load scaler_X1: {e}")
+
+
 def extract_features_X1(img_bgr):
     """
-    Jalur 1: Haralick (texture) + HOG (shape).
-    Di training: X1 dibentuk dari [F_tex1, F_shape1_PCA].
-    Di sini kita pakai pipeline yang sama sampai HOG; PCA sudah di-handle
-    saat training sehingga model SVM_RBF_X1.pkl mengharapkan dimensi X1 tersebut.
+    Jalur 1: Haralick (texture) + HOG-PCA (shape).
+    Di training: X1 = [Haralick (13) + HOG_PCA (K1_best)] → total 23 fitur.
     """
+    if pca_hog1 is None:
+        raise RuntimeError("PCA model (pca_hog1) not loaded")
+
     # Preprocessing 1 (gray) + 2 (color) untuk mask
     gray, _, morph = preprocess_image_gray_pipeline(img_bgr, size=IMG_SIZE)
     _, _, _, mask2, _ = preprocess_image_color_pipeline(img_bgr)
@@ -252,49 +281,19 @@ def extract_features_X1(img_bgr):
     mask1 = (morph > 0).astype(np.uint8) * 255
 
     # Haralick pakai mask
-    haralick = compute_glcm_haralick_features(gray_f, mask1)
+    haralick = compute_glcm_haralick_features(gray_f, mask1)  # shape (13,)
 
     # ROI untuk HOG: ambil dari gray + mask objek (dari pipeline 2)
     roi_gray_full = gray_f
     roi_gray = get_object_roi(roi_gray_full, mask2)
-    hog_vec = extract_hog_features(roi_gray)
+    hog_raw = extract_hog_features(roi_gray)                  # shape (~4356,)
 
-    # ⚠️ Catatan:
-    # Di training, HOG → PCA → digabung dengan Haralick → X1 (19 fitur).
-    # PCA-nya sudah diaplikasikan sebelum model disimpan, jadi di sini
-    # X1 yang kita kirim HARUS punya dimensi yang sama dengan yang dipakai saat training.
-    #
-    # Asumsi: kamu sudah menyimpan model SVM sebagai pipeline yang
-    # meng-handle transformasi kebutuhan internal (mis. scaling, dsb).
-    # Kalau kamu juga menyimpan PCA sebagai bagian dari pipeline sebelum dump,
-    # maka cukup mengirim [Haralick + HOG_raw] di sini.
-    #
-    # Jadi kita gabung: [13 Haralick + N_HOG] → model (di dalamnya ada scaler+pca+svm).
-    X1 = np.hstack([haralick, hog_vec]).reshape(1, -1)
+    # 🔹 Projeksi HOG ke ruang PCA yang sama dengan training
+    hog_pca = pca_hog1.transform(hog_raw.reshape(1, -1))[0]   # shape (K1_best,)
+
+    # Gabung: [Haralick + HOG_PCA] → X1 (1, 23)
+    X1 = np.hstack([haralick, hog_pca]).reshape(1, -1)
     return X1
-
-
-# =========================================================
-# LOAD MODEL & (OPTIONAL) SCALER
-# =========================================================
-
-model = None
-scaler_X1 = None
-
-try:
-    model = joblib.load(MODEL_PATH)
-    print(f"✅ Loaded model pipeline from {MODEL_PATH}")
-except Exception as e:
-    print(f"❌ Failed to load model: {e}")
-
-# Scaler disimpan hanya untuk memenuhi requirement tugas;
-# TIDAK dipakai di sini karena pipeline SVM sudah mengandung StandardScaler.
-if os.path.exists(SCALER_PATH):
-    try:
-        scaler_X1 = joblib.load(SCALER_PATH)
-        print(f"ℹ️ Loaded scaler_X1 from {SCALER_PATH} (not used directly).")
-    except Exception as e:
-        print(f"⚠️ Failed to load scaler_X1: {e}")
 
 
 # =========================================================
@@ -333,17 +332,17 @@ async def predict(file: UploadFile = File(...)):
         if img_bgr is None:
             raise ValueError("Cannot decode image")
 
+        # --- fitur sesuai pipeline X1 ---
         X1 = extract_features_X1(img_bgr)
 
-        # SVM_RBF disimpan sebagai pipeline (StandardScaler + SVC)
-        # Jadi cukup panggil predict/predict_proba di sini.
-        label_idx = None
+        label_idx: int
+        best_conf: float | None = None
         prob_dict = None
-        best_conf = None
 
+        # 1) Kalau pipeline mendukung predict_proba → pakai langsung
         if hasattr(model, "predict_proba"):
-            probas = model.predict_proba(X1)[0]
-            classes_model = model.classes_
+            probas = model.predict_proba(X1)[0]          # shape: (n_classes,)
+            classes_model = model.classes_               # index kelas di training
 
             prob_dict = {}
             for idx, p in zip(classes_model, probas):
@@ -352,20 +351,47 @@ async def predict(file: UploadFile = File(...)):
 
             best_idx = int(np.argmax(probas))
             best_label_idx = int(classes_model[best_idx])
+
             label_idx = best_label_idx
             best_conf = float(probas[best_idx])
+
+        # 2) Kalau tidak ada predict_proba → pakai decision_function sebagai "skor"
+        elif hasattr(model, "decision_function"):
+            scores = model.decision_function(X1)         # (1, n_classes) atau (n_classes,)
+            scores = np.atleast_2d(scores)[0]            # pastikan 1D
+
+            classes_model = model.classes_
+            best_idx = int(np.argmax(scores))
+            best_label_idx = int(classes_model[best_idx])
+            label_idx = best_label_idx
+
+            # normalisasi kasar 0–1 supaya bisa dipakai sebagai "confidence"
+            scores_shift = scores - scores.min()
+            denom = scores_shift.sum()
+            if denom > 0:
+                best_conf = float(scores_shift[best_idx] / denom)
+            else:
+                best_conf = 1.0 / len(scores_shift)
+
+            # kalau mau, isi juga prob_dict pseudo
+            prob_dict = {}
+            if denom > 0:
+                for idx, s in zip(classes_model, scores_shift):
+                    lbl = IDX_TO_CLASS.get(int(idx), str(int(idx)))
+                    prob_dict[lbl] = float(s / denom)
+
+        # 3) Fallback paling sederhana
         else:
             pred = model.predict(X1)[0]
             label_idx = int(pred)
             best_conf = None
-            prob_dict = None
 
         label_name = IDX_TO_CLASS.get(label_idx, str(label_idx))
 
         return {
             "label": label_name,
             "label_index": label_idx,
-            "confidence": best_conf,
+            "confidence": best_conf,   # sekarang hampir selalu angka 0–1
             "probs": prob_dict,
         }
 

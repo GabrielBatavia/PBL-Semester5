@@ -20,12 +20,8 @@ class ApiClient {
       const bool useAdbReverse = true;
       const bool useEmulator   = false;
 
-      if (useEmulator) {
-        return _androidEmuBaseUrl;
-      }
-      if (useAdbReverse) {
-        return _androidAdbBaseUrl;
-      }
+      if (useEmulator) return _androidEmuBaseUrl;
+      if (useAdbReverse) return _androidAdbBaseUrl;
 
       // fallback kalau suatu saat mau pakai LAN langsung
       return _pcLocalBaseUrl;
@@ -35,11 +31,21 @@ class ApiClient {
     return _pcLocalBaseUrl;
   }
 
-  static Future<String?> getToken() async {
+  // Helper untuk konversi path gambar relatif → URL penuh
+  static String? resolveImageUrl(String? path) {
+    if (path == null || path.isEmpty) return null;
+
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    if (path.startsWith('/')) return '$baseUrl$path';
+    return '$baseUrl/$path';
+  }
+
+  static Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
 
+  // Public getter (SATU SAJA, jangan dobel)
   static Future<String?> getToken() => _getToken();
 
   static Future<void> saveToken(String token) async {
@@ -52,20 +58,30 @@ class ApiClient {
     await prefs.remove('auth_token');
   }
 
+  static Future<Map<String, String>> _headers({required bool auth}) async {
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    if (auth) {
+      final token = await _getToken();
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+    }
+    return headers;
+  }
+
+  static Uri _uri(String path) => Uri.parse('$baseUrl$path');
+
   static Future<http.Response> post(
     String path,
     Map<String, dynamic> body, {
     bool auth = false,
   }) async {
-    final uri = Uri.parse('$baseUrl$path');
-    final headers = <String, String>{'Content-Type': 'application/json'};
-
-    if (auth) {
-      final token = await getToken();
-      if (token != null && token.isNotEmpty) {
-        headers['Authorization'] = 'Bearer $token';
-      }
-    }
+    final uri = _uri(path);
+    final headers = await _headers(auth: auth);
 
     try {
       debugPrint('POST $uri');
@@ -85,15 +101,8 @@ class ApiClient {
     String path, {
     bool auth = false,
   }) async {
-    final uri = Uri.parse('$baseUrl$path');
-    final headers = <String, String>{'Content-Type': 'application/json'};
-
-    if (auth) {
-      final token = await getToken();
-      if (token != null && token.isNotEmpty) {
-        headers['Authorization'] = 'Bearer $token';
-      }
-    }
+    final uri = _uri(path);
+    final headers = await _headers(auth: auth);
 
     try {
       debugPrint('GET  $uri');
@@ -109,22 +118,56 @@ class ApiClient {
     }
   }
 
-  // ─────────────────────────────────────────────
+  static Future<http.Response> put(
+    String path,
+    Map<String, dynamic> body, {
+    bool auth = false,
+  }) async {
+    final uri = _uri(path);
+    final headers = await _headers(auth: auth);
+
+    try {
+      debugPrint('PUT  $uri');
+      final resp = await http
+          .put(uri, headers: headers, body: jsonEncode(body))
+          .timeout(const Duration(seconds: 10));
+
+      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠ Timeout ke $uri');
+      rethrow;
+    }
+  }
+
+  static Future<http.Response> delete(
+    String path, {
+    bool auth = false,
+  }) async {
+    final uri = _uri(path);
+    final headers = await _headers(auth: auth);
+
+    try {
+      debugPrint('DELETE $uri');
+      final resp = await http
+          .delete(uri, headers: headers)
+          .timeout(const Duration(seconds: 10));
+
+      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
+      return resp;
+    } on TimeoutException {
+      debugPrint('⚠ Timeout ke $uri');
+      rethrow;
+    }
+  }
 
   static Future<http.Response> patch(
     String path,
     Map<String, dynamic> body, {
     bool auth = false,
   }) async {
-    final uri = Uri.parse('$baseUrl$path');
-    final headers = <String, String>{'Content-Type': 'application/json'};
-
-    if (auth) {
-      final token = await getToken();
-      if (token != null && token.isNotEmpty) {
-        headers['Authorization'] = 'Bearer $token';
-      }
-    }
+    final uri = _uri(path);
+    final headers = await _headers(auth: auth);
 
     try {
       debugPrint('PATCH $uri');

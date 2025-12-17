@@ -7,7 +7,7 @@ import os
 if os.getenv("TESTING") == "1":
     DATABASE_URL = "mysql+pymysql://root:@localhost/jawara_test"
 else:
-    DATABASE_URL = "mysql+pymysql://root:@localhost/jawara"
+    DATABASE_URL = "mysql+pymysql://root:root123@localhost:3306/jawara_db"
 
 engine = create_engine(
     DATABASE_URL,

@@ -28,7 +28,7 @@ import 'package:jawaramobile_1/screens/Pemasukan/lain_lain.dart';//done
 //belum ada
 
 // ====== Pesan Warga ======
-import 'package:jawaramobile_1/screens/PesanWarga/pesan_warga_screen.dart';
+import 'package:jawaramobile_1/screens/pesan_warga/pesan_warga_screen.dart';
 
 
 // ====== Pengeluaran ======
@@ -387,12 +387,6 @@ final appRouter = GoRouter(
       path: '/marketplace',
       name: 'marketplace',
       builder: (context, state) => const MarketplaceScreen(),
-    ),
-
-    GoRoute(
-      path: '/pesan-warga',
-      name: 'pesan-warga',
-      builder: (context, state) => const PesanWargaScreen(),
     ),
 
 

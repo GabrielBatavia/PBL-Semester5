@@ -1,10 +1,10 @@
 // lib/screens/Kegiatan/daftar_kegiatan.dart
 
 import 'dart:async';
-import 'dart:convert';
-import 'package:data_table_2/data_table_2.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:jawaramobile_1/services/kegiatan_service.dart';
 import 'package:jawaramobile_1/widgets/kegiatan/kegiatan_filter.dart';
 import 'package:jawaramobile_1/utils/session.dart';
@@ -77,6 +77,22 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
     );
   }
 
+  String _formatDate(dynamic raw) {
+    if (raw == null) return "-";
+    try {
+      // backend biasanya ngirim "2025-12-18"
+      final s = raw.toString();
+      final dt = DateTime.parse(s.length >= 10 ? s.substring(0, 10) : s);
+      return DateFormat('dd MMM yyyy', 'id_ID').format(dt);
+    } catch (_) {
+      return raw.toString();
+    }
+  }
+
+  String _take(dynamic v) => (v == null || v.toString().trim().isEmpty)
+      ? "-"
+      : v.toString().trim();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -93,12 +109,17 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
             icon: const Icon(Icons.filter_list),
             onPressed: () => _showFilterDialog(context),
           ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadKegiatan,
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/tambah-kegiatan'),
         backgroundColor: colorScheme.primary,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: const Text("Tambah"),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -118,10 +139,9 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
                 Text(
                   'Daftar Kegiatan',
                   style:
-                      theme.textTheme.displayLarge!.copyWith(color: Colors.white),
+                      theme.textTheme.headlineMedium?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 8),
-
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
@@ -132,61 +152,178 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
                       stream: _streamController.stream,
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                         }
 
                         final data = snapshot.data!;
                         if (data.isEmpty) {
-                          return const Center(
-                            child: Text("Tidak ada kegiatan"),
-                          );
+                          return const Center(child: Text("Tidak ada kegiatan"));
                         }
 
-                        return Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: DataTable2(
-                            minWidth: 900,
-                            columnSpacing: 12,
-                            horizontalMargin: 12,
-                            headingRowColor: MaterialStateProperty.all(
-                              colorScheme.primary.withOpacity(0.05),
-                            ),
-                            headingTextStyle:
-                                theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primary,
-                            ),
-                            columns: const [
-                              DataColumn2(label: Text('Nama')),
-                              DataColumn2(label: Text('Tanggal')),
-                              DataColumn2(label: Text('Lokasi')),
-                              DataColumn2(label: Text('PIC')),
-                              DataColumn2(label: Text('Kategori')),
-                              DataColumn2(label: Text('Deskripsi')),
-                            ],
-                            rows: data.map((item) {
-                              return DataRow2(
+                        return RefreshIndicator(
+                          onRefresh: _loadKegiatan,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.all(12),
+                            itemCount: data.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final item = data[index];
+
+                              final name = _take(item['name']);
+                              final date = _formatDate(item['date']);
+                              final location = _take(item['location']);
+                              final pic = _take(item['pic_name']);
+                              final category = _take(item['category']);
+                              final desc = _take(item['description']);
+
+                              return InkWell(
+                                borderRadius: BorderRadius.circular(16),
                                 onTap: () => context.push(
                                   '/detail-kegiatan',
                                   extra: item,
                                 ),
-                                cells: [
-                                  DataCell(Text(item['name'] ?? "-")),
-                                  DataCell(Text(item['date']?.toString() ?? "-")),
-                                  DataCell(Text(item['location'] ?? "-")),
-                                  DataCell(Text(item['pic_name'] ?? "-")),
-                                  DataCell(Text(item['category'] ?? "-")),
-                                  DataCell(
-                                    Text(
-                                      item['description'] ?? "-",
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
+                                child: Container(
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: Colors.black.withOpacity(0.06),
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.06),
+                                        blurRadius: 14,
+                                        offset: const Offset(0, 8),
+                                      ),
+                                    ],
+                                    color: Colors.white,
                                   ),
-                                ],
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // icon bubble
+                                      Container(
+                                        width: 44,
+                                        height: 44,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(14),
+                                          color: colorScheme.primary
+                                              .withOpacity(0.10),
+                                        ),
+                                        child: Icon(
+                                          Icons.event_note,
+                                          color: colorScheme.primary,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      // content
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              name,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: theme.textTheme.titleMedium
+                                                  ?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Row(
+                                              children: [
+                                                Icon(Icons.calendar_today,
+                                                    size: 16,
+                                                    color: Colors.grey[600]),
+                                                const SizedBox(width: 6),
+                                                Expanded(
+                                                  child: Text(
+                                                    date,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: theme
+                                                        .textTheme.bodySmall
+                                                        ?.copyWith(
+                                                      color: Colors.grey[700],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Icon(Icons.location_on,
+                                                    size: 16,
+                                                    color: Colors.grey[600]),
+                                                const SizedBox(width: 6),
+                                                Expanded(
+                                                  child: Text(
+                                                    location,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: theme
+                                                        .textTheme.bodySmall
+                                                        ?.copyWith(
+                                                      color: Colors.grey[700],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            if (desc != "-" &&
+                                                desc.trim().isNotEmpty) ...[
+                                              const SizedBox(height: 10),
+                                              Text(
+                                                desc,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: theme.textTheme.bodyMedium
+                                                    ?.copyWith(
+                                                  color: Colors.grey[800],
+                                                ),
+                                              ),
+                                            ],
+                                            const SizedBox(height: 10),
+                                            Wrap(
+                                              spacing: 8,
+                                              runSpacing: 8,
+                                              children: [
+                                                _ChipMini(
+                                                  icon: Icons.category,
+                                                  label: category == "-"
+                                                      ? "Tanpa kategori"
+                                                      : category,
+                                                  bg: Colors.blue.withOpacity(0.08),
+                                                  fg: Colors.blue[800]!,
+                                                ),
+                                                if (pic != "-" &&
+                                                    pic.trim().isNotEmpty)
+                                                  _ChipMini(
+                                                    icon: Icons.person,
+                                                    label: pic,
+                                                    bg: Colors.orange
+                                                        .withOpacity(0.10),
+                                                    fg: Colors.orange[800]!,
+                                                  ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Icon(Icons.chevron_right,
+                                          color: Colors.grey[500]),
+                                    ],
+                                  ),
+                                ),
                               );
-                            }).toList(),
+                            },
                           ),
                         );
                       },
@@ -197,6 +334,52 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ChipMini extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color bg;
+  final Color fg;
+
+  const _ChipMini({
+    required this.icon,
+    required this.label,
+    required this.bg,
+    required this.fg,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: fg),
+          const SizedBox(width: 6),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 190),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: fg,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,8 +1,8 @@
 // lib/widgets/dashboard_chart.dart
 import 'package:flutter/material.dart';
 import 'package:jawaramobile_1/theme/AppTheme.dart';
-import 'package:jawaramobile_1/services/activitiy_service.dart';
-import 'package:fl_chart/fl_chart.dart'; // pastikan fl_chart sudah ada di pubspec
+import 'package:jawaramobile_1/services/activity_service.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class DashboardChart extends StatefulWidget {
   const DashboardChart({super.key});
@@ -12,10 +12,10 @@ class DashboardChart extends StatefulWidget {
 }
 
 class _DashboardChartState extends State<DashboardChart> {
-  List<ActivityCategoryStats> _stats = [];
+  Map<String, int> _categoryCount = {};
   bool _isLoading = true;
+  String? _error;
 
-  // Category colors mapping
   final Map<String, Color> _categoryColors = {
     'kebersihan': const Color(0xFF2563EB),
     'keagamaan': AppTheme.primaryOrange,
@@ -27,7 +27,6 @@ class _DashboardChartState extends State<DashboardChart> {
     'kegiatan': const Color(0xFF06B6D4),
   };
 
-  // Category display names
   final Map<String, String> _categoryNames = {
     'kebersihan': 'Kebersihan',
     'keagamaan': 'Keagamaan',
@@ -46,19 +45,36 @@ class _DashboardChartState extends State<DashboardChart> {
   }
 
   Future<void> _loadStats() async {
-    setState(() => _isLoading = true);
-    
-    final stats = await ActivityService.getCategoryStats();
-    
     setState(() {
-      _stats = stats;
-      _isLoading = false;
+      _isLoading = true;
+      _error = null;
     });
+
+    try {
+      // ✅ Ambil stats langsung dari backend (lebih cepat & rapi)
+      final stats = await ActivityService.getCategoryStats();
+
+      final Map<String, int> counts = {
+        for (final s in stats) s.category.toLowerCase(): s.count,
+      };
+
+      if (!mounted) return;
+      setState(() {
+        _categoryCount = counts;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _categoryCount = {};
+        _isLoading = false;
+        _error = e.toString();
+      });
+    }
   }
 
   Color _getColorForCategory(String category, int index) {
-    return _categoryColors[category.toLowerCase()] ?? 
-           _getDefaultColor(index);
+    return _categoryColors[category.toLowerCase()] ?? _getDefaultColor(index);
   }
 
   Color _getDefaultColor(int index) {
@@ -84,53 +100,8 @@ class _DashboardChartState extends State<DashboardChart> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    // contoh data statis (bisa nanti di-connect ke API)
-    final sections = <PieChartSectionData>[
-      PieChartSectionData(
-        value: 30,
-        title: 'Keagamaan\n30%',
-        radius: 70,
-        titleStyle: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        color: const Color(0xFF7C3AED),
-      ),
-      PieChartSectionData(
-        value: 20,
-        title: 'Pendidikan\n20%',
-        radius: 70,
-        titleStyle: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        color: const Color(0xFF4F46E5),
-      ),
-      PieChartSectionData(
-        value: 10,
-        title: 'Olahraga\n10%',
-        radius: 70,
-        titleStyle: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        color: const Color(0xFF22C55E),
-      ),
-      PieChartSectionData(
-        value: 40,
-        title: 'Sosial\n40%',
-        radius: 70,
-        titleStyle: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        color: const Color(0xFF9333EA),
-      ),
-    ];
+    final entries = _categoryCount.entries.toList();
+    final total = entries.fold<int>(0, (sum, e) => sum + e.value);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -152,7 +123,7 @@ class _DashboardChartState extends State<DashboardChart> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "📊 Kegiatan per Kategori",
+                "Kegiatan per Kategori",
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -163,10 +134,16 @@ class _DashboardChartState extends State<DashboardChart> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
+              if (!_isLoading)
+                IconButton(
+                  tooltip: 'Refresh',
+                  onPressed: _loadStats,
+                  icon: const Icon(Icons.refresh),
+                ),
             ],
           ),
-          const SizedBox(height: 16),
-          
+          const SizedBox(height: 12),
+
           if (_isLoading)
             const Center(
               child: Padding(
@@ -174,7 +151,19 @@ class _DashboardChartState extends State<DashboardChart> {
                 child: CircularProgressIndicator(),
               ),
             )
-          else if (_stats.isEmpty)
+          else if (_error != null)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Gagal memuat chart:\n$_error',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: theme.colorScheme.error),
+                ),
+              ),
+            )
+          else if (entries.isEmpty || total == 0)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(40),
@@ -194,15 +183,19 @@ class _DashboardChartState extends State<DashboardChart> {
                   sectionsSpace: 2,
                   centerSpaceRadius: 40,
                   borderData: FlBorderData(show: false),
-                  sections: _stats.asMap().entries.map((entry) {
+                  sections: entries.asMap().entries.map((entry) {
                     final index = entry.key;
-                    final stat = entry.value;
-                    final color = _getColorForCategory(stat.category, index);
-                    
+                    final cat = entry.value.key;
+                    final count = entry.value.value;
+
+                    final color = _getColorForCategory(cat, index);
+                    final pct = (count / total) * 100.0;
+
                     return PieChartSectionData(
-                      value: stat.percentage,
+                      value: count.toDouble(),
                       color: color,
-                      title: '${_getCategoryDisplayName(stat.category)}\n${stat.percentage.toStringAsFixed(1)}%',
+                      title:
+                          '${_getCategoryDisplayName(cat)}\n${pct.toStringAsFixed(1)}%',
                       radius: 60,
                       titleStyle: const TextStyle(
                         fontSize: 11,
@@ -214,26 +207,58 @@ class _DashboardChartState extends State<DashboardChart> {
                 ),
               ),
             ),
-          
-          if (_stats.isNotEmpty) ...[
+
+          if (!_isLoading && _error == null && entries.isNotEmpty) ...[
             const SizedBox(height: 16),
             Wrap(
               spacing: 10,
               runSpacing: 6,
-              children: _stats.asMap().entries.map((entry) {
+              children: entries.asMap().entries.map((entry) {
                 final index = entry.key;
-                final stat = entry.value;
-                final color = _getColorForCategory(stat.category, index);
-                
+                final cat = entry.value.key;
+                final count = entry.value.value;
+                final color = _getColorForCategory(cat, index);
+
                 return _LegendDot(
                   color: color,
-                  label: '${_getCategoryDisplayName(stat.category)} (${stat.count})',
+                  label: '${_getCategoryDisplayName(cat)} ($count)',
                 );
               }).toList(),
             ),
           ],
         ],
       ),
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  final Color color;
+  final String label;
+
+  const _LegendDot({
+    required this.color,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: theme.textTheme.bodySmall),
+      ],
     );
   }
 }

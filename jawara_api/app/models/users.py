@@ -23,3 +23,8 @@ class User(Base):
     logs = relationship("ActivityLog", back_populates="actor")
     marketplace_items = relationship("MarketplaceItem", back_populates="owner", cascade="all, delete-orphan")
     kegiatan_list = relationship("Kegiatan", back_populates="creator")
+    citizen_messages = relationship(
+        "CitizenMessage",
+        back_populates="user",
+        cascade="all,delete-orphan",
+    )

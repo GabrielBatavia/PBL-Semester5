@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
 
-
 import '../../services/marketplace_service.dart';
+import '../../services/api_client.dart';
 import '../../models/marketplace_item.dart';
 
 class MarketplaceScreen extends StatefulWidget {
@@ -35,7 +35,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         return _AddItemSheet(
           picker: _picker,
           onItemCreated: () {
-            // refresh kalau perlu (sebenarnya stream sudah update)
+            // kalau mau paksa reload manual, bisa panggil _service.fetchItems();
           },
         );
       },
@@ -54,6 +54,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         elevation: 0,
       ),
       floatingActionButton: FloatingActionButton.extended(
+        // sekarang pakai halaman khusus add item
         onPressed: () => context.pushNamed('marketplace-add-item'),
         icon: const Icon(Icons.add),
         label: const Text('Jual Sayuran'),
@@ -74,8 +75,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
               children: [
                 Text(
                   'Marketplace Sayuran',
-                  style:
-                      theme.textTheme.displayLarge?.copyWith(color: Colors.white),
+                  style: theme.textTheme.displayLarge
+                      ?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -100,7 +101,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     child: StreamBuilder<List<MarketplaceItem>>(
                       stream: _service.items$,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting &&
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting &&
                             !snapshot.hasData) {
                           return const Center(
                             child: CircularProgressIndicator(),
@@ -127,7 +129,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                         return ListView.separated(
                           padding: const EdgeInsets.all(16),
                           itemCount: items.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 12),
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             final item = items[index];
                             return _MarketplaceCard(item: item);
@@ -155,6 +158,24 @@ class _MarketplaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // Konversi path relatif → URL penuh
+    final resolvedUrl = ApiClient.resolveImageUrl(item.imageUrl);
+
+    Widget buildPlaceholder() {
+      return Container(
+        width: 90,
+        height: 90,
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(18),
+            bottomLeft: Radius.circular(18),
+          ),
+          color: Color(0xFFE2E8F0),
+        ),
+        child: const Icon(Icons.local_florist, size: 32),
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
@@ -169,82 +190,78 @@ class _MarketplaceCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          if (item.imageUrl != null)
+          if (resolvedUrl != null)
             ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 bottomLeft: Radius.circular(18),
               ),
               child: Image.network(
-                item.imageUrl!,
+                resolvedUrl,
                 width: 90,
                 height: 90,
                 fit: BoxFit.cover,
+                // Kalau error load gambar → fallback ke placeholder
+                errorBuilder: (context, error, stackTrace) {
+                  return buildPlaceholder();
+                },
               ),
             )
           else
-            Container(
-              width: 90,
-              height: 90,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  bottomLeft: Radius.circular(18),
-                ),
-                color: Color(0xFFE2E8F0),
-              ),
-              child: const Icon(Icons.local_florist, size: 32),
-            ),
+            buildPlaceholder(),
           Expanded(
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item.title,
-                              style: theme.textTheme.titleLarge,
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: theme.textTheme.titleLarge,
+                        ),
+                      ),
+                      if (item.veggieClass != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            item.veggieClass!,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: Colors.green.shade700,
                             ),
                           ),
-                          if (item.veggieClass != null)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.green.shade50,
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(
-                                item.veggieClass!,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: Colors.green.shade700,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      if (item.description != null && item.description!.isNotEmpty)
-                        Text(
-                          item.description!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium,
                         ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Rp ${item.price.toStringAsFixed(0)}'
-                        '${item.unit != null ? ' / ${item.unit}' : ''}',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
                     ],
                   ),
-
+                  const SizedBox(height: 4),
+                  if (item.description != null &&
+                      item.description!.isNotEmpty)
+                    Text(
+                      item.description!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Rp ${item.price.toStringAsFixed(0)}'
+                    '${item.unit != null ? ' / ${item.unit}' : ''}',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -298,7 +315,8 @@ class _AddItemSheetState extends State<_AddItemSheet> {
       await MarketplaceService.instance.addItem(
         title: _titleC.text.trim(),
         price: double.parse(_priceC.text.trim()),
-        description: _descC.text.trim().isEmpty ? null : _descC.text.trim(),
+        description:
+            _descC.text.trim().isEmpty ? null : _descC.text.trim(),
         unit: _unitC.text.trim().isEmpty ? null : _unitC.text.trim(),
         imageFile: _imageFile,
       );
@@ -322,7 +340,6 @@ class _AddItemSheetState extends State<_AddItemSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     final bottom = MediaQuery.of(context).viewInsets.bottom;
 
     return Padding(
@@ -373,18 +390,22 @@ class _AddItemSheetState extends State<_AddItemSheet> {
                           ),
                           child: _imageFile == null
                               ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.camera_alt, size: 32),
+                                    const Icon(Icons.camera_alt,
+                                        size: 32),
                                     const SizedBox(height: 8),
                                     Text(
                                       'Ambil foto sayuran',
-                                      style: theme.textTheme.bodyMedium,
+                                      style:
+                                          theme.textTheme.bodyMedium,
                                     ),
                                   ],
                                 )
                               : ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius:
+                                      BorderRadius.circular(16),
                                   child: Image.file(
                                     _imageFile!,
                                     width: double.infinity,
@@ -396,18 +417,22 @@ class _AddItemSheetState extends State<_AddItemSheet> {
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _titleC,
-                        decoration:
-                            const InputDecoration(labelText: 'Nama sayuran'),
+                        decoration: const InputDecoration(
+                          labelText: 'Nama sayuran',
+                        ),
                         validator: (v) =>
                             v == null || v.isEmpty ? 'Wajib diisi' : null,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _priceC,
-                        decoration:
-                            const InputDecoration(labelText: 'Harga (Rp)'),
+                        decoration: const InputDecoration(
+                          labelText: 'Harga (Rp)',
+                        ),
                         keyboardType:
-                            const TextInputType.numberWithOptions(decimal: true),
+                            const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         validator: (v) =>
                             v == null || v.isEmpty ? 'Wajib diisi' : null,
                       ),
@@ -415,13 +440,15 @@ class _AddItemSheetState extends State<_AddItemSheet> {
                       TextFormField(
                         controller: _unitC,
                         decoration: const InputDecoration(
-                            labelText: 'Satuan (contoh: kg, ikat)'),
+                          labelText: 'Satuan (contoh: kg, ikat)',
+                        ),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _descC,
-                        decoration:
-                            const InputDecoration(labelText: 'Deskripsi'),
+                        decoration: const InputDecoration(
+                          labelText: 'Deskripsi',
+                        ),
                         maxLines: 3,
                       ),
                       const SizedBox(height: 16),
@@ -433,7 +460,9 @@ class _AddItemSheetState extends State<_AddItemSheet> {
                               ? const SizedBox(
                                   width: 18,
                                   height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               : const Text('Pasang di Marketplace'),
                         ),

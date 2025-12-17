@@ -6,53 +6,50 @@ from jose import jwt
 from datetime import datetime, timedelta, timezone
 import hashlib
 
-from ..db import SessionLocal
 from .. import models
 from ..schemas import auth as auth_schemas, users as user_schemas
 from ..deps import get_db, get_current_user, SECRET_KEY, ALGORITHM
+
+# IMPORTANT:
+# pastikan di file ini memang ada pwd_context (kalau belum, ini juga bisa jadi sumber masalah)
+# Kalau kamu sudah punya pwd_context di file lain, biarkan seperti yang kamu pakai.
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 # ============================================================
-#   PASSWORD: PAKE PLAIN TEXT (TIDAK DI HASH)
+#   PASSWORD (SHA256 + bcrypt) + fallback bcrypt plain
 # ============================================================
 
 def hash_password(password: str) -> str:
-    """
-    Hash password using SHA256 + bcrypt
-    SHA256 ensures consistent length (64 hex chars) before bcrypt
-    """
-    # Pre-hash with SHA256 to handle any length password
-    prehashed = hashlib.sha256(password.encode('utf-8')).hexdigest()
-    # Then hash with bcrypt (prehashed is always 64 chars, safe for bcrypt)
+    prehashed = hashlib.sha256(password.encode("utf-8")).hexdigest()
     return pwd_context.hash(prehashed)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    """
-    Verify password using SHA256 + bcrypt
-    
-    Special handling for legacy passwords:
-    - If hash starts with $2b$, try direct bcrypt verify first (legacy)
-    - If that fails, try SHA256 + bcrypt (new method)
-    """
+    # ✅ bersihkan hash dari DB (spasi, \r, \n)
+    hashed = (hashed or "").strip()
+
+    # 1) new method: sha256 + bcrypt
     try:
-        # Try new method (SHA256 + bcrypt)
-        prehashed = hashlib.sha256(plain.encode('utf-8')).hexdigest()
+        prehashed = hashlib.sha256(plain.encode("utf-8")).hexdigest()
         if pwd_context.verify(prehashed, hashed):
             return True
     except Exception:
         pass
-    
+
+    # 2) legacy: bcrypt(plain)
     try:
-        # Try legacy method (direct bcrypt) for old passwords
         if pwd_context.verify(plain, hashed):
             return True
     except Exception:
         pass
-    
+
     return False
+
 
 # ============================================================
 #   TOKEN JWT
@@ -65,6 +62,18 @@ def create_access_token(user_id: int, expires_minutes: int = 60 * 24):
 
 
 # ============================================================
+#   DEBUG helper
+# ============================================================
+
+def mask_hash(h: str | None) -> str:
+    if not h:
+        return "(null)"
+    if len(h) <= 12:
+        return h
+    return f"{h[:8]}...{h[-8:]} (len={len(h)})"
+
+
+# ============================================================
 #   REGISTER
 # ============================================================
 
@@ -73,29 +82,23 @@ def register(
     body: auth_schemas.RegisterRequest,
     db: Session = Depends(get_db),
 ):
-    existing = db.query(models.User).filter(
-        models.User.email == body.email
-    ).first()
+    existing = db.query(models.User).filter(models.User.email == body.email).first()
 
     if existing:
-        raise HTTPException(
-            status_code=400,
-            detail="Email sudah terdaftar"
-        )
-    
-    # Hash password using SHA256 + bcrypt
+        raise HTTPException(status_code=400, detail="Email sudah terdaftar")
+
     hashed_pw = hash_password(body.password)
-    
+
     new_user = models.User(
         name=body.name,
         email=body.email,
         password_hash=hashed_pw,
     )
-    
+
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    
+
     return new_user
 
 
@@ -108,32 +111,49 @@ def login(
     body: auth_schemas.LoginRequest,
     db: Session = Depends(get_db),
 ):
-    user = db.query(models.User).filter(
-        models.User.email == body.email
-    ).first()
-    
+    user = db.query(models.User).filter(models.User.email == body.email).first()
+
+    # DEBUG (email lookup)
+    print("[AUTH][LOGIN] email =", body.email)
+    print("[AUTH][LOGIN] user_found =", bool(user))
+
     if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Email atau password salah"
-        )
-    
-    # Verify password (handles both legacy and new hashes)
-    if not verify_password(body.password, user.password_hash):
-        raise HTTPException(
-            status_code=401,
-            detail="Email atau password salah"
-        )
-    
-    # Auto-upgrade legacy passwords to new format
-    if user.password_hash and not user.password_hash.startswith("$2b$12$"):
-        # Re-hash password with new method
-        user.password_hash = hash_password(body.password)
-        db.commit()
-    
-    # Create access token
+        raise HTTPException(status_code=401, detail="Email atau password salah")
+
+    # DEBUG (hash format)
+    print("[AUTH][LOGIN] hash_db =", mask_hash(user.password_hash))
+    print("[AUTH][LOGIN] hash_prefix =", (user.password_hash or "")[:4])
+
+    # DEBUG (verify in two modes)
+    prehashed = hashlib.sha256(body.password.encode("utf-8")).hexdigest()
+    ok_new = False
+    ok_legacy = False
+
+    try:
+        ok_new = pwd_context.verify(prehashed, user.password_hash)
+    except Exception as e:
+        print("[AUTH][LOGIN] verify_new_exception =", repr(e))
+
+    try:
+        ok_legacy = pwd_context.verify(body.password, user.password_hash)
+    except Exception as e:
+        print("[AUTH][LOGIN] verify_legacy_exception =", repr(e))
+
+    print("[AUTH][LOGIN] verify_new(sha256+bcrypt) =", ok_new)
+    print("[AUTH][LOGIN] verify_legacy(bcrypt_plain) =", ok_legacy)
+
+    ok = ok_new or ok_legacy
+    print("[AUTH][LOGIN] verify_final =", ok)
+
+    if not ok:
+        raise HTTPException(status_code=401, detail="Email atau password salah")
+
+    # (optional) jangan upgrade pakai startswith("$2b$12$") karena cost bisa beda
+    # kalau mau upgrade legacy -> new, sebaiknya pakai flag/version (lebih rapi).
+    # Untuk sementara, aku biarkan tidak auto-upgrade supaya tidak bikin bingung.
+
     token = create_access_token(user.id)
-    
+
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -141,7 +161,7 @@ def login(
             "id": user.id,
             "name": user.name,
             "email": user.email,
-        }
+        },
     }
 
 

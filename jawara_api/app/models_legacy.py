@@ -11,7 +11,6 @@ from datetime import datetime, timezone
 from .db import Base
 
 
-
 def utcnow():
     return datetime.now(timezone.utc)
 
