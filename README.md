@@ -249,166 +249,77 @@ Dokumentasi berikut mencerminkan endpoint backend yang **sudah terimplementasi d
 
 ## Tampilan JawaraMobile
 
-### Login Page (aziz)
-
-![login](./assets/screenshot/login.gif)
-
-### Register Page (aziz)
-
-![register](./assets/screenshot/register.gif)
-
-### Dashboard Homescreen
-
-![home](./assets/screenshot/home.gif)
-
-### Menu Pemasukan (aziz)
-
-#### Kategori Iuran (aziz)
-
-![kategoriiuran](./assets/screenshot/kategori_iuran.gif)
-
-#### Tagih Iuran (aziz)
-
-![tagih](./assets/screenshot/tagihan_iuran.gif)
-
-#### Daftar Tagihan (aziz)
-
-![daftartagih](./assets/screenshot/daftar_tagihan.gif)
-
-#### Lain-lain (aziz)
-
-![lain-lain](./assets/screenshot/lain_lain.gif)
-
-#### Mutasi Keluarga
-
-![mutasi](./assets/screenshot/mutasi_page.gif)
-
-#### Mutasi Keluarga
-
-![mutasi](./assets/screenshot/dataWargaRumah_page.gif)
-
-### Menu Pengeluaran
-
-#### Daftar Pengeluaran (Dio)
-
-![daftarpengeluaran](./assets/screenshot/daftar_pengeluaran.gif)
-
-#### Filter Pengeluaran (Dio)
-
-![filterpengeluaran](./assets/screenshot/filter_pengeluaran.gif)
-
-#### Detail Pengeluaran (Dio)
-
-![detailpengeluaran](./assets/screenshot/detail_pengeluaran.gif)
-
-#### Tambah Pengeluaran (Dio)
-
-![tambahpengeluaran](./assets/screenshot/tambah_pengeluaran.gif)
-
-### Laporan Keuangan
-
-#### Semua Pemasukan (Dio)
-
-![semuapemasukan](./assets/screenshot/semua_pemasukan.gif)
-
-#### Filter Pemasukan (Dio)
-
-![filterpemasukan](./assets/screenshot/filter_pemasukan_all.gif)
-
-#### Detail Pemasukan (Dio)
-
-![detailpemasukan](./assets/screenshot/detail_pemasukan.gif)
-
-#### Semua Pengeluaran (Dio)
-
-![semuapengeluaran](./assets/screenshot/semua_pengeluaran.gif)
-
-#### Filter Pengeluaran (Dio)
-
-![filterpengeluaran](./assets/screenshot/filter_pengeluaran_all.gif)
-
-#### Detail Pengeluaran (Dio)
-
-![detailpengeluaran](./assets/screenshot/detail_pengeluaran_all.gif)
-
-#### Cetak Laporan Keuangan (Dio)
-
-![cetaklaporan](./assets/screenshot/cetak_laporan.gif)
-
-### Kegiatan
-
-#### Daftar Kegiatan (Dio)
-
-![daftarkegiatan](./assets/screenshot/daftar_kegiatan.gif)
-
-#### Filter Kegiatan (Dio)
-
-![filterkegiatan](./assets/screenshot/filter_kegiatan.gif)
-
-#### Detail Kegiatan (Dio)
-
-![detailkegiatan](./assets/screenshot/detail_kegiatan.gif)
-
-#### Tambah Kegiatan (Dio)
-
-![tambahkegiatan](./assets/screenshot/tambah_kegiatan.gif)
-
-#### Edit Kegiatan (Dio)
-
-![editkegiatan](./assets/screenshot/edit_kegiatan.gif)
-
-#### Hapus Kegiatan (Dio)
-
-![hapuskegiatan](./assets/screenshot/hapus_kegiatan.gif)
-
 ### Broadcast
+![broadcast](./assets/screenshot/Broadcast.gif)
 
-#### Daftar Broadcast (Dio)
+---
 
-![daftarbroadcast](./assets/screenshot/daftar_broadcast.gif)
+### Channel Transfer (Bendahara)
+![channel-transfer](./assets/screenshot/channel-transfer-bendahara.gif)
 
-#### Filter Broadcast (Dio)
+---
 
-![filterbroadcast](./assets/screenshot/filter_broadcast.gif)
+### Data Keluarga
+![data-keluarga](./assets/screenshot/DataKeluarga.gif)
 
-#### Detail Broadcast (Dio)
+---
 
-![detailbroadcast](./assets/screenshot/detail_broadcast.gif)
+### Data Rumah
+![data-rumah](./assets/screenshot/dataRumah.gif)
 
-#### Tambah Broadcast (Dio)
+---
 
-![tambahbroadcast](./assets/screenshot/tambah_broadcast.gif)
+### Data Warga
+![data-warga](./assets/screenshot/Datawarga.gif)
 
-#### Edit Broadcast (Dio)
+---
 
-![editbroadcast](./assets/screenshot/edit_broadcast.gif)
+### Kegiatan (Pengurus)
+![kegiatan](./assets/screenshot/Kegiatan.gif)
 
-#### Hapus Broadcast (Dio)
+---
 
-![hapusbroadcast](./assets/screenshot/hapus_broadcast.gif)
+### Kegiatan (Warga)
+![kegiatan-warga](./assets/screenshot/kegiatan-warga.gif)
 
-#### Penerimaan Warga
+---
 
-![penerimaanwarga](./assets/screenshot/penerimaanwarga.png)
-![filter_penerimaanwarga](./assets/screenshot/filter_penerimaanwarga.png)
-![filter_penerimaanwarga2](./assets/screenshot/filter_penerimaanwarga2.png)
-![filter_penerimaanwarga3](./assets/screenshot/filter_penerimaanwarga3.png)
+### Laporan Keuangan (Bendahara)
+![laporan-keuangan](./assets/screenshot/laporan-keuangan-bendahara.gif)
 
-#### Pesan Warga - Aspirasi
+---
 
-![dashboard_aspirasi](./assets/screenshot/dashboard_aspirasi.png)
-![filter_aspirasi](./assets/screenshot/filter_aspirasi.png)
-![filter_aspirasi2](./assets/screenshot/filter_aspirasi2.png)
-![filter_aspirasi3](./assets/screenshot/filter_aspirasi3.png)
+### Laporan
+![laporan](./assets/screenshot/Laporan.gif)
 
-#### LogActiviy
+---
 
-![LogActivity](./assets/screenshot/logactivity.gif)
+### Log Aktivitas (Bendahara)
+![log-aktivitas](./assets/screenshot/log-aktivitas-bendahara.gif)
 
-#### Manajamen Pengguna
+---
 
-![ManjamenPengguna](./assets/screenshot/manajemenpengguna.gif)
+### Marketplace (Warga)
+![marketplace](./assets/screenshot/marketplace.gif)
 
-#### Channel Tranfer
+---
 
-![ChannelTransfer](./assets/screenshot/channeltransfer.gif)
+### Pemasukan (Bendahara)
+![pemasukan](./assets/screenshot/pemasukan-bendahara.gif)
+
+---
+
+### Pengeluaran (Bendahara)
+![pengeluaran](./assets/screenshot/pengeluaran-bendahara.gif)
+
+---
+
+### Pesan (Pengurus)
+![pesan](./assets/screenshot/Pesan.gif)
+
+---
+
+### Pesan Warga
+![pesan-warga](./assets/screenshot/pesan-warga.gif)
+
+---
