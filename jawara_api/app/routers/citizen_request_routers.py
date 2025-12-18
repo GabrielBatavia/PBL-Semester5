@@ -1,12 +1,43 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.deps import get_db
 from app.models.citizen_request import CitizenRequest
 from app.schemas.citizen_request_schema import CitizenRequestOut, CitizenRequestCreate, CitizenRequestUpdate
 from datetime import datetime
+from sqlalchemy import or_
 
 router = APIRouter(prefix="/citizen-requests", tags=["Citizen Requests"])
 
+@router.get("/search", response_model=list[CitizenRequestOut])
+def search_requests(
+    q: str,
+    db: Session = Depends(get_db)
+):
+    data = db.query(CitizenRequest).filter(
+        or_(
+            CitizenRequest.name.ilike(f"%{q}%"),
+            CitizenRequest.nik.ilike(f"%{q}%"),
+            CitizenRequest.email.ilike(f"%{q}%")
+        )
+    ).all()
+
+    return [
+        CitizenRequestOut(
+            id=row.id,
+            name=row.name,
+            nik=row.nik,
+            email=row.email,
+            gender=row.gender,
+            identity_image_url=row.identity_image_url,
+            status=row.status,
+            processed_by=row.processed_by,
+            processed_by_name=row.processed_by_user.name if row.processed_by_user else None,
+            processed_at=row.processed_at,
+            created_at=row.created_at,
+            updated_at=row.updated_at
+        )
+        for row in data
+    ]
 
 # CREATE REQUEST 
 
@@ -48,8 +79,17 @@ def create_request(
 # LIST REQUEST
 
 @router.get("/", response_model=list[CitizenRequestOut])
-def get_all(db: Session = Depends(get_db)):
-    data = db.query(CitizenRequest).order_by(CitizenRequest.created_at.desc()).all()
+def get_all(search: str | None = Query(default=None),
+    db: Session = Depends(get_db)
+):
+    query = db.query(CitizenRequest)
+
+    if search:
+        query = query.filter(
+            CitizenRequest.name.ilike(f"%{search}%")
+        )
+
+    data = query.order_by(CitizenRequest.created_at.desc()).all()
 
     results = []
     for row in data:
@@ -99,17 +139,25 @@ def get_detail(request_id: int, db: Session = Depends(get_db)):
 # UPDATE REQUEST (Approve/Reject)
 
 @router.put("/{request_id}", response_model=CitizenRequestOut)
-def update_request(request_id: int, payload: CitizenRequestUpdate, db: Session = Depends(get_db)):
+def update_request(
+    request_id: int,
+    payload: CitizenRequestUpdate,
+    db: Session = Depends(get_db)
+):
     row = db.query(CitizenRequest).filter(CitizenRequest.id == request_id).first()
     if not row:
         raise HTTPException(404, "Citizen request not found")
 
-    if payload.status:
-        row.status = payload.status
+    data = payload.model_dump(exclude_unset=True)
 
-    if payload.processed_by:
-        row.processed_by = payload.processed_by
+    for key, value in data.items():
+        setattr(row, key, value)
+
+    # jika diproses admin
+    if "processed_by" in data:
         row.processed_at = datetime.utcnow()
+
+    row.updated_at = datetime.utcnow()
 
     db.commit()
     db.refresh(row)

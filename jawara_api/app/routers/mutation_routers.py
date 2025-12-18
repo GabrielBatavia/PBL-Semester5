@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from app.deps import get_db
 from .. import models
 from app.schemas.mutation_schema import MutasiCreate, MutasiUpdate, MutasiOut
@@ -11,12 +12,28 @@ router = APIRouter(prefix="/mutasi", tags=["Mutasi"])
 # GET ALL MUTASI (JOIN Family untuk mengambil family_name)
 # ============================================================
 @router.get("/", response_model=list[MutasiOut])
-def get_all(db: Session = Depends(get_db)):
+def get_all(
+    search: str | None = Query(default=None),
+    db: Session = Depends(get_db)
+):
     query = (
         db.query(models.Mutasi, models.Family.name.label("family_name"))
         .join(models.Family, models.Mutasi.family_id == models.Family.id)
-        .all()
     )
+    if search:
+        query = query.filter(
+            or_(
+                models.Family.name.ilike(f"%{search}%"),
+                models.Family.id.ilike(f"%{search}%"),
+                models.Mutasi.old_address.ilike(f"%{search}%"),
+                models.Mutasi.new_address.ilike(f"%{search}%"),
+                models.Mutasi.mutation_type.ilike(f"%{search}%"),
+                models.Mutasi.reason.ilike(f"%{search}%"),
+            )
+        )
+
+    results = query.order_by(models.Mutasi.created_at.desc()).all()
+
 
     return [
         MutasiOut(
@@ -80,32 +97,44 @@ def create_mutasi(data: MutasiCreate, db: Session = Depends(get_db)):
 # ============================================================
 # GET MUTASI BY ID
 # ============================================================
-@router.get("/{id}", response_model=MutasiOut)
-def get_by_id(id: int, db: Session = Depends(get_db)):
+@router.get("/", response_model=list[MutasiOut])
+def get_all(
+    search: str | None = Query(default=None),
+    db: Session = Depends(get_db)
+):
     query = (
         db.query(models.Mutasi, models.Family.name.label("family_name"))
         .join(models.Family, models.Mutasi.family_id == models.Family.id)
-        .filter(models.Mutasi.id == id)
-        .first()
     )
 
-    if not query:
-        raise HTTPException(status_code=404, detail="Mutasi not found")
+    if search:
+        query = query.filter(
+            or_(
+                models.Family.name.ilike(f"%{search}%"),
+                models.Mutasi.old_address.ilike(f"%{search}%"),
+                models.Mutasi.new_address.ilike(f"%{search}%"),
+                models.Mutasi.mutation_type.ilike(f"%{search}%"),
+                models.Mutasi.reason.ilike(f"%{search}%"),
+            )
+        )
 
-    mutasi, family_name = query
+    results = query.order_by(models.Mutasi.created_at.desc()).all()
 
-    return MutasiOut(
-        id=mutasi.id,
-        family_id=mutasi.family_id,
-        family_name=family_name,
-        old_address=mutasi.old_address,
-        new_address=mutasi.new_address,
-        mutation_type=mutasi.mutation_type,
-        reason=mutasi.reason,
-        date=mutasi.date,
-        created_at=mutasi.created_at,
-        updated_at=mutasi.updated_at,
-    )
+    return [
+        MutasiOut(
+            id=m.id,
+            family_id=m.family_id,
+            family_name=family_name,
+            old_address=m.old_address,
+            new_address=m.new_address,
+            mutation_type=m.mutation_type,
+            reason=m.reason,
+            date=m.date,
+            created_at=m.created_at,
+            updated_at=m.updated_at,
+        )
+        for m, family_name in results
+    ]
 
 
 # ============================================================
