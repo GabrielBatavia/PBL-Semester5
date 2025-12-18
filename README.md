@@ -255,7 +255,7 @@ Dokumentasi berikut mencerminkan endpoint backend yang **sudah terimplementasi d
 ---
 
 ### Channel Transfer (Bendahara)
-![channel-transfer](./assets/screenshot/channel-transfer-bendahara.gif)
+![channel-transfer](./assets/screenshot/channel-transfer-bedahara.gif)
 
 ---
 
