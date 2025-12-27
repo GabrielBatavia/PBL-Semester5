@@ -1,0 +1,1427 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20251227185226
+Username: LAPTOP-E8ITE3TB\GabrielBatavia
+RunAs User: LAPTOP-E8ITE3TB\GabrielBatavia
+Configuration Name: 
+Machine: LAPTOP-E8ITE3TB (Microsoft Windows NT 10.0.22631.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 43092
+PSVersion: 5.1.22621.6133
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.6133
+BuildVersion: 10.0.22621.6133
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is test_logs\test_run_20251227_185226.log
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\activity_test.dart
+==============================
+
+RESULT: PASS -> activity_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\citizen_message_model_test.dart
+==============================
+
+RESULT: PASS -> citizen_message_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\katagori_iuran_item_test.dart
+==============================
+
+RESULT: PASS -> katagori_iuran_item_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\kegiatan_model_test.dart
+==============================
+
+RESULT: PASS -> kegiatan_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\marketplace_item_model_test.dart
+==============================
+
+RESULT: PASS -> marketplace_item_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\payment_channel_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\activity_service_api_test.dart
+==============================
+
+RESULT: PASS -> activity_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\auth_service_api_test.dart
+==============================
+
+RESULT: FAIL -> auth_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_api_test.dart
+==============================
+
+RESULT: PASS -> bill_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_test.dart
+==============================
+
+RESULT: PASS -> bill_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\broadcast_service_api_test.dart
+==============================
+
+RESULT: PASS -> broadcast_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_message_service_api_test.dart
+==============================
+
+RESULT: PASS -> citizen_message_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_request_service_api_test.dart
+==============================
+
+RESULT: FAIL -> citizen_request_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_api_test.dart
+==============================
+
+RESULT: PASS -> expenses_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_test.dart
+==============================
+
+RESULT: PASS -> expenses_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\family_service_api_test.dart
+==============================
+
+RESULT: PASS -> family_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_api_test.dart
+==============================
+
+RESULT: PASS -> fee_category_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_test.dart
+==============================
+
+RESULT: PASS -> fee_category_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\house_service_api_test.dart
+==============================
+
+RESULT: PASS -> house_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_api_test.dart
+==============================
+
+RESULT: PASS -> income_transaction_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_test.dart
+==============================
+
+RESULT: PASS -> income_transaction_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\kegiatan_service_api_test.dart
+==============================
+
+RESULT: PASS -> kegiatan_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\log_service_api_test.dart
+==============================
+
+RESULT: PASS -> log_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\marketplace_service_api_test.dart
+==============================
+
+RESULT: FAIL -> marketplace_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\mutation_service_api_test.dart
+==============================
+
+RESULT: PASS -> mutation_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_api_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_api_test.dart
+==============================
+
+RESULT: PASS -> report_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_test.dart
+==============================
+
+RESULT: PASS -> report_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\resident_service_api_test.dart
+==============================
+
+RESULT: PASS -> resident_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\user_service_api_test.dart
+==============================
+
+RESULT: PASS -> user_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\add_marketplace_item_screen_test.dart
+==============================
+#10     exitWithHooks (package:flutter_tools/src/base/process.dart:648:3)
+<asynchronous suspension>
+#11     LocalSignals._handleSignal
+(package:flutter_tools/src/base/signals.dart:144:7)
+<asynchronous suspension>
+
+
+00:01 +1: AddMarketplaceItemScreen calls addItem with correct values when fo
+rm valid - did not complete [E]
+00:01 +1: Some tests failed.
+Terminate batch job (Y/N)? Y
+PS>TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+PS C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI> $log="test_logs\test_run_$(Get-Date -Format yyyyMMdd_HHmmss).log";New-Item -ItemType Directory -Force test_logs | Out-Null;Start-Transcript -Path $log;$pass=0;$fail=0;$files=Get-ChildItem -Recurse .\test -File | Where-Object { $_.Name -like "*_test.dart" -or $_.Name -like "*_api_test.dart" } | Sort-Object FullName; foreach($f in $files){Write-Host "`n==============================";Write-Host ("RUN  : "+$f.FullName);Write-Host "==============================";flutter test $f.FullName -r expanded;if($LASTEXITCODE -eq 0){Write-Host ("RESULT: PASS -> "+$f.Name);$pass++}else{Write-Host ("RESULT: FAIL -> "+$f.Name);$fail++}};Write-Host "`nDONE. PASS=$pass FAIL=$fail TOTAL=$($files.Count)";Stop-Transcript;Read-Host "`nLog saved to $log | Press ENTER"
+Transcript started, output file is test_logs\test_run_20251227_185507.log
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\activity_test.dart
+==============================
+
+RESULT: PASS -> activity_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\citizen_message_model_test.dart
+==============================
+
+RESULT: PASS -> citizen_message_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\katagori_iuran_item_test.dart
+==============================
+
+RESULT: PASS -> katagori_iuran_item_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\kegiatan_model_test.dart
+==============================
+
+RESULT: PASS -> kegiatan_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\marketplace_item_model_test.dart
+==============================
+
+RESULT: PASS -> marketplace_item_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\payment_channel_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\activity_service_api_test.dart
+==============================
+
+RESULT: PASS -> activity_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\auth_service_api_test.dart
+==============================
+
+RESULT: FAIL -> auth_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_api_test.dart
+==============================
+
+RESULT: PASS -> bill_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_test.dart
+==============================
+
+RESULT: PASS -> bill_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\broadcast_service_api_test.dart
+==============================
+
+RESULT: PASS -> broadcast_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_message_service_api_test.dart
+==============================
+
+RESULT: PASS -> citizen_message_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_request_service_api_test.dart
+==============================
+
+RESULT: FAIL -> citizen_request_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_api_test.dart
+==============================
+
+RESULT: PASS -> expenses_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_test.dart
+==============================
+
+RESULT: PASS -> expenses_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\family_service_api_test.dart
+==============================
+
+RESULT: PASS -> family_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_api_test.dart
+==============================
+
+RESULT: PASS -> fee_category_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_test.dart
+==============================
+
+RESULT: PASS -> fee_category_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\house_service_api_test.dart
+==============================
+
+RESULT: PASS -> house_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_api_test.dart
+==============================
+
+RESULT: PASS -> income_transaction_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_test.dart
+==============================
+
+RESULT: PASS -> income_transaction_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\kegiatan_service_api_test.dart
+==============================
+
+RESULT: PASS -> kegiatan_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\log_service_api_test.dart
+==============================
+
+RESULT: PASS -> log_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\marketplace_service_api_test.dart
+==============================
+
+RESULT: FAIL -> marketplace_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\mutation_service_api_test.dart
+==============================
+
+RESULT: PASS -> mutation_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_api_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_api_test.dart
+==============================
+
+RESULT: PASS -> report_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_test.dart
+==============================
+
+RESULT: PASS -> report_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\resident_service_api_test.dart
+==============================
+
+RESULT: PASS -> resident_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\user_service_api_test.dart
+==============================
+
+RESULT: PASS -> user_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\add_marketplace_item_screen_test.dart
+==============================
+
+RESULT: PASS -> add_marketplace_item_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\detail_kegiatan_screen_test.dart
+==============================
+
+RESULT: PASS -> detail_kegiatan_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\kegiatan_screen_test.dart
+==============================
+
+RESULT: FAIL -> kegiatan_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\marketplace_screen_test.dart
+==============================
+
+RESULT: PASS -> marketplace_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\pesan_warga_screen_test.dart
+==============================
+
+RESULT: PASS -> pesan_warga_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\tambah_pengeluaran_form_test.dart
+==============================
+
+RESULT: PASS -> tambah_pengeluaran_form_test.dart
+
+DONE. PASS=33 FAIL=4 TOTAL=37
+Transcript stopped, output file is C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test_logs\test_run_20251227_185507.log
+
+PS C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI> $log="test_logs\test_run_$(Get-Date -Format yyyyMMdd_HHmmss).log";New-Item -ItemType Directory -Force test_logs|Out-Null;$pass=0;$fail=0;$files=Get-ChildItem -Recurse .\test -File|Where-Object{$_.Name -like "*_test.dart" -or $_.Name -like "*_api_test.dart"}|Sort-Object FullName;foreach($f in $files){"=============================="|Tee-Object -Append $log;"RUN  : $($f.FullName)"|Tee-Object -Append $log;"=============================="|Tee-Object -Append $log;flutter test $f.FullName -r expanded 2>&1|Tee-Object -Append $log;if($LASTEXITCODE -eq 0){"RESULT: PASS -> $($f.Name)"|Tee-Object -Append $log;$pass++}else{"RESULT: FAIL -> $($f.Name)"|Tee-Object -Append $log;$fail++}};"DONE. PASS=$pass FAIL=$fail TOTAL=$($files.Count)"|Tee-Object -Append $log;Read-Host "Log saved to $log | Press ENTER"
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\activity_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/activity_test.dart
+00:00 +0: Activity model parses JSON sesuai database SQL
+HASIL PARSE MODEL:
+{id: 1, name: Kerja Bakti Minggu 1, category: kebersihan, pic_name: Pak RT, location: Lapangan, date: 2025-01-10, description: Kerja bakti rutin., image_url: null, created_by: 2, created_at: 2025-11-24 11:54:33, updated_at: 2025-11-24 11:54:33}
+00:00 +1: All tests passed!
+RESULT: PASS -> activity_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\citizen_message_model_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/citizen_message_model_test.dart
+00:00 +0: CitizenMessage model fromJson parses all fields correctly
+00:00 +1: CitizenMessage model toCreateJson only includes title and content
+00:00 +2: All tests passed!
+RESULT: PASS -> citizen_message_model_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\katagori_iuran_item_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/katagori_iuran_item_test.dart
+00:00 +0: PemasukanListItem Widget Tests should display all provided information correctly
+00:00 +1: PemasukanListItem Widget Tests should display empty strings when provided
+00:00 +2: PemasukanListItem Widget Tests should render as a Card widget
+00:00 +3: PemasukanListItem Widget Tests should display large nominal values correctly
+00:00 +4: PemasukanListItem Widget Tests should display special characters in text
+00:00 +5: All tests passed!
+RESULT: PASS -> katagori_iuran_item_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\kegiatan_model_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/kegiatan_model_test.dart
+00:00 +0: Kegiatan model fromJson parses int, bool, and dates correctly (normal case)
+00:00 +1: Kegiatan model fromJson converts string/int values to int correctly
+00:00 +2: Kegiatan model fromJson converts various is_deleted representations to bool
+00:00 +3: All tests passed!
+RESULT: PASS -> kegiatan_model_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\marketplace_item_model_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/marketplace_item_model_test.dart
+00:00 +0: MarketplaceItem model fromJson parses all fields correctly
+00:00 +1: MarketplaceItem model fromJson handles null optional fields
+00:00 +2: All tests passed!
+RESULT: PASS -> marketplace_item_model_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\payment_channel_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/payment_channel_test.dart
+00:00 +0: PaymentChannel Model Tests fromJson should parse complete data correctly
+00:00 +1: PaymentChannel Model Tests fromJson should handle null accountName and accountNumber
+00:00 +2: PaymentChannel Model Tests fromJson should handle missing optional fields
+00:00 +3: PaymentChannel Model Tests fromJson should provide default values for missing name/type
+00:00 +4: PaymentChannel Model Tests constructor should create object with required fields
+00:00 +5: PaymentChannel Model Tests constructor should create object with all fields
+00:00 +6: PaymentChannel Model Tests should handle different channel types
+00:00 +7: All tests passed!
+RESULT: PASS -> payment_channel_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\activity_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/activity_service_api_test.dart
+00:00 +0: ActivityService.getCategoryStats success
+00:00 +1: ActivityService.getCategoryStats non-200 throws
+00:00 +2: ActivityService.getCategoryStats invalid format throws
+00:00 +3: All tests passed!
+RESULT: PASS -> activity_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\auth_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/auth_service_api_test.dart
+00:00 +0: AuthService.login success saves token and returns true
+00:00 +1: AuthService.login wrong credential returns false
+00:00 +2: AuthService.register success returns true when 201
+00:00 +3: AuthService.register returns false when not 201
+00:00 +4: All tests passed!
+RESULT: PASS -> auth_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/bill_service_api_test.dart
+00:00 +0: BillService.getBills success
+00:00 +1: BillService.getBills throws with detail
+00:00 +2: BillService.createBillsForAllFamilies success
+00:00 +3: BillService.sendBillNotifications success
+00:00 +4: All tests passed!
+RESULT: PASS -> bill_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/bill_service_test.dart
+00:00 +0: BillService Tests Response Parsing should parse single bill response
+00:00 +1: BillService Tests Response Parsing should parse list of bills
+00:00 +2: BillService Tests Response Parsing should handle paid bill with timestamp
+00:00 +3: BillService Tests Response Parsing should parse bulk create request data
+00:00 +4: BillService Tests Response Parsing should parse bulk create response
+00:00 +5: BillService Tests Response Parsing should parse send notifications request
+00:00 +6: BillService Tests Response Parsing should parse send notifications response
+00:00 +7: BillService Tests Response Parsing should handle empty bills list
+00:00 +8: BillService Tests Response Parsing should handle different bill statuses
+00:00 +9: All tests passed!
+RESULT: PASS -> bill_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\broadcast_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/broadcast_service_api_test.dart
+00:00 +0: BroadcastService create/get/update/delete
+00:00 +1: All tests passed!
+RESULT: PASS -> broadcast_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_message_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/citizen_message_service_api_test.dart
+00:00 +0: CitizenMessageService.fetchMessages success
+00:00 +1: CitizenMessageService.createMessage success
+00:00 +2: CitizenMessageService.fetchMessages throws on non-200
+00:00 +3: All tests passed!
+RESULT: PASS -> citizen_message_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_request_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/citizen_request_service_api_test.dart
+00:00 +0: CitizenRequestService getAll/getById/create/update/delete via ApiClient
+00:00 +1: CitizenRequestService.createWithImage multipart success (HttpOverrides)
+00:00 +1 -1: CitizenRequestService.createWithImage multipart success (HttpOverrides) [E]
+  NoSuchMethodError: Class '_FakeHttpClientResponse' has no instance getter 'contentLength'.
+  Receiver: Instance of '_FakeHttpClientResponse'
+  Tried calling: contentLength
+  dart:core                                     Object.noSuchMethod
+  test\helpers\fake_http_overrides.dart 263:56  _FakeHttpClientResponse.noSuchMethod
+  test\helpers\fake_http_overrides.dart 224:7   _FakeHttpClientResponse.contentLength
+  package:http/src/io_client.dart 215:22        IOClient.send
+
+00:00 +1 -1: Some tests failed.
+RESULT: FAIL -> citizen_request_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/expenses_service_api_test.dart
+00:00 +0: ExpenseService.getExpenses supports List response
+00:00 +1: ExpenseService.getExpenses supports {data:[...]} response
+00:00 +2: ExpenseService.createExpense success
+00:00 +3: ExpenseService.createExpense throws with detail
+00:00 +4: All tests passed!
+RESULT: PASS -> expenses_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/expenses_service_test.dart
+00:00 +0: ExpenseService Tests Response Parsing should parse single expense response
+00:00 +1: ExpenseService Tests Response Parsing should parse list of expenses
+00:00 +2: ExpenseService Tests Response Parsing should handle expense with proof image
+00:00 +3: ExpenseService Tests Response Parsing should parse creation request data
+00:00 +4: ExpenseService Tests Response Parsing should handle empty list
+00:00 +5: ExpenseService Tests Response Parsing should handle different expense categories
+00:00 +6: ExpenseService Tests Response Parsing should handle large amount values
+00:00 +7: All tests passed!
+RESULT: PASS -> expenses_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\family_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/family_service_api_test.dart
+00:00 +0: FamilyService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> family_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/fee_category_service_api_test.dart
+00:00 +0: FeeCategoryService.getCategories success
+00:00 +1: FeeCategoryService.createCategory success
+00:00 +2: FeeCategoryService.updateStatus success
+00:00 +3: FeeCategoryService.updateStatus throws when not 200
+00:00 +4: All tests passed!
+RESULT: PASS -> fee_category_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/fee_category_service_test.dart
+00:00 +0: FeeCategoryService Tests Response Parsing should parse single category response
+00:00 +1: FeeCategoryService Tests Response Parsing should parse list of categories
+00:00 +2: FeeCategoryService Tests Response Parsing should handle category with inactive status
+00:00 +3: FeeCategoryService Tests Response Parsing should handle empty list
+00:00 +4: FeeCategoryService Tests Response Parsing should parse category creation request data
+00:00 +5: FeeCategoryService Tests Response Parsing should parse status update request data
+00:00 +6: FeeCategoryService Tests Response Parsing should handle different category types
+00:00 +7: All tests passed!
+RESULT: PASS -> fee_category_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\house_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/house_service_api_test.dart
+00:00 +0: HouseService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> house_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/income_transaction_service_api_test.dart
+00:00 +0: IncomeTransactionService.getIncomeTransactions success
+00:00 +1: IncomeTransactionService.createIncomeTransaction success
+00:00 +2: IncomeTransactionService.getIncomeTransactions throws
+00:00 +3: All tests passed!
+RESULT: PASS -> income_transaction_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/income_transaction_service_test.dart
+00:00 +0: IncomeTransactionService Tests Response Parsing should parse single income transaction response
+00:00 +1: IncomeTransactionService Tests Response Parsing should parse list of income transactions
+00:00 +2: IncomeTransactionService Tests Response Parsing should handle transaction without category_id
+00:00 +3: IncomeTransactionService Tests Response Parsing should parse creation request data
+00:00 +4: IncomeTransactionService Tests Response Parsing should handle empty list
+00:00 +5: IncomeTransactionService Tests Response Parsing should handle different transaction types
+00:00 +6: All tests passed!
+RESULT: PASS -> income_transaction_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\kegiatan_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/kegiatan_service_api_test.dart
+00:00 +0: KegiatanService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> kegiatan_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\log_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/log_service_api_test.dart
+00:00 +0: LogService.fetchLogs success
+00:00 +1: LogService.fetchLatestLogs success (no auth)
+00:00 +2: LogService.logsStream emits list
+00:00 +3: All tests passed!
+RESULT: PASS -> log_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\marketplace_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/marketplace_service_api_test.dart
+00:00 +0: MarketplaceService.fetchItems success
+00:00 +1: MarketplaceService.addItem multipart success (HttpOverrides)
+00:00 +1 -1: MarketplaceService.addItem multipart success (HttpOverrides) [E]
+  NoSuchMethodError: Class '_FakeHttpClientResponse' has no instance getter 'contentLength'.
+  Receiver: Instance of '_FakeHttpClientResponse'
+  Tried calling: contentLength
+  dart:core                                     Object.noSuchMethod
+  test\helpers\fake_http_overrides.dart 263:56  _FakeHttpClientResponse.noSuchMethod
+  test\helpers\fake_http_overrides.dart 224:7   _FakeHttpClientResponse.contentLength
+  package:http/src/io_client.dart 215:22        IOClient.send
+
+00:00 +1 -1: MarketplaceService.analyzeImage multipart success (HttpOverrides)
+00:00 +1 -2: MarketplaceService.analyzeImage multipart success (HttpOverrides) [E]
+  NoSuchMethodError: Class '_FakeHttpClientResponse' has no instance getter 'contentLength'.
+  Receiver: Instance of '_FakeHttpClientResponse'
+  Tried calling: contentLength
+  dart:core                                     Object.noSuchMethod
+  test\helpers\fake_http_overrides.dart 263:56  _FakeHttpClientResponse.noSuchMethod
+  test\helpers\fake_http_overrides.dart 224:7   _FakeHttpClientResponse.contentLength
+  package:http/src/io_client.dart 215:22        IOClient.send
+
+00:00 +1 -2: Some tests failed.
+RESULT: FAIL -> marketplace_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\mutation_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/mutation_service_api_test.dart
+00:00 +0: MutasiService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> mutation_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/payment_channel_service_api_test.dart
+00:00 +0: PaymentChannelService.getChannels success
+00:00 +1: PaymentChannelService.createChannel success
+00:00 +2: PaymentChannelService.getChannels throws on non-200
+00:00 +3: All tests passed!
+RESULT: PASS -> payment_channel_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/payment_channel_service_test.dart
+00:00 +0: PaymentChannelService Tests Response Parsing should parse single channel response
+00:00 +1: PaymentChannelService Tests Response Parsing should parse list of channels
+00:00 +2: PaymentChannelService Tests Response Parsing should parse channel with null optional fields
+00:00 +3: PaymentChannelService Tests Channel Type Validation should accept valid channel types
+00:00 +4: PaymentChannelService Tests Channel Type Validation bank channel should have account details
+00:00 +5: PaymentChannelService Tests Channel Type Validation ewallet channel should have phone number
+00:00 +6: PaymentChannelService Tests Channel Type Validation qris channel should have valid type
+00:00 +7: PaymentChannelService Tests Error Handling should handle empty list
+00:00 +8: PaymentChannelService Tests Error Handling should throw error on missing required id field
+00:00 +9: PaymentChannelService Tests Error Handling should provide default empty string for missing name
+00:00 +10: PaymentChannelService Tests Data Integrity should preserve all field values
+00:00 +11: PaymentChannelService Tests Data Integrity should handle special characters in strings
+00:00 +12: All tests passed!
+RESULT: PASS -> payment_channel_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/report_service_api_test.dart
+00:00 +0: ReportService.generateReport writes file when 200
+00:00 +1: ReportService.generateReport throws when non-200
+00:00 +2: All tests passed!
+RESULT: PASS -> report_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/report_service_test.dart
+00:00 +0: ReportService Tests Request Parameter Parsing should format report generation parameters correctly
+00:00 +1: ReportService Tests Request Parameter Parsing should handle different report types
+00:00 +2: ReportService Tests Request Parameter Parsing should format date ranges correctly
+00:00 +3: ReportService Tests Request Parameter Parsing should handle monthly report date range
+00:00 +4: ReportService Tests Request Parameter Parsing should build correct file path pattern
+00:00 +5: ReportService Tests Request Parameter Parsing should handle yearly report
+00:00 +6: ReportService Tests Request Parameter Parsing should format URL parameters correctly
+00:00 +7: ReportService Tests File Handling should generate unique filenames with timestamp
+00:00 +8: ReportService Tests File Handling should validate PDF extension
+00:00 +9: All tests passed!
+RESULT: PASS -> report_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\resident_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/resident_service_api_test.dart
+00:00 +0: ResidentService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> resident_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\user_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/user_service_api_test.dart
+00:00 +0: UserService.getUsers success
+00:00 +1: UserService.getUsers throws on non-200
+00:00 +2: All tests passed!
+RESULT: PASS -> user_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\add_marketplace_item_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/add_marketplace_item_screen_test.dart
+00:00 +0: AddMarketplaceItemScreen shows validation errors when fields are empty
+00:01 +1: AddMarketplaceItemScreen calls addItem with correct values when form valid
+00:01 +2: All tests passed!
+RESULT: PASS -> add_marketplace_item_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\detail_kegiatan_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/detail_kegiatan_screen_test.dart
+00:00 +0: DetailKegiatanScreen: Edit button navigates to EditKegiatanScreen with initial data
+00:01 +1: DetailKegiatanScreen: Delete button shows confirmation dialog and cancel closes it
+00:01 +2: All tests passed!
+RESULT: PASS -> detail_kegiatan_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\kegiatan_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart
+00:00 +0: KegiatanScreen shows empty text when no activities
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Belum ada kegiatan tercatat.": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart:61:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart line 61
+The test description was:
+  KegiatanScreen shows empty text when no activities
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:00 +0 -1: KegiatanScreen shows empty text when no activities [E]
+  Test failed. See exception logs above.
+  The test description was: KegiatanScreen shows empty text when no activities
+
+00:00 +0 -1: KegiatanScreen shows list of activities with formatted date
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Kerja Bakti": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart:77:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart line 77
+The test description was:
+  KegiatanScreen shows list of activities with formatted date
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:01 +0 -2: KegiatanScreen shows list of activities with formatted date [E]
+  Test failed. See exception logs above.
+  The test description was: KegiatanScreen shows list of activities with formatted date
+
+00:01 +0 -2: KegiatanScreen shows error text when service fails
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextContainingWidgetFinder:<Found 0 widgets with text containing Error: Exception: Dummy
+kegiatan error: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart:97:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart line 97
+The test description was:
+  KegiatanScreen shows error text when service fails
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:01 +0 -3: KegiatanScreen shows error text when service fails [E]
+  Test failed. See exception logs above.
+  The test description was: KegiatanScreen shows error text when service fails
+
+00:01 +0 -3: Some tests failed.
+RESULT: FAIL -> kegiatan_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\marketplace_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/marketplace_screen_test.dart
+00:00 +0: MarketplaceScreen shows empty state when no items
+00:00 +1: MarketplaceScreen shows list of items
+00:00 +2: MarketplaceScreen shows error text when stream has error
+00:01 +3: All tests passed!
+RESULT: PASS -> marketplace_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\pesan_warga_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/pesan_warga_screen_test.dart
+00:00 +0: PesanWargaScreen shows empty text when no messages
+00:00 +1: PesanWargaScreen shows list of messages
+00:00 +2: PesanWargaScreen sends message via dialog
+00:01 +3: PesanWargaScreen shows error text when fetch fails
+00:01 +4: PesanWargaScreen shows snackbar when createMessage fails
+00:01 +5: All tests passed!
+RESULT: PASS -> pesan_warga_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\tambah_pengeluaran_form_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/tambah_pengeluaran_form_test.dart
+00:00 +0: TambahPengeluaranForm Widget Tests should render all form fields
+00:00 +1: TambahPengeluaranForm Widget Tests should show validation error when nama is empty
+00:01 +2: TambahPengeluaranForm Widget Tests should show validation error when kategori not selected
+00:01 +3: TambahPengeluaranForm Widget Tests should show validation error when nominal is empty
+00:01 +4: TambahPengeluaranForm Widget Tests should open date picker when tanggal field tapped
+00:01 +5: TambahPengeluaranForm Widget Tests should select kategori from dropdown
+00:02 +6: TambahPengeluaranForm Widget Tests should show all kategori options
+00:02 +7: TambahPengeluaranForm Widget Tests submit button should be enabled initially
+00:02 +8: TambahPengeluaranForm Widget Tests should accept valid form input
+00:02 +9: All tests passed!
+RESULT: PASS -> tambah_pengeluaran_form_test.dart
+DONE. PASS=34 FAIL=3 TOTAL=37
+PS C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+PS C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI> $base="test_logs\run_$(Get-Date -Format yyyyMMdd_HHmmss)";New-Item -ItemType Directory -Force $base|Out-Null;$pass=0;$fail=0;$summary="$base\summary.log";$files=Get-ChildItem -Recurse .\test -File|Where-Object{$_.Name -like "*_test.dart" -or $_.Name -like "*_api_test.dart"}|Sort-Object FullName;foreach($f in $files){$log="$base\$($f.BaseName).log";"=============================="|Tee-Object $log;"RUN  : $($f.FullName)"|Tee-Object -Append $log;"=============================="|Tee-Object -Append $log;flutter test $f.FullName -r expanded 2>&1|Tee-Object -Append $log;if($LASTEXITCODE -eq 0){"RESULT: PASS -> $($f.Name)"|Tee-Object -Append $log;"PASS | $($f.Name)"|Tee-Object -Append $summary;$pass++}else{"RESULT: FAIL -> $($f.Name)"|Tee-Object -Append $log;"FAIL | $($f.Name)"|Tee-Object -Append $summary;$fail++}};"DONE. PASS=$pass FAIL=$fail TOTAL=$($files.Count)"|Tee-Object -Append $summary;Read-Host "Logs saved in $base | Press ENTER"
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\activity_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/activity_test.dart
+00:00 +0: Activity model parses JSON sesuai database SQL
+HASIL PARSE MODEL:
+{id: 1, name: Kerja Bakti Minggu 1, category: kebersihan, pic_name: Pak RT, location: Lapangan, date: 2025-01-10, description: Kerja bakti rutin., image_url: null, created_by: 2, created_at: 2025-11-24 11:54:33, updated_at: 2025-11-24 11:54:33}
+00:00 +1: All tests passed!
+RESULT: PASS -> activity_test.dart
+PASS | activity_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\citizen_message_model_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/citizen_message_model_test.dart
+00:00 +0: CitizenMessage model fromJson parses all fields correctly
+00:00 +1: CitizenMessage model toCreateJson only includes title and content
+00:00 +2: All tests passed!
+RESULT: PASS -> citizen_message_model_test.dart
+PASS | citizen_message_model_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\katagori_iuran_item_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/katagori_iuran_item_test.dart
+00:00 +0: PemasukanListItem Widget Tests should display all provided information correctly
+00:00 +1: PemasukanListItem Widget Tests should display empty strings when provided
+00:00 +2: PemasukanListItem Widget Tests should render as a Card widget
+00:00 +3: PemasukanListItem Widget Tests should display large nominal values correctly
+00:00 +4: PemasukanListItem Widget Tests should display special characters in text
+00:00 +5: All tests passed!
+RESULT: PASS -> katagori_iuran_item_test.dart
+PASS | katagori_iuran_item_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\kegiatan_model_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/kegiatan_model_test.dart
+00:00 +0: Kegiatan model fromJson parses int, bool, and dates correctly (normal case)
+00:00 +1: Kegiatan model fromJson converts string/int values to int correctly
+00:00 +2: Kegiatan model fromJson converts various is_deleted representations to bool
+00:00 +3: All tests passed!
+RESULT: PASS -> kegiatan_model_test.dart
+PASS | kegiatan_model_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\marketplace_item_model_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/marketplace_item_model_test.dart
+00:00 +0: MarketplaceItem model fromJson parses all fields correctly
+00:00 +1: MarketplaceItem model fromJson handles null optional fields
+00:00 +2: All tests passed!
+RESULT: PASS -> marketplace_item_model_test.dart
+PASS | marketplace_item_model_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\payment_channel_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/models/payment_channel_test.dart
+00:00 +0: PaymentChannel Model Tests fromJson should parse complete data correctly
+00:00 +1: PaymentChannel Model Tests fromJson should handle null accountName and accountNumber
+00:00 +2: PaymentChannel Model Tests fromJson should handle missing optional fields
+00:00 +3: PaymentChannel Model Tests fromJson should provide default values for missing name/type
+00:00 +4: PaymentChannel Model Tests constructor should create object with required fields
+00:00 +5: PaymentChannel Model Tests constructor should create object with all fields
+00:00 +6: PaymentChannel Model Tests should handle different channel types
+00:00 +7: All tests passed!
+RESULT: PASS -> payment_channel_test.dart
+PASS | payment_channel_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\activity_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/activity_service_api_test.dart
+00:00 +0: ActivityService.getCategoryStats success
+00:00 +1: ActivityService.getCategoryStats non-200 throws
+00:00 +2: ActivityService.getCategoryStats invalid format throws
+00:00 +3: All tests passed!
+RESULT: PASS -> activity_service_api_test.dart
+PASS | activity_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\auth_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/auth_service_api_test.dart
+00:00 +0: AuthService.login success saves token and returns true
+00:00 +1: AuthService.login wrong credential returns false
+00:00 +2: AuthService.register success returns true when 201
+00:00 +3: AuthService.register returns false when not 201
+00:00 +4: All tests passed!
+RESULT: PASS -> auth_service_api_test.dart
+PASS | auth_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/bill_service_api_test.dart
+00:00 +0: BillService.getBills success
+00:00 +1: BillService.getBills throws with detail
+00:00 +2: BillService.createBillsForAllFamilies success
+00:00 +3: BillService.sendBillNotifications success
+00:00 +4: All tests passed!
+RESULT: PASS -> bill_service_api_test.dart
+PASS | bill_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/bill_service_test.dart
+00:00 +0: BillService Tests Response Parsing should parse single bill response
+00:00 +1: BillService Tests Response Parsing should parse list of bills
+00:00 +2: BillService Tests Response Parsing should handle paid bill with timestamp
+00:00 +3: BillService Tests Response Parsing should parse bulk create request data
+00:00 +4: BillService Tests Response Parsing should parse bulk create response
+00:00 +5: BillService Tests Response Parsing should parse send notifications request
+00:00 +6: BillService Tests Response Parsing should parse send notifications response
+00:00 +7: BillService Tests Response Parsing should handle empty bills list
+00:00 +8: BillService Tests Response Parsing should handle different bill statuses
+00:00 +9: All tests passed!
+RESULT: PASS -> bill_service_test.dart
+PASS | bill_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\broadcast_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/broadcast_service_api_test.dart
+00:00 +0: BroadcastService create/get/update/delete
+00:00 +1: All tests passed!
+RESULT: PASS -> broadcast_service_api_test.dart
+PASS | broadcast_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_message_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/citizen_message_service_api_test.dart
+00:00 +0: CitizenMessageService.fetchMessages success
+00:00 +1: CitizenMessageService.createMessage success
+00:00 +2: CitizenMessageService.fetchMessages throws on non-200
+00:00 +3: All tests passed!
+RESULT: PASS -> citizen_message_service_api_test.dart
+PASS | citizen_message_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_request_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/citizen_request_service_api_test.dart
+00:00 +0: CitizenRequestService getAll/getById/create/update/delete via ApiClient
+00:00 +1: CitizenRequestService.createWithImage multipart success (HttpOverrides)
+00:00 +1 -1: CitizenRequestService.createWithImage multipart success (HttpOverrides) [E]
+  NoSuchMethodError: Class '_FakeHttpClientResponse' has no instance getter 'contentLength'.
+  Receiver: Instance of '_FakeHttpClientResponse'
+  Tried calling: contentLength
+  dart:core                                     Object.noSuchMethod
+  test\helpers\fake_http_overrides.dart 263:56  _FakeHttpClientResponse.noSuchMethod
+  test\helpers\fake_http_overrides.dart 224:7   _FakeHttpClientResponse.contentLength
+  package:http/src/io_client.dart 215:22        IOClient.send
+
+00:00 +1 -1: Some tests failed.
+RESULT: FAIL -> citizen_request_service_api_test.dart
+FAIL | citizen_request_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/expenses_service_api_test.dart
+00:00 +0: ExpenseService.getExpenses supports List response
+00:00 +1: ExpenseService.getExpenses supports {data:[...]} response
+00:00 +2: ExpenseService.createExpense success
+00:00 +3: ExpenseService.createExpense throws with detail
+00:00 +4: All tests passed!
+RESULT: PASS -> expenses_service_api_test.dart
+PASS | expenses_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/expenses_service_test.dart
+00:00 +0: ExpenseService Tests Response Parsing should parse single expense response
+00:00 +1: ExpenseService Tests Response Parsing should parse list of expenses
+00:00 +2: ExpenseService Tests Response Parsing should handle expense with proof image
+00:00 +3: ExpenseService Tests Response Parsing should parse creation request data
+00:00 +4: ExpenseService Tests Response Parsing should handle empty list
+00:00 +5: ExpenseService Tests Response Parsing should handle different expense categories
+00:00 +6: ExpenseService Tests Response Parsing should handle large amount values
+00:00 +7: All tests passed!
+RESULT: PASS -> expenses_service_test.dart
+PASS | expenses_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\family_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/family_service_api_test.dart
+00:00 +0: FamilyService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> family_service_api_test.dart
+PASS | family_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/fee_category_service_api_test.dart
+00:00 +0: FeeCategoryService.getCategories success
+00:00 +1: FeeCategoryService.createCategory success
+00:00 +2: FeeCategoryService.updateStatus success
+00:00 +3: FeeCategoryService.updateStatus throws when not 200
+00:00 +4: All tests passed!
+RESULT: PASS -> fee_category_service_api_test.dart
+PASS | fee_category_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/fee_category_service_test.dart
+00:00 +0: FeeCategoryService Tests Response Parsing should parse single category response
+00:00 +1: FeeCategoryService Tests Response Parsing should parse list of categories
+00:00 +2: FeeCategoryService Tests Response Parsing should handle category with inactive status
+00:00 +3: FeeCategoryService Tests Response Parsing should handle empty list
+00:00 +4: FeeCategoryService Tests Response Parsing should parse category creation request data
+00:00 +5: FeeCategoryService Tests Response Parsing should parse status update request data
+00:00 +6: FeeCategoryService Tests Response Parsing should handle different category types
+00:00 +7: All tests passed!
+RESULT: PASS -> fee_category_service_test.dart
+PASS | fee_category_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\house_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/house_service_api_test.dart
+00:00 +0: HouseService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> house_service_api_test.dart
+PASS | house_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/income_transaction_service_api_test.dart
+00:00 +0: IncomeTransactionService.getIncomeTransactions success
+00:00 +1: IncomeTransactionService.createIncomeTransaction success
+00:00 +2: IncomeTransactionService.getIncomeTransactions throws
+00:00 +3: All tests passed!
+RESULT: PASS -> income_transaction_service_api_test.dart
+PASS | income_transaction_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/income_transaction_service_test.dart
+00:00 +0: IncomeTransactionService Tests Response Parsing should parse single income transaction response
+00:00 +1: IncomeTransactionService Tests Response Parsing should parse list of income transactions
+00:00 +2: IncomeTransactionService Tests Response Parsing should handle transaction without category_id
+00:00 +3: IncomeTransactionService Tests Response Parsing should parse creation request data
+00:00 +4: IncomeTransactionService Tests Response Parsing should handle empty list
+00:00 +5: IncomeTransactionService Tests Response Parsing should handle different transaction types
+00:00 +6: All tests passed!
+RESULT: PASS -> income_transaction_service_test.dart
+PASS | income_transaction_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\kegiatan_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/kegiatan_service_api_test.dart
+00:00 +0: KegiatanService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> kegiatan_service_api_test.dart
+PASS | kegiatan_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\log_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/log_service_api_test.dart
+00:00 +0: LogService.fetchLogs success
+00:00 +1: LogService.fetchLatestLogs success (no auth)
+00:00 +2: LogService.logsStream emits list
+00:00 +3: All tests passed!
+RESULT: PASS -> log_service_api_test.dart
+PASS | log_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\marketplace_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/marketplace_service_api_test.dart
+00:00 +0: MarketplaceService.fetchItems success
+00:00 +1: MarketplaceService.addItem multipart success (HttpOverrides)
+00:00 +1 -1: MarketplaceService.addItem multipart success (HttpOverrides) [E]
+  NoSuchMethodError: Class '_FakeHttpClientResponse' has no instance getter 'contentLength'.
+  Receiver: Instance of '_FakeHttpClientResponse'
+  Tried calling: contentLength
+  dart:core                                     Object.noSuchMethod
+  test\helpers\fake_http_overrides.dart 263:56  _FakeHttpClientResponse.noSuchMethod
+  test\helpers\fake_http_overrides.dart 224:7   _FakeHttpClientResponse.contentLength
+  package:http/src/io_client.dart 215:22        IOClient.send
+
+00:00 +1 -1: MarketplaceService.analyzeImage multipart success (HttpOverrides)
+00:00 +1 -2: MarketplaceService.analyzeImage multipart success (HttpOverrides) [E]
+  NoSuchMethodError: Class '_FakeHttpClientResponse' has no instance getter 'contentLength'.
+  Receiver: Instance of '_FakeHttpClientResponse'
+  Tried calling: contentLength
+  dart:core                                     Object.noSuchMethod
+  test\helpers\fake_http_overrides.dart 263:56  _FakeHttpClientResponse.noSuchMethod
+  test\helpers\fake_http_overrides.dart 224:7   _FakeHttpClientResponse.contentLength
+  package:http/src/io_client.dart 215:22        IOClient.send
+
+00:00 +1 -2: Some tests failed.
+RESULT: FAIL -> marketplace_service_api_test.dart
+FAIL | marketplace_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\mutation_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/mutation_service_api_test.dart
+00:00 +0: MutasiService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> mutation_service_api_test.dart
+PASS | mutation_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/payment_channel_service_api_test.dart
+00:00 +0: PaymentChannelService.getChannels success
+00:00 +1: PaymentChannelService.createChannel success
+00:00 +2: PaymentChannelService.getChannels throws on non-200
+00:00 +3: All tests passed!
+RESULT: PASS -> payment_channel_service_api_test.dart
+PASS | payment_channel_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/payment_channel_service_test.dart
+00:00 +0: PaymentChannelService Tests Response Parsing should parse single channel response
+00:00 +1: PaymentChannelService Tests Response Parsing should parse list of channels
+00:00 +2: PaymentChannelService Tests Response Parsing should parse channel with null optional fields
+00:00 +3: PaymentChannelService Tests Channel Type Validation should accept valid channel types
+00:00 +4: PaymentChannelService Tests Channel Type Validation bank channel should have account details
+00:00 +5: PaymentChannelService Tests Channel Type Validation ewallet channel should have phone number
+00:00 +6: PaymentChannelService Tests Channel Type Validation qris channel should have valid type
+00:00 +7: PaymentChannelService Tests Error Handling should handle empty list
+00:00 +8: PaymentChannelService Tests Error Handling should throw error on missing required id field
+00:00 +9: PaymentChannelService Tests Error Handling should provide default empty string for missing name
+00:00 +10: PaymentChannelService Tests Data Integrity should preserve all field values
+00:00 +11: PaymentChannelService Tests Data Integrity should handle special characters in strings
+00:00 +12: All tests passed!
+RESULT: PASS -> payment_channel_service_test.dart
+PASS | payment_channel_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/report_service_api_test.dart
+00:00 +0: ReportService.generateReport writes file when 200
+00:00 +1: ReportService.generateReport throws when non-200
+00:00 +2: All tests passed!
+RESULT: PASS -> report_service_api_test.dart
+PASS | report_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/report_service_test.dart
+00:00 +0: ReportService Tests Request Parameter Parsing should format report generation parameters correctly
+00:00 +1: ReportService Tests Request Parameter Parsing should handle different report types
+00:00 +2: ReportService Tests Request Parameter Parsing should format date ranges correctly
+00:00 +3: ReportService Tests Request Parameter Parsing should handle monthly report date range
+00:00 +4: ReportService Tests Request Parameter Parsing should build correct file path pattern
+00:00 +5: ReportService Tests Request Parameter Parsing should handle yearly report
+00:00 +6: ReportService Tests Request Parameter Parsing should format URL parameters correctly
+00:00 +7: ReportService Tests File Handling should generate unique filenames with timestamp
+00:00 +8: ReportService Tests File Handling should validate PDF extension
+00:00 +9: All tests passed!
+RESULT: PASS -> report_service_test.dart
+PASS | report_service_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\resident_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/resident_service_api_test.dart
+00:00 +0: ResidentService endpoints
+00:00 +1: All tests passed!
+RESULT: PASS -> resident_service_api_test.dart
+PASS | resident_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\user_service_api_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/services/user_service_api_test.dart
+00:00 +0: UserService.getUsers success
+00:00 +1: UserService.getUsers throws on non-200
+00:00 +2: All tests passed!
+RESULT: PASS -> user_service_api_test.dart
+PASS | user_service_api_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\add_marketplace_item_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/add_marketplace_item_screen_test.dart
+00:00 +0: AddMarketplaceItemScreen shows validation errors when fields are empty
+00:01 +1: AddMarketplaceItemScreen calls addItem with correct values when form valid
+00:01 +2: All tests passed!
+RESULT: PASS -> add_marketplace_item_screen_test.dart
+PASS | add_marketplace_item_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\detail_kegiatan_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/detail_kegiatan_screen_test.dart
+00:00 +0: DetailKegiatanScreen: Edit button navigates to EditKegiatanScreen with initial data
+00:01 +1: DetailKegiatanScreen: Delete button shows confirmation dialog and cancel closes it
+00:01 +2: All tests passed!
+RESULT: PASS -> detail_kegiatan_screen_test.dart
+PASS | detail_kegiatan_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\kegiatan_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart
+00:00 +0: KegiatanScreen shows empty text when no activities
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Belum ada kegiatan tercatat.": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart:61:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart line 61
+The test description was:
+  KegiatanScreen shows empty text when no activities
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:00 +0 -1: KegiatanScreen shows empty text when no activities [E]
+  Test failed. See exception logs above.
+  The test description was: KegiatanScreen shows empty text when no activities
+
+00:00 +0 -1: KegiatanScreen shows list of activities with formatted date
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Kerja Bakti": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart:77:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart line 77
+The test description was:
+  KegiatanScreen shows list of activities with formatted date
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:01 +0 -2: KegiatanScreen shows list of activities with formatted date [E]
+  Test failed. See exception logs above.
+  The test description was: KegiatanScreen shows list of activities with formatted date
+
+00:01 +0 -2: KegiatanScreen shows error text when service fails
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextContainingWidgetFinder:<Found 0 widgets with text containing Error: Exception: Dummy
+kegiatan error: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart:97:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/kegiatan_screen_test.dart line 97
+The test description was:
+  KegiatanScreen shows error text when service fails
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:01 +0 -3: KegiatanScreen shows error text when service fails [E]
+  Test failed. See exception logs above.
+  The test description was: KegiatanScreen shows error text when service fails
+
+00:01 +0 -3: Some tests failed.
+RESULT: FAIL -> kegiatan_screen_test.dart
+FAIL | kegiatan_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\marketplace_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/marketplace_screen_test.dart
+00:00 +0: MarketplaceScreen shows empty state when no items
+00:00 +1: MarketplaceScreen shows list of items
+00:00 +2: MarketplaceScreen shows error text when stream has error
+00:00 +3: All tests passed!
+RESULT: PASS -> marketplace_screen_test.dart
+PASS | marketplace_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\pesan_warga_screen_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/pesan_warga_screen_test.dart
+00:00 +0: PesanWargaScreen shows empty text when no messages
+00:00 +1: PesanWargaScreen shows list of messages
+00:00 +2: PesanWargaScreen sends message via dialog
+00:01 +3: PesanWargaScreen shows error text when fetch fails
+00:01 +4: PesanWargaScreen shows snackbar when createMessage fails
+00:01 +5: All tests passed!
+RESULT: PASS -> pesan_warga_screen_test.dart
+PASS | pesan_warga_screen_test.dart
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\tambah_pengeluaran_form_test.dart
+==============================
+00:00 +0: loading C:/Users/GabrielBatavia/Documents/github_project/Kelompok1-JawaraUI/test/widgets/tambah_pengeluaran_form_test.dart
+00:00 +0: TambahPengeluaranForm Widget Tests should render all form fields
+00:00 +1: TambahPengeluaranForm Widget Tests should show validation error when nama is empty
+00:01 +2: TambahPengeluaranForm Widget Tests should show validation error when kategori not selected
+00:01 +3: TambahPengeluaranForm Widget Tests should show validation error when nominal is empty
+00:01 +4: TambahPengeluaranForm Widget Tests should open date picker when tanggal field tapped
+00:01 +5: TambahPengeluaranForm Widget Tests should select kategori from dropdown
+00:02 +6: TambahPengeluaranForm Widget Tests should show all kategori options
+00:02 +7: TambahPengeluaranForm Widget Tests submit button should be enabled initially
+00:02 +8: TambahPengeluaranForm Widget Tests should accept valid form input
+00:02 +9: All tests passed!
+RESULT: PASS -> tambah_pengeluaran_form_test.dart
+PASS | tambah_pengeluaran_form_test.dart
+DONE. PASS=34 FAIL=3 TOTAL=37

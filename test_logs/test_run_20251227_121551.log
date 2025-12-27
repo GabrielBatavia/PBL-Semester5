@@ -1,0 +1,247 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20251227121552
+Username: LAPTOP-E8ITE3TB\GabrielBatavia
+RunAs User: LAPTOP-E8ITE3TB\GabrielBatavia
+Configuration Name: 
+Machine: LAPTOP-E8ITE3TB (Microsoft Windows NT 10.0.22631.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 43092
+PSVersion: 5.1.22621.6133
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.6133
+BuildVersion: 10.0.22621.6133
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is test_logs\test_run_20251227_121551.log
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\activity_test.dart
+==============================
+
+RESULT: PASS -> activity_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\citizen_message_model_test.dart
+==============================
+
+RESULT: PASS -> citizen_message_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\katagori_iuran_item_test.dart
+==============================
+
+RESULT: PASS -> katagori_iuran_item_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\kegiatan_model_test.dart
+==============================
+
+RESULT: PASS -> kegiatan_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\marketplace_item_model_test.dart
+==============================
+
+RESULT: PASS -> marketplace_item_model_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\models\payment_channel_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\activity_service_api_test.dart
+==============================
+
+RESULT: PASS -> activity_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\auth_service_api_test.dart
+==============================
+
+RESULT: PASS -> auth_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_api_test.dart
+==============================
+
+RESULT: PASS -> bill_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\bill_service_test.dart
+==============================
+
+RESULT: PASS -> bill_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\broadcast_service_api_test.dart
+==============================
+
+RESULT: PASS -> broadcast_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_message_service_api_test.dart
+==============================
+
+RESULT: PASS -> citizen_message_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\citizen_request_service_api_test.dart
+==============================
+
+RESULT: FAIL -> citizen_request_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_api_test.dart
+==============================
+
+RESULT: PASS -> expenses_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\expenses_service_test.dart
+==============================
+
+RESULT: PASS -> expenses_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\family_service_api_test.dart
+==============================
+
+RESULT: PASS -> family_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_api_test.dart
+==============================
+
+RESULT: PASS -> fee_category_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\fee_category_service_test.dart
+==============================
+
+RESULT: PASS -> fee_category_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\house_service_api_test.dart
+==============================
+
+RESULT: PASS -> house_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_api_test.dart
+==============================
+
+RESULT: PASS -> income_transaction_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\income_transaction_service_test.dart
+==============================
+
+RESULT: PASS -> income_transaction_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\kegiatan_service_api_test.dart
+==============================
+
+RESULT: FAIL -> kegiatan_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\log_service_api_test.dart
+==============================
+
+RESULT: PASS -> log_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\marketplace_service_api_test.dart
+==============================
+
+RESULT: FAIL -> marketplace_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\mutation_service_api_test.dart
+==============================
+
+RESULT: PASS -> mutation_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_api_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\payment_channel_service_test.dart
+==============================
+
+RESULT: PASS -> payment_channel_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_api_test.dart
+==============================
+
+RESULT: PASS -> report_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\report_service_test.dart
+==============================
+
+RESULT: PASS -> report_service_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\resident_service_api_test.dart
+==============================
+
+RESULT: PASS -> resident_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\services\user_service_api_test.dart
+==============================
+
+RESULT: PASS -> user_service_api_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\add_marketplace_item_screen_test.dart
+==============================
+
+RESULT: PASS -> add_marketplace_item_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\detail_kegiatan_screen_test.dart
+==============================
+
+RESULT: PASS -> detail_kegiatan_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\kegiatan_screen_test.dart
+==============================
+
+RESULT: FAIL -> kegiatan_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\marketplace_screen_test.dart
+==============================
+
+RESULT: PASS -> marketplace_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\pesan_warga_screen_test.dart
+==============================
+
+RESULT: PASS -> pesan_warga_screen_test.dart
+
+==============================
+RUN  : C:\Users\GabrielBatavia\Documents\github_project\Kelompok1-JawaraUI\test\widgets\tambah_pengeluaran_form_test.dart
+==============================
+
+RESULT: PASS -> tambah_pengeluaran_form_test.dart
+
+DONE. PASS=33 FAIL=4 TOTAL=37
+**********************
+Windows PowerShell transcript end
+End time: 20251227121912
+**********************

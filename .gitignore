@@ -48,3 +48,5 @@ jawara_api/uploads/
 uploads/
 *.pdf
 
+# Allow test logs
+!test_logs/**/*.log
