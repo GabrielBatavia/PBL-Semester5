@@ -1,16 +1,11 @@
 // lib/services/user_service.dart
-
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:jawaramobile_1/models/user.dart';
-import 'package:jawaramobile_1/services/api_client.dart';
+import 'api_client.dart';
 
 class UserService {
   static Future<List<User>> getUsers() async {
-    final http.Response res = await ApiClient.get(
-      '/users',
-      auth: true,
-    );
+    final res = await ApiClient.get('/users', auth: true);
 
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body) as List<dynamic>;

@@ -1,22 +1,18 @@
 // lib/services/auth_service.dart
-
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'api_client.dart';
 import 'package:jawaramobile_1/utils/session.dart';
 
 class AuthService {
   AuthService._();
-
   static final AuthService instance = AuthService._();
 
-  static const _keyToken     = 'auth_token';
-  static const _keyRoleName  = 'role_name';
-  static const _keyUserName  = 'user_name';
-
-  // ─────────────────────────────────────────────
+  static const _keyToken = 'auth_token';
+  static const _keyRoleName = 'role_name';
+  static const _keyUserName = 'user_name';
 
   static Future<bool> login(String email, String password) =>
       instance._login(email, password);
@@ -38,15 +34,14 @@ class AuthService {
         address: address,
       );
 
-  // ─────────────────────────────────────────────
-
   Future<bool> _login(String email, String password) async {
-    final http.Response res = await ApiClient.post(
+    final res = await ApiClient.post(
       '/auth/login',
       {
         'email': email,
         'password': password,
       },
+      auth: false,
     );
 
     if (res.statusCode == 200 && res.body.isNotEmpty) {
@@ -55,15 +50,13 @@ class AuthService {
       final token = data?['access_token'] as String?;
       if (token != null && token.isNotEmpty) {
         await ApiClient.saveToken(token);
-        await fetchAndCacheProfile(); // safe now
+        await fetchAndCacheProfile();
         return true;
       }
     }
 
     return false;
   }
-
-  // ─────────────────────────────────────────────
 
   Future<bool> _register({
     required String name,
@@ -83,14 +76,11 @@ class AuthService {
         'phone': phone,
         'address': address,
       },
+      auth: false,
     );
 
     return res.statusCode == 201;
   }
-
-  // ─────────────────────────────────────────────
-  // PROFILE CACHE (NO NULL)
-  // ─────────────────────────────────────────────
 
   Future<void> fetchAndCacheProfile() async {
     try {
@@ -103,18 +93,14 @@ class AuthService {
       final roleName = data['role']?['name']?.toLowerCase() ?? 'warga';
       final userId = data['id'] ?? 0;
 
-      // 🔥 Simpan ke SessionManager
       await SessionManager.saveUserSession(
         userId: userId,
         role: roleName,
       );
-
     } catch (e) {
-      debugPrint("⚠ fetchAndCacheProfile error: $e");
+      debugPrint("fetchAndCacheProfile error: $e");
     }
   }
-
-  // ─────────────────────────────────────────────
 
   Future<String?> getCachedRoleName() async {
     final prefs = await SharedPreferences.getInstance();
@@ -126,12 +112,11 @@ class AuthService {
     return prefs.getString(_keyUserName);
   }
 
-  // ─────────────────────────────────────────────
-
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyToken);
     await prefs.remove(_keyRoleName);
     await prefs.remove(_keyUserName);
+    await ApiClient.clearToken();
   }
 }

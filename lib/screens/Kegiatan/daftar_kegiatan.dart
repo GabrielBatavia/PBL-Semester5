@@ -1,5 +1,4 @@
 // lib/screens/Kegiatan/daftar_kegiatan.dart
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:jawaramobile_1/services/kegiatan_service.dart';
 import 'package:jawaramobile_1/widgets/kegiatan/kegiatan_filter.dart';
-import 'package:jawaramobile_1/utils/session.dart';
+import 'package:jawaramobile_1/utils/session.dart' as session;
 
 class KegiatanScreen extends StatefulWidget {
   const KegiatanScreen({super.key});
@@ -30,10 +29,10 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
 
   Future<void> _loadKegiatan() async {
     try {
-      final int userId = await Session.getUserId();
-      final String role = await Session.getUserRole();
+      final int userId = await session.Session.getUserId();
+      final String role = await session.Session.getUserRole();
 
-      final raw = await KegiatanService.getKegiatanByRole(
+      final raw = await KegiatanService.instance.getKegiatanByRoleImpl(
         userId: userId,
         role: role,
       );
@@ -80,7 +79,6 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
   String _formatDate(dynamic raw) {
     if (raw == null) return "-";
     try {
-      // backend biasanya ngirim "2025-12-18"
       final s = raw.toString();
       final dt = DateTime.parse(s.length >= 10 ? s.substring(0, 10) : s);
       return DateFormat('dd MMM yyyy', 'id_ID').format(dt);
@@ -202,7 +200,6 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // icon bubble
                                       Container(
                                         width: 44,
                                         height: 44,
@@ -217,7 +214,6 @@ class _KegiatanScreenState extends State<KegiatanScreen> {
                                         ),
                                       ),
                                       const SizedBox(width: 12),
-                                      // content
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:

@@ -1,3 +1,4 @@
+// lib/models/citizen_request_model.dart
 class CitizenRequestModel {
   final int? id;
   final String name;
@@ -25,19 +26,27 @@ class CitizenRequestModel {
     this.updatedAt,
   });
 
+  static int? _asIntNullable(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
+
   factory CitizenRequestModel.fromJson(Map<String, dynamic> json) {
     return CitizenRequestModel(
-      id: json['id'],
-      name: json['name'],
-      nik: json['nik'],
-      email: json['email'],
-      gender: json['gender'],
-      identityImageUrl: json['identity_image_url'],
-      status: json['status'],
-      processedBy: json['processed_by'],
-      processedAt: json['processed_at'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      id: _asIntNullable(json['id']),
+      name: json['name']?.toString() ?? '',
+      nik: json['nik']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      gender: json['gender']?.toString(),
+      identityImageUrl: json['identity_image_url']?.toString(),
+      status: json['status']?.toString() ?? "pending",
+      processedBy: _asIntNullable(json['processed_by']),
+      processedAt: json['processed_at']?.toString(),
+      createdAt: json['created_at']?.toString(),
+      updatedAt: json['updated_at']?.toString(),
     );
   }
 

@@ -6,14 +6,12 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/marketplace_item.dart';
 import 'api_client.dart';
 
 class MarketplaceService {
   MarketplaceService();
-
   static MarketplaceService instance = MarketplaceService();
 
   final _itemsController = StreamController<List<MarketplaceItem>>.broadcast();
@@ -21,31 +19,16 @@ class MarketplaceService {
 
   List<MarketplaceItem> _cache = [];
 
-  Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
-  }
-
   /// GET /marketplace/items
   Future<void> fetchItems() async {
     try {
-      final res = await ApiClient.get(
-        '/marketplace/items',
-        auth: true,
-      );
-
-      // debug kecil biar kelihatan di log
-      // ignore: avoid_print
-      print('MarketplaceService.fetchItems → status=${res.statusCode}');
+      final res = await ApiClient.get('/marketplace/items', auth: true);
 
       if (res.statusCode == 200) {
         final decoded = jsonDecode(res.body);
 
         if (decoded is! List) {
-          // kalau backend tiba-tiba kirim objek, jangan sampai crash
-          _itemsController.addError(
-            'Format data marketplace tidak valid (bukan list)',
-          );
+          _itemsController.addError('Format data marketplace tidak valid (bukan list)');
           return;
         }
 
@@ -57,9 +40,7 @@ class MarketplaceService {
         _cache = items;
         _itemsController.add(_cache);
       } else {
-        _itemsController.addError(
-          'Gagal memuat marketplace (${res.statusCode})',
-        );
+        _itemsController.addError('Gagal memuat marketplace (${res.statusCode})');
       }
     } catch (e) {
       _itemsController.addError('Error memuat marketplace: $e');
@@ -75,8 +56,8 @@ class MarketplaceService {
     String? veggieClass,
     File? imageFile,
   }) async {
-    final uri = Uri.parse('${ApiClient.baseUrl}/marketplace/items');
-    final token = await _getToken();
+    final uri = ApiClient.buildUri('/marketplace/items');
+    final token = await ApiClient.getToken();
 
     final request = http.MultipartRequest('POST', uri);
 
@@ -104,7 +85,7 @@ class MarketplaceService {
       );
     }
 
-    if (token != null) {
+    if (token != null && token.isNotEmpty) {
       request.headers['Authorization'] = 'Bearer $token';
     }
 
@@ -117,14 +98,14 @@ class MarketplaceService {
       _cache = [item, ..._cache];
       _itemsController.add(_cache);
     } else {
-      throw Exception('Gagal menambahkan item (${resp.statusCode})');
+      throw Exception('Gagal menambahkan item (${resp.statusCode}): ${resp.body}');
     }
   }
 
   /// POST /marketplace/analyze-image – kirim foto ke backend AI
   Future<Map<String, dynamic>> analyzeImage(File imageFile) async {
-    final uri = Uri.parse('${ApiClient.baseUrl}/marketplace/analyze-image');
-    final token = await _getToken();
+    final uri = ApiClient.buildUri('/marketplace/analyze-image');
+    final token = await ApiClient.getToken();
 
     final request = http.MultipartRequest('POST', uri);
     final mime = lookupMimeType(imageFile.path) ?? 'image/jpeg';
@@ -138,7 +119,7 @@ class MarketplaceService {
       ),
     );
 
-    if (token != null) {
+    if (token != null && token.isNotEmpty) {
       request.headers['Authorization'] = 'Bearer $token';
     }
 
@@ -148,9 +129,7 @@ class MarketplaceService {
     if (resp.statusCode == 200) {
       return jsonDecode(resp.body) as Map<String, dynamic>;
     } else {
-      throw Exception(
-        'Gagal analisa gambar (${resp.statusCode}): ${resp.body}',
-      );
+      throw Exception('Gagal analisa gambar (${resp.statusCode}): ${resp.body}');
     }
   }
 

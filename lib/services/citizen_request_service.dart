@@ -2,20 +2,18 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+
 import '../models/citizen_request_model.dart';
+import 'api_client.dart';
 
 class CitizenRequestService {
-  final String baseUrl = "http://127.0.0.1:9000/citizen-requests";
-
   /* ===================== GET ALL ===================== */
   Future<List<CitizenRequestModel>> getAll({String? search}) async {
-    final uri = Uri.parse(
-      search != null && search.isNotEmpty
-          ? "$baseUrl?search=${Uri.encodeQueryComponent(search)}"
-          : baseUrl,
-    );
+    final path = (search != null && search.isNotEmpty)
+        ? '/citizen-requests?search=${Uri.encodeQueryComponent(search)}'
+        : '/citizen-requests';
 
-    final res = await http.get(uri);
+    final res = await ApiClient.get(path, auth: false);
     if (res.statusCode != 200) {
       throw Exception("Gagal load data: ${res.body}");
     }
@@ -26,7 +24,7 @@ class CitizenRequestService {
 
   /* ===================== GET BY ID ===================== */
   Future<CitizenRequestModel> getById(int id) async {
-    final res = await http.get(Uri.parse("$baseUrl/$id"));
+    final res = await ApiClient.get('/citizen-requests/$id', auth: false);
     if (res.statusCode != 200) {
       throw Exception("Data tidak ditemukan");
     }
@@ -35,7 +33,8 @@ class CitizenRequestService {
 
   /* ===================== CREATE (MULTIPART) ===================== */
   Future<bool> createWithImage(CitizenRequestModel data, File? img) async {
-    final req = http.MultipartRequest('POST', Uri.parse(baseUrl));
+    final uri = ApiClient.buildUri('/citizen-requests');
+    final req = http.MultipartRequest('POST', uri);
 
     req.fields['name'] = data.name ?? '';
     req.fields['nik'] = data.nik ?? '';
@@ -53,18 +52,19 @@ class CitizenRequestService {
     final res = await http.Response.fromStream(await req.send());
     return res.statusCode == 201 || res.statusCode == 200;
   }
-  /* ===================== CREATE (JSON - WEB SAFE) ===================== */
+
+  /* ===================== CREATE (JSON) ===================== */
   Future<bool> create(CitizenRequestModel data) async {
-    final res = await http.post(
-      Uri.parse(baseUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    final res = await ApiClient.post(
+      '/citizen-requests',
+      {
         "name": data.name,
         "nik": data.nik,
         "email": data.email,
         "gender": data.gender,
         "status": data.status ?? "pending",
-      }),
+      },
+      auth: false,
     );
 
     if (res.statusCode != 201 && res.statusCode != 200) {
@@ -74,13 +74,12 @@ class CitizenRequestService {
     return true;
   }
 
-
   /* ===================== UPDATE (JSON PUT) ===================== */
   Future<bool> update(int id, CitizenRequestModel data) async {
-    final res = await http.put(
-      Uri.parse("$baseUrl/$id"),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data.toJson()),
+    final res = await ApiClient.put(
+      '/citizen-requests/$id',
+      data.toJson(),
+      auth: false,
     );
 
     if (res.statusCode != 200) {
@@ -95,13 +94,13 @@ class CitizenRequestService {
     required String status,
     required int processedBy,
   }) async {
-    final res = await http.put(
-      Uri.parse("$baseUrl/$id"),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    final res = await ApiClient.put(
+      '/citizen-requests/$id',
+      {
         "status": status,
         "processed_by": processedBy,
-      }),
+      },
+      auth: false,
     );
 
     if (res.statusCode != 200) {
@@ -112,7 +111,7 @@ class CitizenRequestService {
 
   /* ===================== DELETE ===================== */
   Future<bool> delete(int id) async {
-    final res = await http.delete(Uri.parse("$baseUrl/$id"));
+    final res = await ApiClient.delete('/citizen-requests/$id', auth: false);
     return res.statusCode == 200 || res.statusCode == 204;
   }
 }

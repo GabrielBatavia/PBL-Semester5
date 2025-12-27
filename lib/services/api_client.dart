@@ -1,185 +1,167 @@
 // lib/services/api_client.dart
 import 'dart:convert';
-import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io' show Platform;
 
 class ApiClient {
-  static const String _pcLocalBaseUrl    = 'http://127.0.0.1:9000'; // backend di laptop
-  static const String _webBaseUrl        = 'http://127.0.0.1:9000'; // flutter web
-  static const String _androidAdbBaseUrl = 'http://127.0.0.1:9000'; // HP fisik via adb reverse
-  static const String _androidEmuBaseUrl = 'http://10.0.2.2:9000';  // emulator Android
+  ApiClient._();
 
-  static String get baseUrl {
-    if (kIsWeb) return _webBaseUrl;
+  static const String _tokenKey = 'auth_token';
 
-    if (Platform.isAndroid) {
-      // HP fisik pakai kabel + `adb reverse tcp:9000 tcp:9000`
-      const bool useAdbReverse = true;
-      const bool useEmulator   = false;
+  static String baseUrl = const String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://127.0.0.1:9000',
+  );
 
-      if (useEmulator) return _androidEmuBaseUrl;
-      if (useAdbReverse) return _androidAdbBaseUrl;
+  static http.Client _client = http.Client();
 
-      // fallback kalau suatu saat mau pakai LAN langsung
-      return _pcLocalBaseUrl;
+  static void setHttpClient(http.Client client) {
+    _client = client;
+  }
+
+  static void resetHttpClient() {
+    _client = http.Client();
+  }
+
+  static Uri buildUri(String path) {
+    final p = path.trim();
+    if (p.startsWith('http://') || p.startsWith('https://')) {
+      return Uri.parse(p);
     }
 
-    // desktop / iOS
-    return _pcLocalBaseUrl;
+    final b = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
+    final r = p.startsWith('/') ? p : '/$p';
+    return Uri.parse('$b$r');
   }
 
-  // Helper untuk konversi path gambar relatif → URL penuh
-  static String? resolveImageUrl(String? path) {
-    if (path == null || path.isEmpty) return null;
+  static String resolveImageUrl(String? imageUrl) {
+    final v = (imageUrl ?? '').trim();
+    if (v.isEmpty) return '';
+    if (v.startsWith('http://') || v.startsWith('https://')) return v;
 
-    if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    if (path.startsWith('/')) return '$baseUrl$path';
-    return '$baseUrl/$path';
+    final b = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
+
+    final path = v.startsWith('/') ? v : '/$v';
+    return '$b$path';
   }
-
-  static Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
-  }
-
-  // Public getter (SATU SAJA, jangan dobel)
-  static Future<String?> getToken() => _getToken();
 
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', token);
+    await prefs.setString(_tokenKey, token);
+  }
+
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_tokenKey);
   }
 
   static Future<void> clearToken() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
+    await prefs.remove(_tokenKey);
   }
 
-  static Future<Map<String, String>> _headers({required bool auth}) async {
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
+  static Future<Map<String, String>> _headers({
+    bool auth = false,
+    Map<String, String>? extra,
+    bool jsonContentType = true,
+  }) async {
+    final headers = <String, String>{};
+
+    if (jsonContentType) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     if (auth) {
-      final token = await _getToken();
+      final token = await getToken();
       if (token != null && token.isNotEmpty) {
         headers['Authorization'] = 'Bearer $token';
       }
     }
-    return headers;
-  }
 
-  static Uri _uri(String path) => Uri.parse('$baseUrl$path');
-
-  static Future<http.Response> post(
-    String path,
-    Map<String, dynamic> body, {
-    bool auth = false,
-  }) async {
-    final uri = _uri(path);
-    final headers = await _headers(auth: auth);
-
-    try {
-      debugPrint('POST $uri');
-      final resp = await http
-          .post(uri, headers: headers, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 10));
-
-      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
-      return resp;
-    } on TimeoutException {
-      debugPrint('⚠ Timeout ke $uri');
-      rethrow;
+    if (extra != null) {
+      headers.addAll(extra);
     }
+
+    return headers;
   }
 
   static Future<http.Response> get(
     String path, {
     bool auth = false,
+    Map<String, String>? headers,
   }) async {
-    final uri = _uri(path);
-    final headers = await _headers(auth: auth);
+    final uri = buildUri(path);
+    return _client.get(
+      uri,
+      headers: await _headers(auth: auth, extra: headers, jsonContentType: true),
+    );
+  }
 
-    try {
-      debugPrint('GET  $uri');
-      final resp = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 10));
-
-      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
-      return resp;
-    } on TimeoutException {
-      debugPrint('⚠ Timeout ke $uri');
-      rethrow;
-    }
+  static Future<http.Response> post(
+    String path,
+    Object? body, {
+    bool auth = false,
+    Map<String, String>? headers,
+  }) async {
+    final uri = buildUri(path);
+    return _client.post(
+      uri,
+      headers: await _headers(auth: auth, extra: headers, jsonContentType: true),
+      body: jsonEncode(body ?? {}),
+    );
   }
 
   static Future<http.Response> put(
     String path,
-    Map<String, dynamic> body, {
+    Object? body, {
     bool auth = false,
+    Map<String, String>? headers,
   }) async {
-    final uri = _uri(path);
-    final headers = await _headers(auth: auth);
+    final uri = buildUri(path);
+    return _client.put(
+      uri,
+      headers: await _headers(auth: auth, extra: headers, jsonContentType: true),
+      body: jsonEncode(body ?? {}),
+    );
+  }
 
-    try {
-      debugPrint('PUT  $uri');
-      final resp = await http
-          .put(uri, headers: headers, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 10));
-
-      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
-      return resp;
-    } on TimeoutException {
-      debugPrint('⚠ Timeout ke $uri');
-      rethrow;
-    }
+  static Future<http.Response> patch(
+    String path,
+    Object? body, {
+    bool auth = false,
+    Map<String, String>? headers,
+  }) async {
+    final uri = buildUri(path);
+    return _client.patch(
+      uri,
+      headers: await _headers(auth: auth, extra: headers, jsonContentType: true),
+      body: jsonEncode(body ?? {}),
+    );
   }
 
   static Future<http.Response> delete(
     String path, {
     bool auth = false,
+    Map<String, String>? headers,
   }) async {
-    final uri = _uri(path);
-    final headers = await _headers(auth: auth);
-
-    try {
-      debugPrint('DELETE $uri');
-      final resp = await http
-          .delete(uri, headers: headers)
-          .timeout(const Duration(seconds: 10));
-
-      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
-      return resp;
-    } on TimeoutException {
-      debugPrint('⚠ Timeout ke $uri');
-      rethrow;
-    }
+    final uri = buildUri(path);
+    return _client.delete(
+      uri,
+      headers: await _headers(auth: auth, extra: headers, jsonContentType: true),
+    );
   }
 
-  static Future<http.Response> patch(
-    String path,
-    Map<String, dynamic> body, {
+  static Future<http.Response> getRaw(
+    String path, {
     bool auth = false,
+    Map<String, String>? headers,
   }) async {
-    final uri = _uri(path);
-    final headers = await _headers(auth: auth);
-
-    try {
-      debugPrint('PATCH $uri');
-      final resp = await http
-          .patch(uri, headers: headers, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 10));
-
-      debugPrint('→ ${resp.statusCode} body=${resp.body.isNotEmpty ? resp.body : "(empty)"}');
-      return resp;
-    } on TimeoutException {
-      debugPrint('⚠ Timeout ke $uri');
-      rethrow;
-    }
+    final uri = buildUri(path);
+    final h = await _headers(auth: auth, extra: headers, jsonContentType: false);
+    return _client.get(uri, headers: h);
   }
 }

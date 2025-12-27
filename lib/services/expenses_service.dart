@@ -4,10 +4,8 @@ import 'api_client.dart';
 
 class ExpenseService {
   ExpenseService._();
-
   static final ExpenseService instance = ExpenseService._();
 
-  // ===== STATIC WRAPPERS (biar screen aman panggil ExpenseService.getExpenses()) =====
   static Future<List<Map<String, dynamic>>> getExpenses() {
     return instance._getExpenses();
   }
@@ -28,7 +26,6 @@ class ExpenseService {
     );
   }
 
-  // ===== IMPLEMENTATION =====
   Future<List<Map<String, dynamic>>> _getExpenses() async {
     final response = await ApiClient.get('/expenses', auth: true);
 
@@ -39,7 +36,6 @@ class ExpenseService {
         return decoded.cast<Map<String, dynamic>>();
       }
 
-      // kalau backend ternyata balikin {data:[...]}
       if (decoded is Map && decoded['data'] is List) {
         return (decoded['data'] as List).cast<Map<String, dynamic>>();
       }

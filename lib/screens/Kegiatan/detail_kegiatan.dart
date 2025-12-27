@@ -1,5 +1,4 @@
 // lib/screens/Kegiatan/detail_kegiatan.dart
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jawaramobile_1/services/kegiatan_service.dart';
@@ -8,6 +7,13 @@ class DetailKegiatanScreen extends StatelessWidget {
   final Map<String, dynamic> kegiatanData;
 
   const DetailKegiatanScreen({super.key, required this.kegiatanData});
+
+  int _asInt(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString()) ?? 0;
+  }
 
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
@@ -31,9 +37,8 @@ class DetailKegiatanScreen extends StatelessWidget {
               ),
               child: const Text("Hapus"),
               onPressed: () async {
-                final id = int.tryParse(kegiatanData['id'] ?? '0') ?? 0;
-
-                final success = await KegiatanService.delete(id);
+                final id = _asInt(kegiatanData['id']);
+                final success = await KegiatanService.instance.deleteImpl(id);
 
                 Navigator.of(dialogContext).pop();
 
@@ -113,13 +118,17 @@ class DetailKegiatanScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  kegiatanData['nama'] ?? '-',
+                  (kegiatanData['name'] ?? kegiatanData['nama'] ?? '-')
+                      .toString(),
                   style: theme.textTheme.displayLarge
                       ?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  kegiatanData['kategori'] ?? '',
+                  (kegiatanData['category'] ??
+                          kegiatanData['kategori'] ??
+                          '')
+                      .toString(),
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: Colors.white70),
                 ),
@@ -146,31 +155,40 @@ class DetailKegiatanScreen extends StatelessWidget {
                         _buildDetailRow(
                           context,
                           "Nama Kegiatan",
-                          kegiatanData['name'] ?? '-',
+                          (kegiatanData['name'] ?? '-').toString(),
                         ),
                         const Divider(height: 1),
                         _buildDetailRow(
                           context,
                           "Kategori",
-                          kegiatanData['kategori'] ?? '-',
+                          (kegiatanData['category'] ??
+                                  kegiatanData['kategori'] ??
+                                  '-')
+                              .toString(),
                         ),
                         const Divider(height: 1),
                         _buildDetailRow(
                           context,
                           "Penanggung Jawab",
-                          kegiatanData['pj'] ?? '-',
+                          (kegiatanData['pic_name'] ??
+                                  kegiatanData['pj'] ??
+                                  '-')
+                              .toString(),
                         ),
                         const Divider(height: 1),
                         _buildDetailRow(
                           context,
                           "Lokasi",
-                          kegiatanData['lokasi'] ?? '-',
+                          (kegiatanData['location'] ??
+                                  kegiatanData['lokasi'] ??
+                                  '-')
+                              .toString(),
                         ),
                         const Divider(height: 1),
                         _buildDetailRow(
                           context,
                           "Tanggal",
-                          kegiatanData['date'] ?? '-',
+                          (kegiatanData['date'] ?? '-').toString(),
                         ),
                       ],
                     ),
@@ -193,31 +211,11 @@ class DetailKegiatanScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    kegiatanData['deskripsi'] ?? 'Tidak ada deskripsi.',
+                    (kegiatanData['description'] ??
+                            kegiatanData['deskripsi'] ??
+                            'Tidak ada deskripsi.')
+                        .toString(),
                     style: theme.textTheme.bodyMedium,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Dokumentasi Kegiatan',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    height: 200,
-                    color: Colors.white.withOpacity(0.15),
-                    child: const Center(
-                      child: Icon(
-                        Icons.image,
-                        color: Colors.white70,
-                        size: 40,
-                      ),
-                    ),
                   ),
                 ),
                 const SizedBox(height: 32),

@@ -1,23 +1,21 @@
 // lib/services/broadcast_service.dart
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'api_client.dart';
 
 class BroadcastService {
-  static const String baseUrl = "http://127.0.0.1:9000";
-
   static Future<Map<String, dynamic>> createBroadcast({
     required String title,
     required String content,
     required int senderId,
   }) async {
-    final resp = await http.post(
-      Uri.parse('$baseUrl/broadcast'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    final resp = await ApiClient.post(
+      '/broadcast',
+      {
         "title": title,
         "content": content,
         "sender_id": senderId,
-      }),
+      },
+      auth: false,
     );
 
     if (resp.statusCode == 201 || resp.statusCode == 200) {
@@ -27,7 +25,7 @@ class BroadcastService {
   }
 
   static Future<List<dynamic>> getBroadcastList() async {
-    final resp = await http.get(Uri.parse('$baseUrl/broadcast'));
+    final resp = await ApiClient.get('/broadcast', auth: false);
     if (resp.statusCode == 200) {
       return jsonDecode(resp.body) as List<dynamic>;
     }
@@ -40,14 +38,14 @@ class BroadcastService {
     required String content,
     required int senderId,
   }) async {
-    final resp = await http.put(
-      Uri.parse('$baseUrl/broadcast/$id'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    final resp = await ApiClient.put(
+      '/broadcast/$id',
+      {
         "title": title,
         "content": content,
         "sender_id": senderId,
-      }),
+      },
+      auth: false,
     );
 
     if (resp.statusCode == 200) {
@@ -57,7 +55,7 @@ class BroadcastService {
   }
 
   static Future<bool> deleteBroadcast(dynamic id) async {
-    final resp = await http.delete(Uri.parse('$baseUrl/broadcast/$id'));
+    final resp = await ApiClient.delete('/broadcast/$id', auth: false);
     return resp.statusCode == 200 || resp.statusCode == 204;
   }
 }

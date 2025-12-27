@@ -1,12 +1,11 @@
 // lib/services/bill_service.dart
-
 import 'dart:convert';
 import 'api_client.dart';
 
 class BillService {
   static Future<List<Map<String, dynamic>>> getBills() async {
     final response = await ApiClient.get('/bills', auth: true);
-    
+
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.cast<Map<String, dynamic>>();
@@ -43,7 +42,9 @@ class BillService {
     }
   }
 
-  static Future<Map<String, dynamic>> sendBillNotifications(List<int> billIds) async {
+  static Future<Map<String, dynamic>> sendBillNotifications(
+    List<int> billIds,
+  ) async {
     final response = await ApiClient.post(
       '/bills/send-notifications/',
       {

@@ -1,12 +1,11 @@
 // lib/services/income_transaction_service.dart
-
 import 'dart:convert';
 import 'api_client.dart';
 
 class IncomeTransactionService {
   static Future<List<Map<String, dynamic>>> getIncomeTransactions() async {
     final response = await ApiClient.get('/income-transactions', auth: true);
-    
+
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.cast<Map<String, dynamic>>();
@@ -37,7 +36,7 @@ class IncomeTransactionService {
       auth: true,
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return json.decode(response.body);
     } else {
       final error = json.decode(response.body);

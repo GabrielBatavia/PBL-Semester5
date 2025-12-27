@@ -1,16 +1,11 @@
 // lib/services/payment_channel_service.dart
-
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:jawaramobile_1/models/payment_channel.dart';
-import 'package:jawaramobile_1/services/api_client.dart';
+import 'api_client.dart';
 
 class PaymentChannelService {
   static Future<List<PaymentChannel>> getChannels() async {
-    final http.Response res = await ApiClient.get(
-      '/payment-channels',
-      auth: true,
-    );
+    final res = await ApiClient.get('/payment-channels', auth: true);
 
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body) as List<dynamic>;
@@ -18,8 +13,7 @@ class PaymentChannelService {
           .map((e) => PaymentChannel.fromJson(e as Map<String, dynamic>))
           .toList();
     } else {
-      throw Exception(
-          'Gagal memuat channel transfer (status: ${res.statusCode})');
+      throw Exception('Gagal memuat channel transfer (status: ${res.statusCode})');
     }
   }
 
@@ -32,7 +26,7 @@ class PaymentChannelService {
     String? qrisImageUrl,
   }) async {
     final response = await ApiClient.post(
-      '/payment-channels/',  // Note the trailing slash
+      '/payment-channels/',
       {
         'name': name,
         'type': type,
@@ -48,11 +42,10 @@ class PaymentChannelService {
       return json.decode(response.body);
     }
 
-    // Better error message
     String errorMsg = 'Failed to create channel';
     try {
       final errorBody = json.decode(response.body);
-      if (errorBody['detail'] != null) {
+      if (errorBody is Map && errorBody['detail'] != null) {
         errorMsg = errorBody['detail'].toString();
       }
     } catch (e) {

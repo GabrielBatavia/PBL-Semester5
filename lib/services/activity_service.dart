@@ -32,7 +32,9 @@ class ActivityService {
 
     final decoded = jsonDecode(response.body);
     if (decoded is! List) {
-      throw Exception('Invalid response format: expected List, got ${decoded.runtimeType}');
+      throw Exception(
+        'Invalid response format: expected List, got ${decoded.runtimeType}',
+      );
     }
 
     return decoded
