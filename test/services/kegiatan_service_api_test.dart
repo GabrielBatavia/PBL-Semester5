@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:jawaramobile_1/services/kegiatan_service.dart';
+import 'package:jawaramobile_1/utils/session.dart';
 import '../helpers/api_test_harness.dart';
 
 void main() {
@@ -15,7 +16,9 @@ void main() {
       'user_id': 7,
       'role': 'warga',
     });
-    await Session.saveSession(userId: 7, role: 'warga');
+
+    // sinkronkan juga lewat helper Session supaya kode UI/service yang baca prefs aman
+    await Session.saveSession(userId: 7, role: 'warga', token: 'T');
   });
 
   tearDown(() => ApiTestHarness.tearDownClient());
@@ -37,7 +40,8 @@ void main() {
       'POST /kegiatan/delete/1': (_) => http.Response('', 200),
     });
 
-    final list = await KegiatanService.getKegiatanByRole(userId: 7, role: 'warga');
+    final list =
+        await KegiatanService.getKegiatanByRole(userId: 7, role: 'warga');
     expect(list, isA<List>());
 
     final detail = await KegiatanService.getDetail(1);

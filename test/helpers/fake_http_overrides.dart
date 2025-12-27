@@ -14,7 +14,8 @@ class FakeRoute {
     this.headers = const {},
     Uint8List? bodyBytes,
     String? bodyText,
-  }) : bodyBytes = bodyBytes ?? Uint8List.fromList((bodyText ?? '').codeUnits);
+  }) : bodyBytes = bodyBytes ??
+            Uint8List.fromList(utf8.encode(bodyText ?? '')); // pakai utf8
 }
 
 class FakeHttpOverrides extends HttpOverrides {
@@ -49,7 +50,7 @@ class _FakeHttpClient implements HttpClient {
   void close({bool force = false}) {}
 
   @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _FakeHttpClientRequest implements HttpClientRequest {
@@ -61,7 +62,6 @@ class _FakeHttpClientRequest implements HttpClientRequest {
   final BytesBuilder _buffer = BytesBuilder(copy: false);
 
   // Properties that `package:http`'s IOClient / MultipartRequest may set/read.
-  // If these are missing, Dart will route to noSuchMethod and tests will fail.
   bool _followRedirects = true;
   int _maxRedirects = 5;
   bool _persistentConnection = true;
@@ -86,7 +86,17 @@ class _FakeHttpClientRequest implements HttpClientRequest {
   @override
   void write(Object? obj) {
     final s = obj?.toString() ?? '';
-    _buffer.add(s.codeUnits);
+    _buffer.add(utf8.encode(s));
+  }
+
+  @override
+  void writeAll(Iterable objects, [String separator = ""]) {
+    write(objects.join(separator));
+  }
+
+  @override
+  void writeln([Object? obj = ""]) {
+    write("${obj ?? ''}\n");
   }
 
   @override
@@ -95,8 +105,8 @@ class _FakeHttpClientRequest implements HttpClientRequest {
     if (route == null) {
       return _FakeHttpClientResponse(
         statusCode: 500,
-        headers: {'content-type': 'text/plain'},
-        bodyBytes: Uint8List.fromList('No fake route for $_key'.codeUnits),
+        headers: {'content-type': 'text/plain; charset=utf-8'},
+        bodyBytes: Uint8List.fromList(utf8.encode('No fake route for $_key')),
       );
     }
     return _FakeHttpClientResponse(
@@ -109,37 +119,31 @@ class _FakeHttpClientRequest implements HttpClientRequest {
   // ---- HttpClientRequest fields used by IOClient ----
   @override
   bool get followRedirects => _followRedirects;
-
   @override
   set followRedirects(bool value) => _followRedirects = value;
 
   @override
   int get maxRedirects => _maxRedirects;
-
   @override
   set maxRedirects(int value) => _maxRedirects = value;
 
   @override
   bool get persistentConnection => _persistentConnection;
-
   @override
   set persistentConnection(bool value) => _persistentConnection = value;
 
   @override
   bool get bufferOutput => _bufferOutput;
-
   @override
   set bufferOutput(bool value) => _bufferOutput = value;
 
   @override
   int get contentLength => _contentLength;
-
   @override
   set contentLength(int value) => _contentLength = value;
 
   @override
   Encoding get encoding => _encoding;
-
   @override
   set encoding(Encoding value) => _encoding = value;
 
@@ -157,35 +161,64 @@ class _FakeHttpClientRequest implements HttpClientRequest {
   }
 
   @override
-  void writeAll(Iterable objects, [String separator = ""]) {
-    write(objects.join(separator));
-  }
-
-  @override
-  void writeln([Object? obj = ""]) {
-    write("${obj ?? ''}\n");
-  }
-
-  @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _FakeHttpHeaders implements HttpHeaders {
   final Map<String, List<String>> _map = {};
 
+  String _k(String name) => name.toLowerCase();
+
   @override
   void add(String name, Object value, {bool preserveHeaderCase = false}) {
-    _map.putIfAbsent(name.toLowerCase(), () => []);
-    _map[name.toLowerCase()]!.add(value.toString());
+    final key = _k(name);
+    _map.putIfAbsent(key, () => <String>[]);
+    _map[key]!.add(value.toString());
   }
 
   @override
   void set(String name, Object value, {bool preserveHeaderCase = false}) {
-    _map[name.toLowerCase()] = [value.toString()];
+    _map[_k(name)] = <String>[value.toString()];
+  }
+
+  // INI YANG DIBUTUHKAN IOClient.send (sebelumnya bikin error)
+  @override
+  void forEach(void Function(String name, List<String> values) action) {
+    _map.forEach((k, v) => action(k, List<String>.from(v)));
   }
 
   @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  List<String>? operator [](String name) => _map[_k(name)];
+
+  @override
+  String? value(String name) {
+    final v = _map[_k(name)];
+    if (v == null || v.isEmpty) return null;
+    return v.join(',');
+  }
+
+  @override
+  void remove(String name, Object value) {
+    final key = _k(name);
+    final list = _map[key];
+    if (list == null) return;
+    list.remove(value.toString());
+    if (list.isEmpty) _map.remove(key);
+  }
+
+  @override
+  void removeAll(String name) {
+    _map.remove(_k(name));
+  }
+
+  @override
+  void clear() {
+    _map.clear();
+  }
+
+  // sisanya kalau ada yang manggil, biar aman
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _FakeHttpClientResponse extends Stream<List<int>>
@@ -227,5 +260,5 @@ class _FakeHttpClientResponse extends Stream<List<int>>
   }
 
   @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
