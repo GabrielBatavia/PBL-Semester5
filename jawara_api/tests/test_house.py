@@ -1,42 +1,99 @@
-# tests/test_house.py
+import pytest
 
-def test_create_house(client):
-    payload = {"address": "Jl Mawar", "area": "A1", "status": "active"}
-    res = client.post("/houses/", json=payload)
-    assert res.status_code in (200, 201)
-    assert "id" in res.json()
 
-def test_search_house(client):
-    # gunakan query param sesuai router: ?search=
-    res = client.get("/houses/?search=mawar")
-    assert res.status_code == 200
-    # hasil bisa kosong atau berisi list
-    assert isinstance(res.json(), list)
-
-def test_update_house(client):
-    # ambil house pertama
-    res_list = client.get("/houses/")
-    hid = res_list.json()[0]["id"]
-
-    # Ambil detail house supaya kita kirim payload lengkap saat PUT
-    house_detail = client.get(f"/houses/{hid}").json()
-    # siapkan payload update (kirim semua field yang diperlukan)
-    update_payload = {
-        "address": house_detail.get("address", "Alamat Default"),
-        "area": house_detail.get("area", None),
-        "status": "terisi"  # perubahan yang diinginkan
+def test_create_house_success(client):
+    payload = {
+        "address": "Jl. Merdeka No 10",
+        "area": "RT 01",
+        "status": "aktif"
     }
 
-    res = client.put(f"/houses/{hid}", json=update_payload)
-    assert res.status_code == 200
-    assert res.json()["status"] == "terisi"
-
-def test_delete_house(client):
-    # create dulu supaya ada yang dihapus
-    payload = {"address": "Jl Hapus", "area": "A2", "status": "active"}
     res = client.post("/houses/", json=payload)
-    hid = res.json()["id"]
+    assert res.status_code == 200
 
-    res_del = client.delete(f"/houses/{hid}")
-    assert res_del.status_code == 200
-    assert res_del.json().get("deleted", True) is True
+    data = res.json()
+    assert data["address"] == payload["address"]
+    assert data["status"] == payload["status"]
+    assert "id" in data
+
+
+def test_get_all_houses(client):
+    res = client.get("/houses/")
+    assert res.status_code == 200
+    assert isinstance(res.json(), list)
+
+
+def test_search_house_by_address(client):
+    # buat data dulu
+    client.post("/houses/", json={
+        "address": "Jl. Mawar",
+        "area": "RT 02",
+        "status": "aktif"
+    })
+
+    res = client.get("/houses/?search=Mawar")
+    assert res.status_code == 200
+    data = res.json()
+
+    assert len(data) >= 1
+    assert "Mawar" in data[0]["address"]
+
+
+def test_get_house_by_id_success(client):
+    create = client.post("/houses/", json={
+        "address": "Jl. Melati",
+        "area": "RT 03",
+        "status": "aktif"
+    }).json()
+
+    res = client.get(f"/houses/{create['id']}")
+    assert res.status_code == 200
+    assert res.json()["id"] == create["id"]
+
+
+def test_update_house_success(client):
+    create = client.post("/houses/", json={
+        "address": "Jl. Kenanga",
+        "area": "RT 04",
+        "status": "aktif"
+    }).json()
+
+    update_payload = {
+        "address": "Jl. Kenanga Baru",
+        "area": "RT 05",
+        "status": "tidak aktif"
+    }
+
+    res = client.put(f"/houses/{create['id']}", json=update_payload)
+    assert res.status_code == 200
+
+    data = res.json()
+    assert data["address"] == "Jl. Kenanga Baru"
+    assert data["status"] == "tidak aktif"
+
+def test_delete_house_success(client):
+    create = client.post("/houses/", json={
+        "address": "Jl. Anggrek",
+        "area": "RT 06",
+        "status": "aktif"
+    }).json()
+
+    res = client.delete(f"/houses/{create['id']}")
+    assert res.status_code == 200
+    assert res.json()["deleted"] is True
+
+
+def test_delete_house_not_found(client):
+    res = client.delete("/houses/999999")
+    assert res.status_code == 200
+    assert res.json()["deleted"] is False
+
+
+def test_create_house_invalid_payload(client):
+    payload = {
+        "area": "RT 07"
+        # address wajib tapi tidak dikirim
+    }
+
+    res = client.post("/houses/", json=payload)
+    assert res.status_code == 422
